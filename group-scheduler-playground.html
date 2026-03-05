@@ -1,0 +1,3722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe's Stag - Lisbon</title>
+  <style>
+    /* Splash Screen - inside phone */
+    .splash-screen {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      border-radius: 36px;
+      animation: fadeOut 0.5s ease-out 2.5s forwards;
+    }
+
+    .splash-screen.hidden {
+      display: none;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    .splash-logo {
+      width: 140px;
+      height: 140px;
+      animation: logoIn 0.8s ease-out;
+    }
+
+    @keyframes logoIn {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .splash-text {
+      color: #c41414;
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 20px;
+      animation: textIn 0.6s ease-out 0.3s both;
+    }
+
+    .splash-subtext {
+      color: #666;
+      font-size: 14px;
+      margin-top: 8px;
+      animation: textIn 0.6s ease-out 0.5s both;
+    }
+
+    @keyframes textIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .splash-loader {
+      width: 40px;
+      height: 4px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 2px;
+      margin-top: 40px;
+      overflow: hidden;
+      animation: textIn 0.6s ease-out 0.7s both;
+    }
+
+    .splash-loader-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #d10a0a, #ba1409);
+      border-radius: 2px;
+      animation: loading 2s ease-out 0.8s forwards;
+    }
+
+    @keyframes loading {
+      to {
+        width: 100%;
+      }
+    }
+
+    .app-logo {
+      width: 36px;
+      height: 36px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f6f8fa;
+      --surface-2: #eaeef2;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --text-dim: #656d76;
+      --accent: #0969da;
+      --accent-2: #1a7f37;
+      --accent-3: #8250df;
+      --accent-4: #cf222e;
+      --accent-5: #1a7f37;
+      --gold: #9a6700;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .view-tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .view-tab:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .view-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .controls {
+      width: 300px;
+      padding: 20px;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      background: var(--surface);
+    }
+
+    .control-section {
+      margin-bottom: 24px;
+    }
+
+    .control-section h3 {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .control-group select, .control-group input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .checkbox-group input {
+      accent-color: var(--accent);
+    }
+
+    .tracker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tracker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .tracker-item .emoji {
+      font-size: 18px;
+    }
+
+    .tracker-item input {
+      width: 60px;
+      padding: 4px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 14px;
+      margin-left: auto;
+    }
+
+    .add-tracker {
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 13px;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .add-tracker:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+
+    /* Alert Banner */
+    .alert-banner {
+      background: linear-gradient(135deg, #cf222e, #a40e26);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: pulse-alert 2s infinite;
+      box-shadow: 0 4px 12px rgba(207, 34, 46, 0.3);
+    }
+
+    .alert-banner.warning {
+      background: linear-gradient(135deg, #9a6700, #7a5200);
+      animation: none;
+      box-shadow: 0 4px 12px rgba(154, 103, 0, 0.3);
+    }
+
+    @keyframes pulse-alert {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+
+    .alert-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .alert-subtitle {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .alert-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .alert-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .alert-btn.primary {
+      background: #fff;
+      color: #cf222e;
+    }
+
+    .alert-btn.secondary {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    .countdown-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: rgba(207, 34, 46, 0.15);
+      border: 1px solid rgba(207, 34, 46, 0.3);
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cf222e;
+      margin-left: 8px;
+    }
+
+    .countdown-badge.soon {
+      background: rgba(154, 103, 0, 0.15);
+      border-color: rgba(154, 103, 0, 0.3);
+      color: #9a6700;
+    }
+
+    /* Wrapped/Summary Styles */
+    .wrapped-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .wrapped-card {
+      flex: 1;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wrapped-card.gradient-1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .wrapped-card.gradient-2 {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .wrapped-card.gradient-3 {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .wrapped-card.gradient-4 {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .wrapped-card.gradient-5 {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    .wrapped-header {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 8px;
+    }
+
+    .wrapped-person {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .wrapped-person-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .wrapped-person-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .wrapped-big-stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .wrapped-big-number {
+      font-size: 72px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .wrapped-big-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      margin-top: 8px;
+    }
+
+    .wrapped-big-sublabel {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
+    }
+
+    .wrapped-emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .wrapped-award {
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: auto;
+      text-align: center;
+    }
+
+    .wrapped-award-title {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 4px;
+    }
+
+    .wrapped-award-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .wrapped-nav {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 16px 0 8px;
+    }
+
+    .wrapped-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .wrapped-dot.active {
+      background: var(--accent);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    .wrapped-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .wrapped-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .wrapped-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .wrapped-selector {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .wrapped-selector button {
+      padding: 6px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-dim);
+      font-size: 12px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .wrapped-selector button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .export-options {
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+
+    .export-options-title {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .export-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .export-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px;
+      background: var(--surface);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .export-option:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .export-option .icon {
+      font-size: 20px;
+    }
+
+    /* Golf Scorecard */
+    .golf-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .golf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .golf-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .golf-round-selector {
+      display: flex;
+      gap: 4px;
+    }
+
+    .golf-round-selector button {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .golf-round-selector button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .golf-scorecard {
+      flex: 1;
+      overflow: auto;
+      background: var(--surface-2);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .golf-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .golf-table th, .golf-table td {
+      padding: 8px 4px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      min-width: 28px;
+    }
+
+    .golf-table th {
+      background: var(--surface);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .golf-table th:first-child,
+    .golf-table td:first-child {
+      position: sticky;
+      left: 0;
+      background: var(--surface);
+      z-index: 1;
+      text-align: left;
+      padding-left: 8px;
+      min-width: 50px;
+      font-weight: 500;
+    }
+
+    .golf-table th:first-child {
+      z-index: 3;
+    }
+
+    .golf-table td:last-child,
+    .golf-table th:last-child {
+      font-weight: 700;
+      background: var(--surface);
+      position: sticky;
+      right: 0;
+    }
+
+    .golf-table .par-row {
+      background: var(--surface);
+      color: var(--text-dim);
+      font-size: 10px;
+    }
+
+    .golf-score {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .golf-score.eagle {
+      background: #ffd700;
+      color: #000;
+    }
+
+    .golf-score.birdie {
+      background: #3fb950;
+      color: #fff;
+    }
+
+    .golf-score.par {
+      background: transparent;
+    }
+
+    .golf-score.bogey {
+      background: #58a6ff;
+      color: #fff;
+    }
+
+    .golf-score.double {
+      background: #a371f7;
+      color: #fff;
+    }
+
+    .golf-score.worse {
+      background: #cf222e;
+      color: #fff;
+    }
+
+    .golf-input {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .golf-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .golf-leaderboard {
+      margin-top: 12px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .golf-leaderboard h4 {
+      font-size: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .golf-leader-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+    }
+
+    .golf-leader-rank {
+      width: 20px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .golf-leader-name {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .golf-leader-score {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .golf-leader-score.under {
+      color: #1a7f37;
+    }
+
+    .golf-leader-score.over {
+      color: #cf222e;
+    }
+
+    .golf-bets {
+      margin-top: 8px;
+      padding: 8px;
+      background: var(--surface);
+      border-radius: 8px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .golf-bets strong {
+      color: var(--text);
+    }
+
+    .golf-bets-panel {
+      margin-top: 12px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .golf-bets-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .golf-bets-header h4 {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .golf-bets-add {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .golf-bet-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .golf-bet-item:last-child {
+      border-bottom: none;
+    }
+
+    .golf-bet-icon {
+      font-size: 18px;
+    }
+
+    .golf-bet-info {
+      flex: 1;
+    }
+
+    .golf-bet-name {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .golf-bet-detail {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .golf-bet-winner {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: var(--accent-2);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .golf-bet-pending {
+      padding: 4px 8px;
+      background: var(--surface);
+      border-radius: 12px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .golf-bet-claim {
+      padding: 4px 10px;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .golf-skins {
+      padding: 10px 12px;
+      background: linear-gradient(135deg, rgba(154, 103, 0, 0.1), transparent);
+    }
+
+    .golf-skins-title {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .golf-skins-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 3px 0;
+    }
+
+    .golf-skins-count {
+      font-weight: 600;
+    }
+
+    /* Kitty / Finance */
+    .kitty-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .kitty-balance {
+      background: linear-gradient(135deg, #1a7f37, #238636);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .kitty-balance-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .kitty-balance-amount {
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    .kitty-balance-sub {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    .kitty-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .kitty-action-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kitty-action-btn .icon {
+      font-size: 20px;
+    }
+
+    .kitty-action-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .kitty-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .kitty-tabs button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .kitty-tabs button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .kitty-section {
+      background: var(--surface-2);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .kitty-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kitty-section-header h4 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .kitty-section-total {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .kitty-transaction {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kitty-transaction:last-child {
+      border-bottom: none;
+    }
+
+    .kitty-tx-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: var(--surface);
+    }
+
+    .kitty-tx-info {
+      flex: 1;
+    }
+
+    .kitty-tx-title {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .kitty-tx-detail {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .kitty-tx-amount {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .kitty-tx-amount.expense {
+      color: #cf222e;
+    }
+
+    .kitty-tx-amount.income {
+      color: #1a7f37;
+    }
+
+    .kitty-balances {
+      padding: 12px;
+    }
+
+    .kitty-person {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kitty-person:last-child {
+      border-bottom: none;
+    }
+
+    .kitty-person-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .kitty-person-info {
+      flex: 1;
+    }
+
+    .kitty-person-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .kitty-person-detail {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .kitty-person-balance {
+      text-align: right;
+    }
+
+    .kitty-person-amount {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .kitty-person-amount.owes {
+      color: #cf222e;
+    }
+
+    .kitty-person-amount.owed {
+      color: #1a7f37;
+    }
+
+    .kitty-person-status {
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .kitty-settle {
+      padding: 12px;
+      background: linear-gradient(135deg, rgba(9, 105, 218, 0.1), transparent);
+    }
+
+    .kitty-settle-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .kitty-settle-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      padding: 6px 0;
+    }
+
+    .kitty-settle-arrow {
+      color: var(--text-dim);
+    }
+
+    .kitty-settle-amount {
+      margin-left: auto;
+      font-weight: 600;
+    }
+
+    .kitty-fines-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: linear-gradient(135deg, rgba(154, 103, 0, 0.1), transparent);
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .kitty-fines-link:hover {
+      background: linear-gradient(135deg, rgba(154, 103, 0, 0.15), transparent);
+    }
+
+    .kitty-fines-total {
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .tracker-item input[type="text"]:focus {
+      outline: none;
+      background: var(--surface) !important;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin: -2px -6px;
+    }
+
+    .preview {
+      flex: 1;
+      padding: 24px;
+      overflow: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 24px;
+      padding-top: 20px;
+    }
+
+    .preview-container {
+      width: 340px;
+      height: 680px;
+      background: var(--surface);
+      border-radius: 36px;
+      border: 3px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 30px;
+      background: #1f2328;
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      padding: 40px 16px 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation Tabs */
+    .app-nav {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 12px;
+    }
+
+    .app-nav button {
+      flex: 1;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .app-nav button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Card Stack */
+    .card-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-stack {
+      position: relative;
+      width: 100%;
+      height: 380px;
+    }
+
+    .swipe-card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      cursor: grab;
+      transition: transform 0.3s, opacity 0.3s;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .swipe-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .swipe-card.food::before { background: var(--accent-4); }
+    .swipe-card.outdoor::before { background: var(--accent-5); }
+    .swipe-card.social::before { background: var(--accent-3); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .card-emoji {
+      font-size: 48px;
+    }
+
+    .card-status {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .card-status.upcoming {
+      background: rgba(88, 166, 255, 0.2);
+      color: var(--accent);
+    }
+
+    .card-status.now {
+      background: rgba(63, 185, 80, 0.2);
+      color: var(--accent-5);
+      animation: pulse-status 2s infinite;
+    }
+
+    @keyframes pulse-status {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-time {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .card-location {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .card-people {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: -8px;
+    }
+
+    .avatar:first-child { margin-left: 0; }
+
+    .card-trackers {
+      display: flex;
+      gap: 12px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-tracker {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--surface);
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    .card-tracker .count {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .swipe-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .swipe-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 22px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .swipe-btn.skip:hover {
+      border-color: var(--accent-4);
+      color: var(--accent-4);
+      transform: scale(1.1);
+    }
+
+    .swipe-btn.checkin:hover {
+      border-color: var(--accent-5);
+      color: var(--accent-5);
+      transform: scale(1.1);
+    }
+
+    .swipe-btn.info:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    /* Live Activity View */
+    .live-activity {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .current-activity {
+      background: linear-gradient(145deg, rgba(63, 185, 80, 0.15), rgba(63, 185, 80, 0.05));
+      border: 1px solid rgba(63, 185, 80, 0.3);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .current-activity .label {
+      font-size: 11px;
+      color: var(--accent-5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .current-activity .title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tracker-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .tracker-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tracker-btn:hover {
+      transform: scale(1.02);
+      border-color: var(--accent);
+    }
+
+    .tracker-btn:active {
+      transform: scale(0.98);
+    }
+
+    .tracker-btn .emoji {
+      font-size: 32px;
+    }
+
+    .tracker-btn .count {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .tracker-btn .label {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .quick-action {
+      flex: 1;
+      padding: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .quick-action:hover {
+      border-color: var(--accent);
+    }
+
+    .quick-action .icon {
+      font-size: 20px;
+    }
+
+    .activity-feed {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feed-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .feed-content {
+      flex: 1;
+    }
+
+    .feed-content .text {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .feed-content .time {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Stats View */
+    .stats-view {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .stats-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .stats-header h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .stats-header p {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .stat-card {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card .stat-title {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .stat-card .stat-emoji {
+      font-size: 24px;
+      margin-right: 8px;
+    }
+
+    .leaderboard {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .leaderboard h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .leaderboard-item .rank {
+      width: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .leaderboard-item .rank.gold { color: var(--gold); }
+    .leaderboard-item .rank.silver { color: #c0c0c0; }
+    .leaderboard-item .rank.bronze { color: #cd7f32; }
+
+    .leaderboard-item .avatar {
+      margin-left: 0;
+    }
+
+    .leaderboard-item .name {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .leaderboard-item .score {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Horse Race View */
+    .race-container {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .race-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .race-header h3 {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .race-category {
+      font-size: 11px;
+      padding: 4px 10px;
+      background: var(--surface);
+      border-radius: 12px;
+      color: var(--text-dim);
+    }
+
+    .race-track {
+      position: relative;
+      background: linear-gradient(90deg, var(--surface-2) 0%, rgba(26, 127, 55, 0.1) 100%);
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .race-lane {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .race-lane:last-child {
+      border-bottom: none;
+    }
+
+    .race-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .race-progress {
+      flex: 1;
+      height: 24px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .race-bar {
+      height: 100%;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      transition: width 0.5s ease-out;
+      position: relative;
+    }
+
+    .race-bar::after {
+      content: '';
+      position: absolute;
+      right: 4px;
+      font-size: 14px;
+    }
+
+    .race-bar.horse::after { content: '🏇'; }
+    .race-bar.car::after { content: '🏎️'; }
+    .race-bar.rocket::after { content: '🚀'; }
+    .race-bar.runner::after { content: '🏃'; }
+    .race-bar.beer::after { content: '🍺'; }
+
+    .race-score {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      margin-right: 20px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .race-finish {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent-5);
+    }
+
+    .race-finish::before {
+      content: '🏁';
+      position: absolute;
+      right: -4px;
+      top: -20px;
+      font-size: 16px;
+    }
+
+    .race-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .race-tab {
+      flex: 1;
+      padding: 6px 8px;
+      background: var(--surface);
+      border: none;
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .race-tab.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .race-timeframe {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .race-timeframe button {
+      padding: 4px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .race-timeframe button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Challenges View */
+    .challenges-view {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .challenge-card {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .challenge-card.active {
+      border-color: var(--accent-3);
+      background: linear-gradient(145deg, rgba(130, 80, 223, 0.08), #fff);
+    }
+
+    .challenge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .challenge-emoji {
+      font-size: 32px;
+    }
+
+    .challenge-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(163, 113, 247, 0.2);
+      color: var(--accent-3);
+    }
+
+    .challenge-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .challenge-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .challenge-progress {
+      height: 6px;
+      background: var(--surface);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .challenge-progress-bar {
+      height: 100%;
+      background: var(--accent-3);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    .challenge-status {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Chat View */
+    .chat-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .chat-header-tabs button {
+      flex: 1;
+      padding: 6px 8px;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .chat-header-tabs button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 12px;
+    }
+
+    .chat-message {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .chat-message.own {
+      flex-direction: row-reverse;
+    }
+
+    .chat-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .chat-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border-radius: 16px;
+      border-top-left-radius: 4px;
+    }
+
+    .chat-message.own .chat-bubble {
+      background: var(--accent);
+      border-radius: 16px;
+      border-top-right-radius: 4px;
+    }
+
+    .chat-bubble .name {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .chat-message.own .chat-bubble .name {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .chat-bubble .text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .chat-bubble .time {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .chat-message.own .chat-bubble .time {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .chat-bubble .gif {
+      width: 100%;
+      max-width: 180px;
+      border-radius: 8px;
+      margin-top: 6px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100px;
+      font-size: 32px;
+    }
+
+    .chat-reactions {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chat-reaction {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: var(--surface);
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .chat-reaction .count {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .chat-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .chat-action-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reaction-picker {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .reaction-picker button {
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .reaction-picker button:hover {
+      background: var(--surface);
+      transform: scale(1.2);
+    }
+
+    .floating-reaction {
+      position: absolute;
+      font-size: 32px;
+      animation: floatUp 2s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
+    }
+
+    .activity-comment {
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .activity-comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .activity-comment-header .activity-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      background: var(--accent);
+      border-radius: 8px;
+      color: #fff;
+    }
+
+    /* Prompt Output */
+    .prompt-output {
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      background: var(--surface);
+    }
+
+    .prompt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .prompt-header h3 {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .copy-btn {
+      padding: 6px 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-2);
+    }
+
+    .prompt-text {
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg class="app-logo" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hg1" x1="101.1" y1="112.9" x2="101.1" y2="70.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+          </linearGradient>
+          <linearGradient id="hg2" x1="134.1" y1="111.8" x2="134.1" y2="71.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+          </linearGradient>
+          <linearGradient id="hg3" x1="169.4" y1="111.8" x2="169.4" y2="71.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+          </linearGradient>
+          <linearGradient id="hg4" x1="212.4" y1="112.9" x2="212.4" y2="70.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#hg1)" d="M112,150c-2.3-2-4.6-2.9-7.4-2.9s-5.1,1.4-5.1,3.5,1.7,3.2,7.2,5.3c7.6,3,10,6.4,10,12,0,8.2-5.7,13.5-15.3,13.5s-10.5-2.3-15.8-5.3l4.9-8.2c3.2,3,6.3,5.3,10.5,5.3s5.9-2,5.9-4.5-1.6-4-6.2-5.9c-7.5-3-11.7-5.4-11.7-11.4s5.3-12.3,14.5-12.3,9.2,1.5,12.2,3.8l-3.6,7.1Z"/>
+        <path fill="url(#hg2)" d="M139.4,180.4h-9.5v-32.3h-10.5v-7.9h29.5v7.9h-9.5v32.3Z"/>
+        <path fill="url(#hg3)" d="M164.3,164.3l4.8-12.4,5.1,12.4h-10ZM164.6,140.2l-17,40.2h10.4l3.8-7.9h16.1l3,7.9h10.1l-17.4-40.2h-9Z"/>
+        <path fill="url(#hg4)" d="M213.8,157.6h18.5v7.2c-.2,10.2-8.7,16.6-18.5,16.6s-21.4-8.6-21.4-21.2,8.8-21.1,21.1-21.1,12.4,2.6,16.1,6.9l-5.9,6.5c-2.3-3.2-5-4.7-9.3-4.7-7.2,0-11.4,5.8-11.4,12.6s4.7,12.7,11.1,12.7,9.5-3,10.1-8.2h-10.4v-7.4Z"/>
+      </svg>
+      <h1>Joe's Stag - Lisbon</h1>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="schedule">📋 Schedule</button>
+      <button class="view-tab" data-view="live">🔴 Live</button>
+      <button class="view-tab" data-view="golf">⛳ Golf</button>
+      <button class="view-tab" data-view="kitty">💶 Kitty</button>
+      <button class="view-tab" data-view="wrapped">🎁 Wrapped</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="controls">
+      <div class="control-section">
+        <h3>Tracking Items</h3>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px;">Create your own or use presets. Tap emoji to change.</p>
+        <div class="tracker-list" id="trackerList">
+          <div class="tracker-item" data-tracker="drinks">
+            <span class="emoji" style="cursor: pointer;" title="Click to change emoji">🍺</span>
+            <input type="text" value="Drinks" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="drinks">
+          </div>
+          <div class="tracker-item" data-tracker="shots">
+            <span class="emoji" style="cursor: pointer;">🥃</span>
+            <input type="text" value="Shots" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="shots">
+          </div>
+          <div class="tracker-item" data-tracker="fines">
+            <span class="emoji" style="cursor: pointer;">💸</span>
+            <input type="text" value="Fines" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="fines">
+          </div>
+          <div class="tracker-item" data-tracker="photos">
+            <span class="emoji" style="cursor: pointer;">📸</span>
+            <input type="text" value="Photos" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="photos">
+          </div>
+          <div class="tracker-item" data-tracker="falls">
+            <span class="emoji" style="cursor: pointer;">🤦</span>
+            <input type="text" value="Falls/Fails" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" data-tracker="falls">
+          </div>
+          <div class="tracker-item" data-tracker="golfwins">
+            <span class="emoji" style="cursor: pointer;">⛳</span>
+            <input type="text" value="Golf Holes Won" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" data-tracker="golfwins">
+          </div>
+        </div>
+        <button class="add-tracker" id="addTrackerBtn">+ Add Custom Tracker</button>
+
+        <div style="margin-top: 12px;">
+          <label style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 6px;">Quick Presets</label>
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button class="preset-btn" data-preset="stag" style="padding: 4px 10px; font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer;">🎉 Stag Do</button>
+            <button class="preset-btn" data-preset="golf" style="padding: 4px 10px; font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer;">⛳ Golf Day</button>
+            <button class="preset-btn" data-preset="nightout" style="padding: 4px 10px; font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer;">🪩 Night Out</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Interactive Features</h3>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="featPolls" checked> Quick Polls</label>
+          <label><input type="checkbox" id="featChallenges" checked> Group Challenges</label>
+          <label><input type="checkbox" id="featLeaderboard" checked> Leaderboards</label>
+          <label><input type="checkbox" id="featReactions" checked> Live Reactions</label>
+          <label><input type="checkbox" id="featPhotos" checked> Photo Moments</label>
+          <label><input type="checkbox" id="featSplitBills"> Split Bills</label>
+          <label><input type="checkbox" id="featChat" checked> Group Chat</label>
+          <label><input type="checkbox" id="featGifs" checked> GIF Reactions</label>
+          <label><input type="checkbox" id="featMemes" checked> Meme Replies</label>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Chat & Reactions</h3>
+        <div class="control-group">
+          <label>Chat Style</label>
+          <select id="chatStyle">
+            <option value="activity">Per-Activity Threads</option>
+            <option value="unified" selected>Unified Group Chat</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="reactEmoji" checked> Emoji Reactions</label>
+          <label><input type="checkbox" id="reactFloat" checked> Floating Reactions</label>
+          <label><input type="checkbox" id="reactGif" checked> GIF Search (Giphy)</label>
+          <label><input type="checkbox" id="reactVoice"> Voice Notes</label>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Gamification</h3>
+        <div class="control-group">
+          <label>Challenge Style</label>
+          <select id="challengeStyle">
+            <option value="cooperative">Cooperative (Team Goals)</option>
+            <option value="competitive">Competitive (Individual)</option>
+            <option value="mixed" selected>Mixed</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Rewards</label>
+          <select id="rewards">
+            <option value="badges">Badges & Achievements</option>
+            <option value="points" selected>Points System</option>
+            <option value="titles">Fun Titles</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Race Theme</label>
+          <select id="raceTheme">
+            <option value="horse">🏇 Horse Race</option>
+            <option value="car">🏎️ Race Cars</option>
+            <option value="rocket">🚀 Space Race</option>
+            <option value="runner">🏃 Runners</option>
+            <option value="beer">🍺 Beer Run</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Notifications</h3>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="notifyActivity" checked> Activity Updates</label>
+          <label><input type="checkbox" id="notifyMilestones" checked> Milestone Alerts</label>
+          <label><input type="checkbox" id="notifyReminders" checked> Schedule Reminders</label>
+          <label><input type="checkbox" id="notifyPhotos"> Photo Prompts</label>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Event Alerts</h3>
+        <div class="control-group">
+          <label>Reminder Before Events</label>
+          <select id="reminderTime">
+            <option value="15">15 minutes before</option>
+            <option value="30" selected>30 minutes before</option>
+            <option value="60">1 hour before</option>
+            <option value="custom">Custom times</option>
+          </select>
+        </div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="alertPush" checked> Push Notifications</label>
+          <label><input type="checkbox" id="alertSound" checked> Sound Alert</label>
+          <label><input type="checkbox" id="alertVibrate" checked> Vibrate</label>
+          <label><input type="checkbox" id="alertSnooze" checked> Allow Snooze (5 min)</label>
+        </div>
+        <div class="control-group" style="margin-top: 12px;">
+          <label>Alert Style</label>
+          <select id="alertStyle">
+            <option value="gentle">Gentle Reminder</option>
+            <option value="urgent" selected>Urgent (Louder)</option>
+            <option value="alarm">Full Alarm (Nuclear)</option>
+          </select>
+        </div>
+        <div class="checkbox-group" style="margin-top: 8px;">
+          <label><input type="checkbox" id="alertLocationShare"> Share location when late</label>
+          <label><input type="checkbox" id="alertAutoFine" checked> Auto-fine if 10+ min late</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-container">
+        <!-- Splash Screen inside phone -->
+        <div class="splash-screen" id="splashScreen">
+          <svg class="splash-logo" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sg1" x1="101.1" y1="112.9" x2="101.1" y2="70.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+              <linearGradient id="sg2" x1="134.1" y1="111.8" x2="134.1" y2="71.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+              <linearGradient id="sg3" x1="169.4" y1="111.8" x2="169.4" y2="71.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+              <linearGradient id="sg4" x1="212.4" y1="112.9" x2="212.4" y2="70.6" gradientTransform="translate(0 252) scale(1 -1)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+              <linearGradient id="sg5" x1="37.3" y1="163.3" x2="37.3" y2="69.4" gradientTransform="translate(-17.3 9.7) rotate(-8.9)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+              <linearGradient id="sg6" x1="93.2" y1="149.8" x2="93.2" y2="105.5" gradientTransform="translate(-17.3 9.7) rotate(-8.9)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+              <linearGradient id="sg7" x1="126.9" y1="162.9" x2="126.9" y2="141.1" gradientTransform="translate(21.7 258.7) rotate(-8.9) scale(1 -1)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+              <linearGradient id="sg8" x1="142" y1="134.8" x2="142" y2="89.7" gradientTransform="translate(-17.3 9.7) rotate(-8.9)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d10a0a"/><stop offset="1" stop-color="#ba1409"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#sg1)" d="M112,150c-2.3-2-4.6-2.9-7.4-2.9s-5.1,1.4-5.1,3.5,1.7,3.2,7.2,5.3c7.6,3,10,6.4,10,12,0,8.2-5.7,13.5-15.3,13.5s-10.5-2.3-15.8-5.3l4.9-8.2c3.2,3,6.3,5.3,10.5,5.3s5.9-2,5.9-4.5-1.6-4-6.2-5.9c-7.5-3-11.7-5.4-11.7-11.4s5.3-12.3,14.5-12.3,9.2,1.5,12.2,3.8l-3.6,7.1Z"/>
+            <path fill="url(#sg2)" d="M139.4,180.4h-9.5v-32.3h-10.5v-7.9h29.5v7.9h-9.5v32.3Z"/>
+            <path fill="url(#sg3)" d="M164.3,164.3l4.8-12.4,5.1,12.4h-10ZM164.6,140.2l-17,40.2h10.4l3.8-7.9h16.1l3,7.9h10.1l-17.4-40.2h-9Z"/>
+            <path fill="url(#sg4)" d="M213.8,157.6h18.5v7.2c-.2,10.2-8.7,16.6-18.5,16.6s-21.4-8.6-21.4-21.2,8.8-21.1,21.1-21.1,12.4,2.6,16.1,6.9l-5.9,6.5c-2.3-3.2-5-4.7-9.3-4.7-7.2,0-11.4,5.8-11.4,12.6s4.7,12.7,11.1,12.7,9.5-3,10.1-8.2h-10.4v-7.4Z"/>
+            <g>
+              <path fill="url(#sg5)" d="M59.1,121.3c-.5.7-1.8,1.9-2.1,0-2.3-17.8-10-34.8-20.6-44.8-4.5-3.9-7.4-4-11.9-3-9.3,2-14.6,19-12.3,33.4s12,29,21.2,27.6c8-1.3,9.6-9.8,8.4-16.9-.5-2.6-3.4-2.3-3.3,0,.3,5.9-.9,7.7-4,8.1-6.7.8-12.8-11.7-14.4-22.1s1.6-23.4,6.6-24.2c7.9-1.2,17,17.2,20.1,36.7.5,3.3,1,7.3,1.1,10.3-10,8.6-18.9,20.8-16.8,34,.9,5.5,4.8,6.6,8.2,5.8,9.9-2.2,17.8-16.5,17.5-37.8,1.7-1.6,3.5-3.6,4.2-5.2,1.2-2.9-.2-4.1-1.8-2ZM40.4,160.8c-2.3,0-3.4-2.4-3.5-6.1,0-7.3,5-15,11.4-21.1.7,15.8-1.4,27.1-7.9,27.2Z"/>
+              <path fill="url(#sg6)" d="M121.5,114.4c-1.9,8.1-5.9,13.4-10,14.1s-5.2-1.3-6.2-5.2c7.5-3.6,12.7-13.4,11.6-20.6s-4.3-6.6-9.5-5.8c-9.8,1.5-14,13.6-12.3,24.4s.7,3.1,1.2,4.4c-1.2,1.9-2.6,3-4,3.2,0-2.1-.1-4.2-.4-6.2-1.5-9.7-7.3-14.4-12-13.7s-3.7,1.2-4.9,2.4c-1.2-.4-2.5-.5-3.6-.2-7.2,1.9-5.8,16.4-5.2,20.3,1.6,10.1,8.2,15.3,14.2,14.3s9.5-7.7,10.6-14.4c2.8-.2,5.2-1.9,7-4.3,3.1,5,8.2,7.4,12.7,6.7,7.6-1.2,11.9-8.4,12.7-17,.3-3.5-1.2-4.8-2-2.6ZM82.4,140.1c-4.1.6-7.3-4-8.2-9.8s-.2-2.3-.3-3.4c2-.6,2.8-3.3,3.3-8.1.1-1.8,1.1-2.6,2.6-2.9,4.1-.6,7.1,2.3,8,8.5s.3,2.1.3,3.1c-.6-.4-1.4-.6-2.1-.5-2,.3-2.6,2.5-2.2,4.9s1,3,2.2,3.8c.5.3,1,.5,1.6.6-1.1,2.2-2.9,3.3-5.2,3.7ZM107.1,102c1.8-2,3.2-1.3,3.8.3,1.9,4.7-.5,15.4-6.7,18.4-2-6.9-.8-14.5,2.9-18.7Z"/>
+              <path fill="url(#sg7)" d="M123.2,78.3c-5.3-.4-6.9,3.3-7.1,6.1-.3,5.6,5.6,8.2,9.4,9.4.9.3,1.1.9.6,2.2-.7,1.9-1.1,2.9-.5,3.3,1.1.6,1.8-1.7,2.3-3.1,2.4-6.6,3.8-17.1-4.8-17.9Z"/>
+              <path fill="url(#sg8)" d="M140.8,83.1c-2-1.5-1.9-3.8-1.4-5,.8-2.4-2.3-2.5-3.1-.4-1.1,3.1-.1,8-.6,14.4l-1.1,9.6c-.8,0-1.5,0-2.5.1-4.9,1.1-5.2,6.8-3.2,12.3.6,1.7,1.3,3,2.3,4.2-1.5,1.4-3.2,2.9-2.4,3.9.8,1,2.8-.8,4.9-2.4,2.8,1.8,6.4,2.2,10,1.2,9.7-2.6,13.8-11.5,12.8-18.1s-9.8-15.6-15.7-19.9ZM143.3,115.4c-3.7,1.3-6.9-.4-8.6-3.9.9-.3,1.8-.6,2.9-1.1,3.8-1.8,4.4-5,2.8-8.3-.8-1.6-2.2-2.6-3.7-3.1l1-8.7c7.5,4,14.4,21.7,5.6,25.2Z"/>
+            </g>
+          </svg>
+          <div class="splash-text">Joe's Stag</div>
+          <div class="splash-subtext">Lisbon 2026</div>
+          <div class="splash-loader">
+            <div class="splash-loader-bar"></div>
+          </div>
+        </div>
+
+        <div class="phone-notch"></div>
+        <div class="phone-screen" id="phone-screen">
+          <!-- Dynamic content here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-output">
+    <div class="prompt-header">
+      <h3>Generated App Specification</h3>
+      <button class="copy-btn" id="copyBtn">Copy Prompt</button>
+    </div>
+    <div class="prompt-text" id="promptText"></div>
+  </div>
+
+  <script>
+    const state = {
+      view: 'schedule',
+      trackers: {
+        drinks: true,
+        shots: true,
+        fines: true,
+        photos: true,
+        falls: false,
+        golfwins: false
+      },
+      features: {
+        polls: true,
+        challenges: true,
+        leaderboard: true,
+        reactions: true,
+        photos: true,
+        splitBills: false,
+        chat: true,
+        gifs: true,
+        memes: true
+      },
+      chatStyle: 'unified',
+      chatFeatures: {
+        emoji: true,
+        float: true,
+        gif: true,
+        voice: false
+      },
+      challengeStyle: 'mixed',
+      rewards: 'points',
+      raceTheme: 'horse',
+      raceCategory: 'drinks',
+      raceTimeframe: 'today',
+      notifications: {
+        activity: true,
+        milestones: true,
+        reminders: true,
+        photos: false
+      }
+    };
+
+    const trackerEmojis = {
+      drinks: '🍺',
+      shots: '🥃',
+      fines: '💸',
+      photos: '📸',
+      falls: '🤦',
+      golfwins: '⛳'
+    };
+
+    const trackerLabels = {
+      drinks: 'Drinks',
+      shots: 'Shots',
+      fines: 'Fines',
+      photos: 'Photos',
+      falls: 'Falls',
+      golfwins: 'Holes Won'
+    };
+
+    const sampleActivities = [
+      // Thursday
+      { title: 'Arrivals', emoji: '✈️', type: 'travel', time: '3:00 PM', day: 'Thursday', location: 'Lisbon', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Shopping - Booze & Brekfasts', emoji: '🛒', type: 'food', time: '5:00 PM', day: 'Thursday', location: 'Local shops', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Dinner at Villa', emoji: '🍝', type: 'food', time: '7:00 PM', day: 'Thursday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Drinks & Early Night', emoji: '🍻', type: 'social', time: '9:00 PM', day: 'Thursday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Friday
+      { title: 'Mega Breakfast', emoji: '🍳', type: 'food', time: '9:00 AM', day: 'Friday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Golf (18 holes)', emoji: '⛳', type: 'outdoor', time: '10:00 AM', day: 'Friday', location: 'Chilli booking', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'now' },
+      { title: 'Drinks', emoji: '🍺', type: 'social', time: '5:00 PM', day: 'Friday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Dinner at Villa', emoji: '🥘', type: 'food', time: '7:00 PM', day: 'Friday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Night Out', emoji: '🎉', type: 'social', time: '10:00 PM', day: 'Friday', location: 'Urban Beach / Lust', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Saturday
+      { title: 'Mega Breakfast', emoji: '🍳', type: 'food', time: '9:00 AM', day: 'Saturday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Swim/Relax', emoji: '🏊', type: 'outdoor', time: '11:00 AM', day: 'Saturday', location: 'Villa Pool', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Padel', emoji: '🎾', type: 'outdoor', time: '12:00 PM', day: 'Saturday', location: 'TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Drinks & Early Dinner', emoji: '🍹', type: 'food', time: '5:00 PM', day: 'Saturday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Bar Crawl - Bairro Alto', emoji: '🍻', type: 'social', time: '6:00 PM', day: 'Saturday', location: 'Bairro Alto', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Night Out', emoji: '🪩', type: 'social', time: '10:00 PM', day: 'Saturday', location: 'TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Sunday
+      { title: 'Golf (9 holes)', emoji: '⛳', type: 'outdoor', time: '10:00 AM', day: 'Sunday', location: 'TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Beach', emoji: '🏖️', type: 'outdoor', time: '2:00 PM', day: 'Sunday', location: 'Lisbon Beach', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Dinner Out', emoji: '🍽️', type: 'food', time: '7:00 PM', day: 'Sunday', location: 'Restaurant TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Relax', emoji: '😴', type: 'social', time: '9:00 PM', day: 'Sunday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Monday
+      { title: 'Departures', emoji: '✈️', type: 'travel', time: '9:00 AM', day: 'Monday', location: 'Lisbon Airport', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+    ];
+
+    const feedItems = [
+      { person: 'Joe', action: 'got fined!', emoji: '💸', time: '2 min ago', color: '#f78166' },
+      { person: 'Bobi', action: 'added a shot', emoji: '🥃', time: '5 min ago', color: '#3fb950' },
+      { person: 'R', action: 'took a photo', emoji: '📸', time: '8 min ago', color: '#a371f7' },
+      { person: 'M', action: 'added a drink', emoji: '🍺', time: '12 min ago', color: '#58a6ff' },
+    ];
+
+    const challenges = [
+      { title: 'First Round', desc: 'Everyone has at least one drink', emoji: '🍻', progress: 80, total: '4/5 lads', active: true },
+      { title: 'Joe\'s Fines', desc: 'Get Joe fined 10 times', emoji: '💸', progress: 30, total: '3/10 fines', active: true },
+      { title: 'Golf Legends', desc: 'Complete both golf rounds', emoji: '⛳', progress: 50, total: '1/2 rounds', active: true },
+      { title: 'Bairro Alto Crawl', desc: 'Hit 5 bars in Bairro Alto', emoji: '🍻', progress: 0, total: 'Saturday night', active: false },
+      { title: 'Survivor', desc: 'Make it to Monday departures', emoji: '✈️', progress: 25, total: 'Day 1/4', active: false },
+    ];
+
+    // Event listeners
+    document.querySelectorAll('.view-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        state.view = tab.dataset.view;
+        renderView();
+      });
+    });
+
+    document.querySelectorAll('[data-tracker]').forEach(cb => {
+      cb.addEventListener('change', e => {
+        state.trackers[e.target.dataset.tracker] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    ['featPolls', 'featChallenges', 'featLeaderboard', 'featReactions', 'featPhotos', 'featSplitBills', 'featChat', 'featGifs', 'featMemes'].forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        const key = id.replace('feat', '').toLowerCase();
+        state.features[key] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    document.getElementById('chatStyle').addEventListener('change', e => {
+      state.chatStyle = e.target.value;
+      updateAll();
+    });
+
+    ['reactEmoji', 'reactFloat', 'reactGif', 'reactVoice'].forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        const key = id.replace('react', '').toLowerCase();
+        state.chatFeatures[key] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    ['notifyActivity', 'notifyMilestones', 'notifyReminders', 'notifyPhotos'].forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        const key = id.replace('notify', '').toLowerCase();
+        state.notifications[key] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    document.getElementById('challengeStyle').addEventListener('change', e => {
+      state.challengeStyle = e.target.value;
+      updateAll();
+    });
+
+    document.getElementById('rewards').addEventListener('change', e => {
+      state.rewards = e.target.value;
+      updateAll();
+    });
+
+    document.getElementById('raceTheme').addEventListener('change', e => {
+      state.raceTheme = e.target.value;
+      updateAll();
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const text = document.getElementById('promptText').textContent;
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy Prompt';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+
+    function getActiveTrackers() {
+      return Object.entries(state.trackers).filter(([k, v]) => v).map(([k]) => k);
+    }
+
+    function renderScheduleView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers().slice(0, 3);
+      const activity = sampleActivities[1]; // Current activity
+
+      screen.innerHTML = `
+        <div class="app-nav">
+          <button>Thu</button>
+          <button class="active">Fri</button>
+          <button>Sat</button>
+          <button>Sun</button>
+          <button>Mon</button>
+        </div>
+        <div class="card-area">
+          <div class="card-stack">
+            ${sampleActivities.filter(a => a.day === 'Friday').slice(0, 3).reverse().map((act, i) => {
+              const offset = (2 - i) * 6;
+              const scale = 1 - (2 - i) * 0.03;
+              return `
+                <div class="swipe-card ${act.type}" style="transform: translateY(${offset}px) scale(${scale}); z-index: ${i};">
+                  <div class="card-header">
+                    <div class="card-emoji">${act.emoji}</div>
+                    <div class="card-status ${act.status}">${act.status === 'now' ? '🔴 NOW' : '<span class="countdown-badge soon">⏱ 28 min</span>'}</div>
+                  </div>
+                  <div class="card-title">${act.title}</div>
+                  <div class="card-time">${act.time}</div>
+                  <div class="card-location">📍 ${act.location}</div>
+                  <div class="card-people">
+                    ${act.people.slice(0, 4).map((p, j) => `<div class="avatar" style="background: ${['#f78166', '#3fb950', '#a371f7', '#58a6ff'][j % 4]}">${p}</div>`).join('')}
+                    ${act.people.length > 4 ? `<div class="avatar" style="background: var(--surface-2)">+${act.people.length - 4}</div>` : ''}
+                  </div>
+                  ${activeTrackers.length > 0 ? `
+                    <div class="card-trackers">
+                      ${activeTrackers.map(t => `
+                        <div class="card-tracker">
+                          ${trackerEmojis[t]} <span class="count">${Math.floor(Math.random() * 5)}</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="swipe-actions">
+            <button class="swipe-btn skip">⏭️</button>
+            <button class="swipe-btn info">ℹ️</button>
+            <button class="swipe-btn checkin">✓</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLiveView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers();
+      const activity = sampleActivities[1];
+
+      screen.innerHTML = `
+        <div class="live-activity">
+          <div class="alert-banner warning">
+            <div class="alert-icon">⏰</div>
+            <div class="alert-content">
+              <div class="alert-title">Golf tee time in 30 mins!</div>
+              <div class="alert-subtitle">Get your gear ready lads</div>
+            </div>
+            <div class="alert-actions">
+              <button class="alert-btn secondary">Snooze</button>
+              <button class="alert-btn primary">Ready ✓</button>
+            </div>
+          </div>
+
+          <div class="current-activity">
+            <div class="label">Currently at</div>
+            <div class="title">${activity.emoji} ${activity.title}</div>
+          </div>
+
+          <div class="tracker-buttons">
+            ${activeTrackers.slice(0, 4).map(t => `
+              <div class="tracker-btn" data-tracker="${t}">
+                <div class="emoji">${trackerEmojis[t]}</div>
+                <div class="count">${t === 'spending' ? '$47' : t === 'steps' ? '2.4k' : Math.floor(Math.random() * 8) + 1}</div>
+                <div class="label">${trackerLabels[t]}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="quick-actions">
+            ${state.features.polls ? '<div class="quick-action"><span class="icon">📊</span>Poll</div>' : ''}
+            ${state.features.photos ? '<div class="quick-action"><span class="icon">📸</span>Photo</div>' : ''}
+            ${state.features.reactions ? '<div class="quick-action"><span class="icon">🎉</span>React</div>' : ''}
+            ${state.features.splitBills ? '<div class="quick-action"><span class="icon">💳</span>Split</div>' : ''}
+          </div>
+
+          <div class="activity-feed">
+            ${feedItems.map(item => `
+              <div class="feed-item">
+                <div class="feed-avatar" style="background: ${item.color}">${item.person}</div>
+                <div class="feed-content">
+                  <div class="text"><strong>${item.person}</strong> ${item.action} ${item.emoji}</div>
+                  <div class="time">${item.time}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStatsView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers();
+
+      const raceData = [
+        { name: 'Joe', score: 8, color: '#f78166' },
+        { name: 'Bobi', score: 6, color: '#3fb950' },
+        { name: 'Ryan', score: 5, color: '#a371f7' },
+        { name: 'M', score: 7, color: '#58a6ff' },
+        { name: 'D', score: 4, color: '#f0c000' }
+      ];
+      const maxScore = Math.max(...raceData.map(r => r.score));
+      const goalScore = 10;
+
+      screen.innerHTML = `
+        <div class="stats-view">
+          <div class="race-container">
+            <div class="race-header">
+              <h3>🏁 Live Race</h3>
+              <span class="race-category">${trackerEmojis[activeTrackers[0]] || '🍺'} ${trackerLabels[activeTrackers[0]] || 'Drinks'}</span>
+            </div>
+
+            <div class="race-tabs">
+              ${activeTrackers.slice(0, 3).map((t, i) => `
+                <button class="race-tab ${i === 0 ? 'active' : ''}">${trackerEmojis[t]}</button>
+              `).join('')}
+            </div>
+
+            <div class="race-track">
+              <div class="race-finish"></div>
+              ${raceData.map((racer, i) => `
+                <div class="race-lane">
+                  <div class="race-avatar" style="background: ${racer.color}">${racer.name[0]}</div>
+                  <div class="race-progress">
+                    <div class="race-bar ${state.raceTheme}" style="width: ${(racer.score / goalScore) * 100}%; background: linear-gradient(90deg, ${racer.color}88, ${racer.color});">
+                      <span class="race-score">${racer.score}</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="race-timeframe">
+              <button class="active">Today</button>
+              <button>This Trip</button>
+              <button>All Time</button>
+            </div>
+          </div>
+
+          ${activeTrackers.slice(0, 2).map(t => `
+            <div class="stat-card">
+              <div class="stat-title">Group Total ${trackerLabels[t]}</div>
+              <div class="stat-value">
+                <span class="stat-emoji">${trackerEmojis[t]}</span>
+                ${t === 'spending' ? '$234' : t === 'steps' ? '12,456' : Math.floor(Math.random() * 30) + 10}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderChallengesView() {
+      const screen = document.getElementById('phone-screen');
+
+      screen.innerHTML = `
+        <div class="challenges-view">
+          ${challenges.map(c => `
+            <div class="challenge-card ${c.active ? 'active' : ''}">
+              <div class="challenge-header">
+                <div class="challenge-emoji">${c.emoji}</div>
+                ${c.active ? '<div class="challenge-badge">In Progress</div>' : ''}
+              </div>
+              <div class="challenge-title">${c.title}</div>
+              <div class="challenge-desc">${c.desc}</div>
+              <div class="challenge-progress">
+                <div class="challenge-progress-bar" style="width: ${c.progress}%"></div>
+              </div>
+              <div class="challenge-status">${c.total}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderKittyView() {
+      const screen = document.getElementById('phone-screen');
+
+      screen.innerHTML = `
+        <div class="kitty-view">
+          <div class="kitty-balance">
+            <div class="kitty-balance-label">Group Kitty</div>
+            <div class="kitty-balance-amount">€847.50</div>
+            <div class="kitty-balance-sub">€169.50 per person contributed</div>
+          </div>
+
+          <div class="kitty-actions">
+            <button class="kitty-action-btn primary">
+              <span class="icon">➕</span>
+              Add to Kitty
+            </button>
+            <button class="kitty-action-btn">
+              <span class="icon">🧾</span>
+              Log Expense
+            </button>
+            <button class="kitty-action-btn">
+              <span class="icon">📊</span>
+              Split Bill
+            </button>
+          </div>
+
+          <div class="kitty-tabs">
+            <button class="active">Expenses</button>
+            <button>Balances</button>
+            <button>Settle Up</button>
+          </div>
+
+          <div class="kitty-section">
+            <div class="kitty-section-header">
+              <h4>Recent Expenses</h4>
+              <span class="kitty-section-total">€623.40 spent</span>
+            </div>
+
+            <div class="kitty-transaction">
+              <div class="kitty-tx-icon">🛒</div>
+              <div class="kitty-tx-info">
+                <div class="kitty-tx-title">Supermarket - Booze & Food</div>
+                <div class="kitty-tx-detail">Paid by Ryan • Thu 5:30 PM</div>
+              </div>
+              <div class="kitty-tx-amount expense">-€187.40</div>
+            </div>
+
+            <div class="kitty-transaction">
+              <div class="kitty-tx-icon">⛳</div>
+              <div class="kitty-tx-info">
+                <div class="kitty-tx-title">Golf - Chilli Booking</div>
+                <div class="kitty-tx-detail">Paid by Bobi • Fri 9:00 AM</div>
+              </div>
+              <div class="kitty-tx-amount expense">-€280.00</div>
+            </div>
+
+            <div class="kitty-transaction">
+              <div class="kitty-tx-icon">🍻</div>
+              <div class="kitty-tx-info">
+                <div class="kitty-tx-title">Drinks - Happy Hour</div>
+                <div class="kitty-tx-detail">Paid by Joe • Fri 6:15 PM</div>
+              </div>
+              <div class="kitty-tx-amount expense">-€86.00</div>
+            </div>
+
+            <div class="kitty-transaction">
+              <div class="kitty-tx-icon">🚕</div>
+              <div class="kitty-tx-info">
+                <div class="kitty-tx-title">Taxi to Urban Beach</div>
+                <div class="kitty-tx-detail">Paid by M • Fri 10:30 PM</div>
+              </div>
+              <div class="kitty-tx-amount expense">-€35.00</div>
+            </div>
+
+            <div class="kitty-transaction">
+              <div class="kitty-tx-icon">🎟️</div>
+              <div class="kitty-tx-info">
+                <div class="kitty-tx-title">Club Entry - Urban Beach</div>
+                <div class="kitty-tx-detail">Paid by D • Fri 11:00 PM</div>
+              </div>
+              <div class="kitty-tx-amount expense">-€35.00</div>
+            </div>
+          </div>
+
+          <div class="kitty-section">
+            <div class="kitty-section-header">
+              <h4>Who Owes What</h4>
+            </div>
+            <div class="kitty-balances">
+              <div class="kitty-person">
+                <div class="kitty-person-avatar" style="background: #f78166;">J</div>
+                <div class="kitty-person-info">
+                  <div class="kitty-person-name">Joe</div>
+                  <div class="kitty-person-detail">Paid €86 • Share €124.68</div>
+                </div>
+                <div class="kitty-person-balance">
+                  <div class="kitty-person-amount owes">-€38.68</div>
+                  <div class="kitty-person-status">owes kitty</div>
+                </div>
+              </div>
+
+              <div class="kitty-person">
+                <div class="kitty-person-avatar" style="background: #3fb950;">B</div>
+                <div class="kitty-person-info">
+                  <div class="kitty-person-name">Bobi</div>
+                  <div class="kitty-person-detail">Paid €280 • Share €124.68</div>
+                </div>
+                <div class="kitty-person-balance">
+                  <div class="kitty-person-amount owed">+€155.32</div>
+                  <div class="kitty-person-status">gets back</div>
+                </div>
+              </div>
+
+              <div class="kitty-person">
+                <div class="kitty-person-avatar" style="background: #a371f7;">R</div>
+                <div class="kitty-person-info">
+                  <div class="kitty-person-name">Ryan</div>
+                  <div class="kitty-person-detail">Paid €187.40 • Share €124.68</div>
+                </div>
+                <div class="kitty-person-balance">
+                  <div class="kitty-person-amount owed">+€62.72</div>
+                  <div class="kitty-person-status">gets back</div>
+                </div>
+              </div>
+
+              <div class="kitty-person">
+                <div class="kitty-person-avatar" style="background: #58a6ff;">M</div>
+                <div class="kitty-person-info">
+                  <div class="kitty-person-name">M</div>
+                  <div class="kitty-person-detail">Paid €35 • Share €124.68</div>
+                </div>
+                <div class="kitty-person-balance">
+                  <div class="kitty-person-amount owes">-€89.68</div>
+                  <div class="kitty-person-status">owes kitty</div>
+                </div>
+              </div>
+
+              <div class="kitty-person">
+                <div class="kitty-person-avatar" style="background: #f0c000;">D</div>
+                <div class="kitty-person-info">
+                  <div class="kitty-person-name">D</div>
+                  <div class="kitty-person-detail">Paid €35 • Share €124.68</div>
+                </div>
+                <div class="kitty-person-balance">
+                  <div class="kitty-person-amount owes">-€89.68</div>
+                  <div class="kitty-person-status">owes kitty</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="kitty-settle">
+              <div class="kitty-settle-title">💸 SIMPLIFY PAYMENTS</div>
+              <div class="kitty-settle-item">
+                <span>M</span>
+                <span class="kitty-settle-arrow">→</span>
+                <span>Bobi</span>
+                <span class="kitty-settle-amount">€89.68</span>
+              </div>
+              <div class="kitty-settle-item">
+                <span>D</span>
+                <span class="kitty-settle-arrow">→</span>
+                <span>Bobi</span>
+                <span class="kitty-settle-amount">€65.64</span>
+              </div>
+              <div class="kitty-settle-item">
+                <span>D</span>
+                <span class="kitty-settle-arrow">→</span>
+                <span>Ryan</span>
+                <span class="kitty-settle-amount">€24.04</span>
+              </div>
+              <div class="kitty-settle-item">
+                <span>Joe</span>
+                <span class="kitty-settle-arrow">→</span>
+                <span>Ryan</span>
+                <span class="kitty-settle-amount">€38.68</span>
+              </div>
+            </div>
+
+            <div class="kitty-fines-link">
+              <span>💸 Fines collected (goes to kitty)</span>
+              <span class="kitty-fines-total">€45.00</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGolfView() {
+      const screen = document.getElementById('phone-screen');
+
+      const players = ['Joe', 'Bobi', 'Ryan', 'M', 'D'];
+      const pars = [4, 3, 5, 4, 4, 3, 4, 5, 4]; // Front 9
+      const scores = {
+        'Joe':  [5, 4, 6, 5, 4, 4, 5, 6, 5],
+        'Bobi': [4, 3, 5, 4, 5, 3, 4, 5, 4],
+        'Ryan': [4, 4, 5, 4, 4, 3, 4, 6, 4],
+        'M':    [5, 3, 6, 5, 5, 4, 5, 5, 5],
+        'D':    [6, 4, 5, 5, 4, 4, 5, 6, 5]
+      };
+
+      function getScoreClass(score, par) {
+        const diff = score - par;
+        if (diff <= -2) return 'eagle';
+        if (diff === -1) return 'birdie';
+        if (diff === 0) return 'par';
+        if (diff === 1) return 'bogey';
+        if (diff === 2) return 'double';
+        return 'worse';
+      }
+
+      function getTotal(player) {
+        return scores[player].reduce((a, b) => a + b, 0);
+      }
+
+      function getTotalPar() {
+        return pars.reduce((a, b) => a + b, 0);
+      }
+
+      function getScoreToPar(player) {
+        const diff = getTotal(player) - getTotalPar();
+        if (diff > 0) return '+' + diff;
+        if (diff < 0) return diff;
+        return 'E';
+      }
+
+      const sortedPlayers = [...players].sort((a, b) => getTotal(a) - getTotal(b));
+
+      screen.innerHTML = `
+        <div class="golf-view">
+          <div class="golf-header">
+            <h3>⛳ Scorecard</h3>
+            <div class="golf-round-selector">
+              <button class="active">Fri (18)</button>
+              <button>Sun (9)</button>
+            </div>
+          </div>
+
+          <div class="golf-scorecard">
+            <table class="golf-table">
+              <thead>
+                <tr>
+                  <th>Hole</th>
+                  ${[1,2,3,4,5,6,7,8,9].map(h => `<th>${h}</th>`).join('')}
+                  <th>Tot</th>
+                </tr>
+                <tr class="par-row">
+                  <td>Par</td>
+                  ${pars.map(p => `<td>${p}</td>`).join('')}
+                  <td>${getTotalPar()}</td>
+                </tr>
+              </thead>
+              <tbody>
+                ${players.map(player => `
+                  <tr>
+                    <td>${player}</td>
+                    ${scores[player].map((s, i) => `
+                      <td><span class="golf-score ${getScoreClass(s, pars[i])}">${s}</span></td>
+                    `).join('')}
+                    <td><strong>${getTotal(player)}</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="golf-leaderboard">
+            <h4>🏆 Leaderboard</h4>
+            ${sortedPlayers.map((player, i) => `
+              <div class="golf-leader-row">
+                <div class="golf-leader-rank" style="color: ${i === 0 ? '#9a6700' : i === 1 ? '#8b949e' : i === 2 ? '#cd7f32' : 'var(--text-dim)'}">${i + 1}</div>
+                <div class="golf-leader-name">${player}</div>
+                <div class="golf-leader-score ${getTotal(player) < getTotalPar() ? 'under' : getTotal(player) > getTotalPar() ? 'over' : ''}">${getScoreToPar(player)}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="golf-bets-panel">
+            <div class="golf-bets-header">
+              <h4>💰 Side Bets</h4>
+              <button class="golf-bets-add">+ Add Bet</button>
+            </div>
+
+            <div class="golf-bet-item">
+              <div class="golf-bet-icon">🎯</div>
+              <div class="golf-bet-info">
+                <div class="golf-bet-name">Nearest Pin - Hole 3</div>
+                <div class="golf-bet-detail">Par 3 • 145 yards</div>
+              </div>
+              <div class="golf-bet-winner">👑 Joe</div>
+            </div>
+
+            <div class="golf-bet-item">
+              <div class="golf-bet-icon">💪</div>
+              <div class="golf-bet-info">
+                <div class="golf-bet-name">Longest Drive - Hole 5</div>
+                <div class="golf-bet-detail">Par 5 • Currently on hole 4</div>
+              </div>
+              <div class="golf-bet-pending">Upcoming</div>
+            </div>
+
+            <div class="golf-bet-item">
+              <div class="golf-bet-icon">🏌️</div>
+              <div class="golf-bet-info">
+                <div class="golf-bet-name">First Birdie</div>
+                <div class="golf-bet-detail">Anyone to score under par</div>
+              </div>
+              <button class="golf-bet-claim">Claim!</button>
+            </div>
+
+            <div class="golf-bet-item">
+              <div class="golf-bet-icon">🌊</div>
+              <div class="golf-bet-info">
+                <div class="golf-bet-name">First in Water</div>
+                <div class="golf-bet-detail">Loses and buys a round</div>
+              </div>
+              <div class="golf-bet-winner" style="background: #cf222e;">💀 M</div>
+            </div>
+
+            <div class="golf-bet-item">
+              <div class="golf-bet-icon">🏆</div>
+              <div class="golf-bet-info">
+                <div class="golf-bet-name">Most Fairways Hit</div>
+                <div class="golf-bet-detail">Out of 14 fairway holes</div>
+              </div>
+              <div class="golf-bet-pending">Ryan: 6 leading</div>
+            </div>
+
+            <div class="golf-skins">
+              <div class="golf-skins-title">🪙 SKINS GAME</div>
+              <div class="golf-skins-row">
+                <span>Bobi</span>
+                <span class="golf-skins-count">3 skins</span>
+              </div>
+              <div class="golf-skins-row">
+                <span>Ryan</span>
+                <span class="golf-skins-count">2 skins</span>
+              </div>
+              <div class="golf-skins-row">
+                <span>Joe</span>
+                <span class="golf-skins-count">1 skin</span>
+              </div>
+              <div class="golf-skins-row">
+                <span style="color: var(--text-dim);">3 holes carried over</span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderWrappedView() {
+      const screen = document.getElementById('phone-screen');
+
+      const wrappedData = {
+        'Joe': { drinks: 24, shots: 12, fines: 8, title: 'The Stag Legend', topMoment: 'Falling in the pool at 3am', gradient: 'gradient-1' },
+        'Bobi': { drinks: 31, shots: 15, fines: 3, title: 'Drink Champion', topMoment: 'That speech at dinner', gradient: 'gradient-2' },
+        'Ryan': { drinks: 22, shots: 9, fines: 5, title: 'Golf GOAT', topMoment: 'Hole in one attempt (miss)', gradient: 'gradient-3' },
+        'M': { drinks: 28, shots: 11, fines: 2, title: 'Party Starter', topMoment: 'Starting Bairro Alto crawl', gradient: 'gradient-4' },
+        'D': { drinks: 19, shots: 7, fines: 4, title: 'The Survivor', topMoment: 'Actually making Monday flight', gradient: 'gradient-5' }
+      };
+
+      const currentPerson = 'Joe';
+      const data = wrappedData[currentPerson];
+
+      screen.innerHTML = `
+        <div class="wrapped-view">
+          <div class="wrapped-selector">
+            ${Object.keys(wrappedData).map(name => `
+              <button class="${name === currentPerson ? 'active' : ''}">${name}</button>
+            `).join('')}
+            <button style="background: var(--accent); color: #fff; border-color: var(--accent);">📦 All</button>
+          </div>
+
+          <div class="wrapped-slides" style="position: relative; flex: 1;">
+            <!-- Slide 1: Drinks -->
+            <div class="wrapped-card gradient-1" id="slide-1" style="position: absolute; inset: 0; display: flex;">
+              <div class="wrapped-header">Joe's Stag • Lisbon 2026</div>
+              <div class="wrapped-person">
+                <div class="wrapped-person-avatar">${currentPerson[0]}</div>
+                <div class="wrapped-person-name">${currentPerson}'s Wrapped</div>
+              </div>
+              <div class="wrapped-big-stat">
+                <div class="wrapped-emoji">🍺</div>
+                <div class="wrapped-big-number">${data.drinks}</div>
+                <div class="wrapped-big-label">Drinks</div>
+                <div class="wrapped-big-sublabel">That's 6 per day</div>
+              </div>
+              <div class="wrapped-award">
+                <div class="wrapped-award-title">Ranking</div>
+                <div class="wrapped-award-value">#2 in the group</div>
+              </div>
+            </div>
+
+            <!-- Slide 2: Shots (hidden by default) -->
+            <div class="wrapped-card gradient-2" id="slide-2" style="position: absolute; inset: 0; display: none;">
+              <div class="wrapped-header">Joe's Stag • Lisbon 2026</div>
+              <div class="wrapped-person">
+                <div class="wrapped-person-avatar">${currentPerson[0]}</div>
+                <div class="wrapped-person-name">${currentPerson}'s Wrapped</div>
+              </div>
+              <div class="wrapped-big-stat">
+                <div class="wrapped-emoji">🥃</div>
+                <div class="wrapped-big-number">${data.shots}</div>
+                <div class="wrapped-big-label">Shots</div>
+                <div class="wrapped-big-sublabel">Most on Saturday night</div>
+              </div>
+              <div class="wrapped-award">
+                <div class="wrapped-award-title">Favourite</div>
+                <div class="wrapped-award-value">Tequila 🌵</div>
+              </div>
+            </div>
+
+            <!-- Slide 3: Fines -->
+            <div class="wrapped-card gradient-5" id="slide-3" style="position: absolute; inset: 0; display: none;">
+              <div class="wrapped-header">Joe's Stag • Lisbon 2026</div>
+              <div class="wrapped-person">
+                <div class="wrapped-person-avatar">${currentPerson[0]}</div>
+                <div class="wrapped-person-name">${currentPerson}'s Wrapped</div>
+              </div>
+              <div class="wrapped-big-stat">
+                <div class="wrapped-emoji">💸</div>
+                <div class="wrapped-big-number">${data.fines}</div>
+                <div class="wrapped-big-label">Fines</div>
+                <div class="wrapped-big-sublabel">You were the most fined!</div>
+              </div>
+              <div class="wrapped-award">
+                <div class="wrapped-award-title">Best Fine Reason</div>
+                <div class="wrapped-award-value">"Mentioned the wedding"</div>
+              </div>
+            </div>
+
+            <!-- Slide 4: Quote -->
+            <div class="wrapped-card gradient-3" id="slide-4" style="position: absolute; inset: 0; display: none;">
+              <div class="wrapped-header">Joe's Stag • Lisbon 2026</div>
+              <div class="wrapped-person">
+                <div class="wrapped-person-avatar">${currentPerson[0]}</div>
+                <div class="wrapped-person-name">${currentPerson}'s Wrapped</div>
+              </div>
+              <div class="wrapped-big-stat">
+                <div class="wrapped-emoji">💬</div>
+                <div style="font-size: 24px; font-weight: 700; color: #fff; text-align: center; line-height: 1.4; padding: 0 12px;">"I'm not even drunk, this is just how I play golf"</div>
+                <div class="wrapped-big-sublabel" style="margin-top: 16px;">- Friday, 2:34 PM</div>
+              </div>
+              <div class="wrapped-award">
+                <div class="wrapped-award-title">Quote saved by</div>
+                <div class="wrapped-award-value">Bobi</div>
+              </div>
+            </div>
+
+            <!-- Slide 5: Title -->
+            <div class="wrapped-card gradient-4" id="slide-5" style="position: absolute; inset: 0; display: none;">
+              <div class="wrapped-header">Joe's Stag • Lisbon 2026</div>
+              <div class="wrapped-person">
+                <div class="wrapped-person-avatar">${currentPerson[0]}</div>
+                <div class="wrapped-person-name">${currentPerson}'s Wrapped</div>
+              </div>
+              <div class="wrapped-big-stat">
+                <div class="wrapped-emoji">🏆</div>
+                <div style="font-size: 28px; font-weight: 800; color: #fff; text-align: center;">${data.title}</div>
+                <div class="wrapped-big-sublabel" style="margin-top: 12px; font-size: 14px;">Most fined, best sport about it,<br>and still made every activity</div>
+              </div>
+              <div class="wrapped-award">
+                <div class="wrapped-award-title">Top Moment</div>
+                <div class="wrapped-award-value">${data.topMoment}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wrapped-nav" style="cursor: pointer;" onclick="cycleSlide()">
+            <div class="wrapped-dot active" data-slide="1"></div>
+            <div class="wrapped-dot" data-slide="2"></div>
+            <div class="wrapped-dot" data-slide="3"></div>
+            <div class="wrapped-dot" data-slide="4"></div>
+            <div class="wrapped-dot" data-slide="5"></div>
+          </div>
+          <div style="text-align: center; font-size: 11px; color: var(--text-dim);">Tap card to see next slide</div>
+
+          <div class="export-options">
+            <div class="export-options-title">Export & Print</div>
+            <div class="export-grid">
+              <div class="export-option">
+                <span class="icon">📱</span>
+                Share
+              </div>
+              <div class="export-option">
+                <span class="icon">🖼️</span>
+                Poster
+              </div>
+              <div class="export-option">
+                <span class="icon">📖</span>
+                Booklet
+              </div>
+              <div class="export-option">
+                <span class="icon">📄</span>
+                PDF
+              </div>
+              <div class="export-option">
+                <span class="icon">🛒</span>
+                Print Shop
+              </div>
+              <div class="export-option">
+                <span class="icon">📦</span>
+                Export All
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderChatView() {
+      const screen = document.getElementById('phone-screen');
+
+      const chatMessages = [
+        { name: 'Joe', text: 'Lads what time we teeing off Friday? ⛳', time: '2:34 PM', color: '#f78166', own: false },
+        { name: 'Bobi', text: '', gif: '🏌️', gifLabel: 'golf swing', time: '2:35 PM', color: '#3fb950', own: false, reactions: [{ emoji: '😂', count: 3 }, { emoji: '🔥', count: 2 }] },
+        { name: 'You', text: '10am at Chilli. Don\'t be late or that\'s a fine 💸', time: '2:36 PM', color: '#58a6ff', own: true },
+        { name: 'M', text: '', gif: '🍻', gifLabel: 'beers clinking', time: '2:37 PM', color: '#a371f7', own: false },
+        { name: 'D', text: 'Urban Beach or Lust for Friday night?', time: '2:40 PM', color: '#f0c000', own: false, reactions: [{ emoji: '🔥', count: 4 }] },
+      ];
+
+      screen.innerHTML = `
+        <div class="chat-view">
+          <div class="chat-header-tabs">
+            <button class="active">Group Chat</button>
+            <button>⛳ Golf</button>
+            <button>🪩 Night Out</button>
+          </div>
+
+          ${state.chatFeatures.float ? `
+          <div class="reaction-picker">
+            <button>😂</button>
+            <button>🔥</button>
+            <button>❤️</button>
+            <button>🍺</button>
+            <button>🎉</button>
+            <button>👀</button>
+            <button>💀</button>
+            <button>🙌</button>
+          </div>
+          ` : ''}
+
+          <div class="chat-messages">
+            ${state.chatStyle === 'activity' || state.chatStyle === 'both' ? `
+              <div class="activity-comment">
+                <div class="activity-comment-header">
+                  <span class="activity-tag">🍻 Pub Crawl</span>
+                  <span style="font-size: 11px; color: var(--text-dim);">3 comments</span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-dim);">Latest: "Can't wait!" - Alex</div>
+              </div>
+            ` : ''}
+
+            ${chatMessages.map(msg => `
+              <div class="chat-message ${msg.own ? 'own' : ''}">
+                <div class="chat-avatar" style="background: ${msg.color}">${msg.name[0]}</div>
+                <div class="chat-bubble">
+                  ${!msg.own ? `<div class="name">${msg.name}</div>` : ''}
+                  ${msg.text ? `<div class="text">${msg.text}</div>` : ''}
+                  ${msg.gif ? `<div class="gif">${msg.gif}<br><span style="font-size: 10px; color: var(--text-dim);">${msg.gifLabel}</span></div>` : ''}
+                  ${msg.reactions ? `
+                    <div class="chat-reactions">
+                      ${msg.reactions.map(r => `<span class="chat-reaction">${r.emoji} <span class="count">${r.count}</span></span>`).join('')}
+                    </div>
+                  ` : ''}
+                  <div class="time">${msg.time}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" placeholder="Message the group...">
+            <div class="chat-actions">
+              ${state.chatFeatures.gif ? '<button class="chat-action-btn">GIF</button>' : ''}
+              ${state.chatFeatures.voice ? '<button class="chat-action-btn">🎤</button>' : ''}
+              <button class="chat-action-btn" style="background: var(--accent);">➤</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRaceView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers();
+
+      const raceData = [
+        { name: 'Joe', scores: { drinks: 8, shots: 5, fines: 3 }, color: '#f78166' },
+        { name: 'Bobi', scores: { drinks: 6, shots: 4, fines: 1 }, color: '#3fb950' },
+        { name: 'Ryan', scores: { drinks: 5, shots: 6, fines: 2 }, color: '#a371f7' },
+        { name: 'M', scores: { drinks: 7, shots: 3, fines: 0 }, color: '#58a6ff' },
+        { name: 'D', scores: { drinks: 4, shots: 2, fines: 1 }, color: '#f0c000' }
+      ];
+
+      const currentCategory = activeTrackers[0] || 'drinks';
+      const sortedRacers = [...raceData].sort((a, b) => (b.scores[currentCategory] || 0) - (a.scores[currentCategory] || 0));
+      const maxScore = Math.max(...sortedRacers.map(r => r.scores[currentCategory] || 0));
+      const goalScore = currentCategory === 'spending' ? 100 : currentCategory === 'photos' ? 20 : 10;
+
+      screen.innerHTML = `
+        <div class="stats-view">
+          <div class="race-container" style="margin-bottom: 12px;">
+            <div class="race-header">
+              <h3>🏁 ${currentCategory === 'drinks' ? 'Drink' : currentCategory === 'photos' ? 'Photo' : 'Spending'} Race</h3>
+              <span class="race-category">Goal: ${currentCategory === 'spending' ? '$' : ''}${goalScore}</span>
+            </div>
+
+            <div class="race-tabs">
+              ${activeTrackers.slice(0, 4).map((t, i) => `
+                <button class="race-tab ${i === 0 ? 'active' : ''}" onclick="this.parentElement.querySelectorAll('.race-tab').forEach(b => b.classList.remove('active')); this.classList.add('active');">${trackerEmojis[t]} ${trackerLabels[t]}</button>
+              `).join('')}
+            </div>
+
+            <div class="race-track" style="padding: 12px;">
+              <div class="race-finish"></div>
+              ${sortedRacers.map((racer, i) => {
+                const score = racer.scores[currentCategory] || 0;
+                const percentage = Math.min((score / goalScore) * 100, 100);
+                return `
+                <div class="race-lane" style="padding: 10px 0;">
+                  <div class="race-avatar" style="background: ${racer.color}; width: 32px; height: 32px; font-size: 12px;">${racer.name[0]}</div>
+                  <div class="race-progress" style="height: 32px;">
+                    <div class="race-bar ${state.raceTheme}" style="width: ${percentage}%; background: linear-gradient(90deg, ${racer.color}99, ${racer.color}); min-width: 40px;">
+                      <span class="race-score" style="font-size: 14px;">${currentCategory === 'spending' ? '$' : ''}${score}</span>
+                    </div>
+                  </div>
+                </div>
+              `}).join('')}
+            </div>
+
+            <div class="race-timeframe">
+              <button class="active">Today</button>
+              <button>This Trip</button>
+              <button>All Time</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div class="stat-card" style="padding: 12px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 4px;">👑</div>
+              <div style="font-size: 13px; font-weight: 600;">${sortedRacers[0].name}</div>
+              <div style="font-size: 11px; color: var(--text-dim);">Current Leader</div>
+            </div>
+            <div class="stat-card" style="padding: 12px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 4px;">🔥</div>
+              <div style="font-size: 13px; font-weight: 600;">Riley</div>
+              <div style="font-size: 11px; color: var(--text-dim);">Fastest Climber</div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="margin-top: 8px; padding: 12px;">
+            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Recent Activity</div>
+            <div style="font-size: 13px;">🍺 <strong>Riley</strong> just added a drink! <span style="color: var(--text-dim);">12s ago</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderView() {
+      switch (state.view) {
+        case 'schedule': renderScheduleView(); break;
+        case 'live': renderLiveView(); break;
+        case 'golf': renderGolfView(); break;
+        case 'kitty': renderKittyView(); break;
+        case 'race': renderRaceView(); break;
+        case 'chat': renderChatView(); break;
+        case 'wrapped': renderWrappedView(); break;
+        case 'stats': renderStatsView(); break;
+        case 'challenges': renderChallengesView(); break;
+      }
+    }
+
+    function updatePrompt() {
+      const prompt = document.getElementById('promptText');
+      const activeTrackers = getActiveTrackers();
+      const activeFeatures = Object.entries(state.features).filter(([k, v]) => v).map(([k]) => k);
+
+      let text = `Build a group activity app with card-swipe scheduling and live interactive tracking.
+
+CORE CONCEPT:
+A mobile app for groups to manage their shared schedule while tracking fun stats and completing challenges together during activities. Swipe through upcoming activities, tap to track things like drinks or photos, and compete on leaderboards.
+
+SCHEDULE VIEW (Card Swipe):
+- Stack of cards showing upcoming activities
+- Swipe right to check in, left to skip, up for details
+- Each card shows: activity name, time, location, who's going
+- Cards display live tracker counts from current activity
+
+LIVE TRACKING:
+Track these items with tap-to-increment buttons:
+${activeTrackers.map(t => `- ${trackerEmojis[t]} ${trackerLabels[t]}`).join('\n')}
+
+CUSTOM TRACKER CREATION:
+- Users can create their own trackers with custom name + emoji
+- Preset packs available (Party Night, Beach Day, Road Trip, etc.)
+- Each tracker can have:
+  - Custom emoji (picker)
+  - Name (editable)
+  - Optional goal/target number
+  - Toggle for leaderboard inclusion
+- Group admin can lock/unlock which trackers are available
+
+Each tracker should:
+- Show individual counts per person
+- Update in real-time across all group members' phones
+- Display running totals on activity cards
+- Feed into leaderboards and challenges
+
+INTERACTIVE FEATURES:
+${activeFeatures.includes('polls') ? '- Quick Polls: One-tap voting for group decisions ("Where to eat?", "Stay or go?")' : ''}
+${activeFeatures.includes('challenges') ? '- Group Challenges: Shared goals to complete together or compete on' : ''}
+${activeFeatures.includes('leaderboard') ? '- Leaderboards: Rankings for tracked items (most drinks, most photos, etc.)' : ''}
+${activeFeatures.includes('reactions') ? '- Live Reactions: Send emoji reactions that pop up on everyone\'s screen' : ''}
+${activeFeatures.includes('photos') ? '- Photo Moments: Prompt for group photos, shared album' : ''}
+${activeFeatures.includes('splitbills') ? '- Bill Splitting: Track spending and split costs at end of activity' : ''}
+${activeFeatures.includes('chat') ? '- Group Chat: Real-time messaging with the whole group' : ''}
+${activeFeatures.includes('gifs') ? '- GIF Reactions: Search and send GIFs via Giphy/Tenor integration' : ''}
+${activeFeatures.includes('memes') ? '- Meme Replies: Quick meme responses and inside joke sharing' : ''}
+
+CHAT & SOCIAL FEATURES:
+- Chat style: ${state.chatStyle === 'activity' ? 'Per-activity comment threads (discuss specific activities)' : state.chatStyle === 'unified' ? 'Single unified group chat' : 'Both activity threads AND main group chat'}
+${state.chatFeatures.emoji ? '- Emoji reactions on messages (tap to react)' : ''}
+${state.chatFeatures.float ? '- Floating reactions that pop up on everyone\'s screen in real-time (party mode!)' : ''}
+${state.chatFeatures.gif ? '- GIF search integration (Giphy/Tenor) for sending GIF reactions' : ''}
+${state.chatFeatures.voice ? '- Voice notes for quick audio messages' : ''}
+
+GAMIFICATION:
+- Challenge style: ${state.challengeStyle === 'cooperative' ? 'Cooperative team goals everyone works toward together' : state.challengeStyle === 'competitive' ? 'Competitive individual rankings' : 'Mix of team goals and individual competition'}
+- Rewards: ${state.rewards === 'badges' ? 'Unlock badges and achievements' : state.rewards === 'points' ? 'Earn points for tracking and challenges' : state.rewards === 'titles' ? 'Earn fun titles like "Party Captain" or "Photographer"' : 'No explicit rewards, just fun tracking'}
+
+LIVE RACE LEADERBOARD:
+- Animated horse-race style visualization showing everyone competing in real-time
+- Race theme: ${state.raceTheme === 'horse' ? '🏇 Horse racing' : state.raceTheme === 'car' ? '🏎️ Race cars' : state.raceTheme === 'rocket' ? '🚀 Space rockets' : state.raceTheme === 'runner' ? '🏃 Runners' : '🍺 Beer mugs'}
+- Progress bars animate as people track items
+- Switch between tracking categories (drinks, photos, etc.)
+- Timeframe filters: Today, This Trip, All Time
+- Finish line showing the goal/target
+- Updates instantly when anyone logs something
+
+NOTIFICATIONS:
+${state.notifications.activity ? '- Activity updates when someone tracks something' : ''}
+${state.notifications.milestones ? '- Milestone alerts ("Group hit 20 drinks!")' : ''}
+${state.notifications.reminders ? '- Schedule reminders before activities start' : ''}
+${state.notifications.photos ? '- Photo prompts at key moments' : ''}
+
+EVENT ALERTS & REMINDERS:
+- Countdown timers on upcoming activities
+- Push notification reminders before each event (configurable: 15/30/60 min)
+- Alert banner appears in-app with "Ready" confirmation button
+- Snooze option (5 min)
+- Alert intensity levels: Gentle, Urgent (louder), Nuclear (full alarm)
+- Sound + vibration alerts
+- "Who's ready?" status - see who has confirmed they're ready
+- Late tracking: auto-shares location if someone is running behind
+- Auto-fine option: automatically log a fine if someone is 10+ min late
+- Group notification when everyone confirms ready
+
+STAG WRAPPED - END OF TRIP SUMMARY:
+Each person gets a Spotify Wrapped-style summary with:
+- Swipeable cards with bold stats (drinks, shots, fines, etc.)
+- Personal "title" based on their stats (Drink Champion, Golf GOAT, etc.)
+- Top moments and highlights
+- Photos they were tagged in
+- Awards and superlatives
+- Beautiful gradient backgrounds, shareable format
+
+Organizer features:
+- View everyone's Wrapped from one place
+- "Export All" option to download all summaries
+- Export formats: Share image, Poster (printable), Booklet (multi-page), PDF
+- Print shop integration (order physical prints, photobooks, framed posters)
+- Can customize/edit before printing
+- Bundle option: create gift pack with everyone's personalized summary
+
+TECH REQUIREMENTS:
+- Real-time sync across all group members (WebSocket/Firebase)
+- Works on iOS and Android
+- Offline support with sync when back online
+- Push notifications
+- Camera integration for photos
+- PDF generation for exports
+- Print partner API integration (optional)`;
+
+      prompt.textContent = text;
+    }
+
+    function updateAll() {
+      renderView();
+      updatePrompt();
+    }
+
+    // Wrapped slide cycling
+    let currentSlide = 1;
+    const totalSlides = 5;
+
+    function cycleSlide() {
+      // Hide current slide
+      const current = document.getElementById('slide-' + currentSlide);
+      if (current) current.style.display = 'none';
+
+      // Update dot
+      const currentDot = document.querySelector('.wrapped-dot[data-slide="' + currentSlide + '"]');
+      if (currentDot) currentDot.classList.remove('active');
+
+      // Move to next slide
+      currentSlide = currentSlide >= totalSlides ? 1 : currentSlide + 1;
+
+      // Show new slide
+      const next = document.getElementById('slide-' + currentSlide);
+      if (next) next.style.display = 'flex';
+
+      // Update dot
+      const nextDot = document.querySelector('.wrapped-dot[data-slide="' + currentSlide + '"]');
+      if (nextDot) nextDot.classList.add('active');
+    }
+
+    // Make wrapped card clickable
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.wrapped-card')) {
+        cycleSlide();
+      }
+    });
+
+    // Hide splash screen after animation
+    setTimeout(() => {
+      const splash = document.getElementById('splashScreen');
+      if (splash) {
+        splash.classList.add('hidden');
+      }
+    }, 3000);
+
+    // Initialize
+    updateAll();
+  </script>
+</body>
+</html>
