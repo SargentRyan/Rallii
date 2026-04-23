@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe's Stag - Lisbon</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f6f8fa;
+      --surface-2: #eaeef2;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --text-dim: #656d76;
+      --accent: #0969da;
+      --accent-2: #1a7f37;
+      --accent-3: #8250df;
+      --accent-4: #cf222e;
+      --accent-5: #1a7f37;
+      --gold: #9a6700;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .view-tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .view-tab:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .view-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .controls {
+      width: 300px;
+      padding: 20px;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      background: var(--surface);
+    }
+
+    .control-section {
+      margin-bottom: 24px;
+    }
+
+    .control-section h3 {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .control-group select, .control-group input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .checkbox-group input {
+      accent-color: var(--accent);
+    }
+
+    .tracker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tracker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .tracker-item .emoji {
+      font-size: 18px;
+    }
+
+    .tracker-item input {
+      width: 60px;
+      padding: 4px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 14px;
+      margin-left: auto;
+    }
+
+    .add-tracker {
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 13px;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .add-tracker:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+
+    .tracker-item input[type="text"]:focus {
+      outline: none;
+      background: var(--surface) !important;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin: -2px -6px;
+    }
+
+    .preview {
+      flex: 1;
+      padding: 24px;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .preview-container {
+      width: 375px;
+      height: 750px;
+      background: var(--surface);
+      border-radius: 40px;
+      border: 3px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 30px;
+      background: #1f2328;
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      padding: 40px 16px 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation Tabs */
+    .app-nav {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 12px;
+    }
+
+    .app-nav button {
+      flex: 1;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .app-nav button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Card Stack */
+    .card-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-stack {
+      position: relative;
+      width: 100%;
+      height: 380px;
+    }
+
+    .swipe-card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      cursor: grab;
+      transition: transform 0.3s, opacity 0.3s;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .swipe-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .swipe-card.food::before { background: var(--accent-4); }
+    .swipe-card.outdoor::before { background: var(--accent-5); }
+    .swipe-card.social::before { background: var(--accent-3); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .card-emoji {
+      font-size: 48px;
+    }
+
+    .card-status {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .card-status.upcoming {
+      background: rgba(88, 166, 255, 0.2);
+      color: var(--accent);
+    }
+
+    .card-status.now {
+      background: rgba(63, 185, 80, 0.2);
+      color: var(--accent-5);
+      animation: pulse-status 2s infinite;
+    }
+
+    @keyframes pulse-status {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-time {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .card-location {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .card-people {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: -8px;
+    }
+
+    .avatar:first-child { margin-left: 0; }
+
+    .card-trackers {
+      display: flex;
+      gap: 12px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-tracker {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--surface);
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    .card-tracker .count {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .swipe-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .swipe-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 22px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .swipe-btn.skip:hover {
+      border-color: var(--accent-4);
+      color: var(--accent-4);
+      transform: scale(1.1);
+    }
+
+    .swipe-btn.checkin:hover {
+      border-color: var(--accent-5);
+      color: var(--accent-5);
+      transform: scale(1.1);
+    }
+
+    .swipe-btn.info:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    /* Live Activity View */
+    .live-activity {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .current-activity {
+      background: linear-gradient(145deg, rgba(63, 185, 80, 0.15), rgba(63, 185, 80, 0.05));
+      border: 1px solid rgba(63, 185, 80, 0.3);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .current-activity .label {
+      font-size: 11px;
+      color: var(--accent-5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .current-activity .title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tracker-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .tracker-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tracker-btn:hover {
+      transform: scale(1.02);
+      border-color: var(--accent);
+    }
+
+    .tracker-btn:active {
+      transform: scale(0.98);
+    }
+
+    .tracker-btn .emoji {
+      font-size: 32px;
+    }
+
+    .tracker-btn .count {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .tracker-btn .label {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .quick-action {
+      flex: 1;
+      padding: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .quick-action:hover {
+      border-color: var(--accent);
+    }
+
+    .quick-action .icon {
+      font-size: 20px;
+    }
+
+    .activity-feed {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feed-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .feed-content {
+      flex: 1;
+    }
+
+    .feed-content .text {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .feed-content .time {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Stats View */
+    .stats-view {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .stats-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .stats-header h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .stats-header p {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .stat-card {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card .stat-title {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .stat-card .stat-emoji {
+      font-size: 24px;
+      margin-right: 8px;
+    }
+
+    .leaderboard {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .leaderboard h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .leaderboard-item .rank {
+      width: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .leaderboard-item .rank.gold { color: var(--gold); }
+    .leaderboard-item .rank.silver { color: #c0c0c0; }
+    .leaderboard-item .rank.bronze { color: #cd7f32; }
+
+    .leaderboard-item .avatar {
+      margin-left: 0;
+    }
+
+    .leaderboard-item .name {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .leaderboard-item .score {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Horse Race View */
+    .race-container {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .race-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .race-header h3 {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .race-category {
+      font-size: 11px;
+      padding: 4px 10px;
+      background: var(--surface);
+      border-radius: 12px;
+      color: var(--text-dim);
+    }
+
+    .race-track {
+      position: relative;
+      background: linear-gradient(90deg, var(--surface-2) 0%, rgba(26, 127, 55, 0.1) 100%);
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .race-lane {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .race-lane:last-child {
+      border-bottom: none;
+    }
+
+    .race-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .race-progress {
+      flex: 1;
+      height: 24px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .race-bar {
+      height: 100%;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      transition: width 0.5s ease-out;
+      position: relative;
+    }
+
+    .race-bar::after {
+      content: '';
+      position: absolute;
+      right: 4px;
+      font-size: 14px;
+    }
+
+    .race-bar.horse::after { content: '🏇'; }
+    .race-bar.car::after { content: '🏎️'; }
+    .race-bar.rocket::after { content: '🚀'; }
+    .race-bar.runner::after { content: '🏃'; }
+    .race-bar.beer::after { content: '🍺'; }
+
+    .race-score {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      margin-right: 20px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .race-finish {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent-5);
+    }
+
+    .race-finish::before {
+      content: '🏁';
+      position: absolute;
+      right: -4px;
+      top: -20px;
+      font-size: 16px;
+    }
+
+    .race-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .race-tab {
+      flex: 1;
+      padding: 6px 8px;
+      background: var(--surface);
+      border: none;
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .race-tab.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .race-timeframe {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .race-timeframe button {
+      padding: 4px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .race-timeframe button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Challenges View */
+    .challenges-view {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .challenge-card {
+      background: var(--surface-2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .challenge-card.active {
+      border-color: var(--accent-3);
+      background: linear-gradient(145deg, rgba(130, 80, 223, 0.08), #fff);
+    }
+
+    .challenge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .challenge-emoji {
+      font-size: 32px;
+    }
+
+    .challenge-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(163, 113, 247, 0.2);
+      color: var(--accent-3);
+    }
+
+    .challenge-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .challenge-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .challenge-progress {
+      height: 6px;
+      background: var(--surface);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .challenge-progress-bar {
+      height: 100%;
+      background: var(--accent-3);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    .challenge-status {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Chat View */
+    .chat-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .chat-header-tabs button {
+      flex: 1;
+      padding: 6px 8px;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .chat-header-tabs button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 12px;
+    }
+
+    .chat-message {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .chat-message.own {
+      flex-direction: row-reverse;
+    }
+
+    .chat-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .chat-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border-radius: 16px;
+      border-top-left-radius: 4px;
+    }
+
+    .chat-message.own .chat-bubble {
+      background: var(--accent);
+      border-radius: 16px;
+      border-top-right-radius: 4px;
+    }
+
+    .chat-bubble .name {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .chat-message.own .chat-bubble .name {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .chat-bubble .text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .chat-bubble .time {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .chat-message.own .chat-bubble .time {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .chat-bubble .gif {
+      width: 100%;
+      max-width: 180px;
+      border-radius: 8px;
+      margin-top: 6px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100px;
+      font-size: 32px;
+    }
+
+    .chat-reactions {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chat-reaction {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: var(--surface);
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .chat-reaction .count {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .chat-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .chat-action-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reaction-picker {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .reaction-picker button {
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .reaction-picker button:hover {
+      background: var(--surface);
+      transform: scale(1.2);
+    }
+
+    .floating-reaction {
+      position: absolute;
+      font-size: 32px;
+      animation: floatUp 2s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
+    }
+
+    .activity-comment {
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .activity-comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .activity-comment-header .activity-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      background: var(--accent);
+      border-radius: 8px;
+      color: #fff;
+    }
+
+    /* Prompt Output */
+    .prompt-output {
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      background: var(--surface);
+    }
+
+    .prompt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .prompt-header h3 {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .copy-btn {
+      padding: 6px 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-2);
+    }
+
+    .prompt-text {
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🇵🇹 Joe's Stag - Lisbon</h1>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="schedule">📋 Schedule</button>
+      <button class="view-tab" data-view="live">🔴 Live</button>
+      <button class="view-tab" data-view="race">🏁 Race</button>
+      <button class="view-tab" data-view="chat">💬 Chat</button>
+      <button class="view-tab" data-view="challenges">🏆 Challenges</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="controls">
+      <div class="control-section">
+        <h3>Tracking Items</h3>
+        <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 12px;">Create your own or use presets. Tap emoji to change.</p>
+        <div class="tracker-list" id="trackerList">
+          <div class="tracker-item" data-tracker="drinks">
+            <span class="emoji" style="cursor: pointer;" title="Click to change emoji">🍺</span>
+            <input type="text" value="Drinks" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="drinks">
+          </div>
+          <div class="tracker-item" data-tracker="shots">
+            <span class="emoji" style="cursor: pointer;">🥃</span>
+            <input type="text" value="Shots" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="shots">
+          </div>
+          <div class="tracker-item" data-tracker="fines">
+            <span class="emoji" style="cursor: pointer;">💸</span>
+            <input type="text" value="Fines" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="fines">
+          </div>
+          <div class="tracker-item" data-tracker="photos">
+            <span class="emoji" style="cursor: pointer;">📸</span>
+            <input type="text" value="Photos" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" checked data-tracker="photos">
+          </div>
+          <div class="tracker-item" data-tracker="falls">
+            <span class="emoji" style="cursor: pointer;">🤦</span>
+            <input type="text" value="Falls/Fails" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" data-tracker="falls">
+          </div>
+          <div class="tracker-item" data-tracker="golfwins">
+            <span class="emoji" style="cursor: pointer;">⛳</span>
+            <input type="text" value="Golf Holes Won" style="flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px;">
+            <input type="checkbox" data-tracker="golfwins">
+          </div>
+        </div>
+        <button class="add-tracker" id="addTrackerBtn">+ Add Custom Tracker</button>
+
+        <div style="margin-top: 12px;">
+          <label style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 6px;">Quick Presets</label>
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button class="preset-btn" data-preset="stag" style="padding: 4px 10px; font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer;">🎉 Stag Do</button>
+            <button class="preset-btn" data-preset="golf" style="padding: 4px 10px; font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer;">⛳ Golf Day</button>
+            <button class="preset-btn" data-preset="nightout" style="padding: 4px 10px; font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; cursor: pointer;">🪩 Night Out</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Interactive Features</h3>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="featPolls" checked> Quick Polls</label>
+          <label><input type="checkbox" id="featChallenges" checked> Group Challenges</label>
+          <label><input type="checkbox" id="featLeaderboard" checked> Leaderboards</label>
+          <label><input type="checkbox" id="featReactions" checked> Live Reactions</label>
+          <label><input type="checkbox" id="featPhotos" checked> Photo Moments</label>
+          <label><input type="checkbox" id="featSplitBills"> Split Bills</label>
+          <label><input type="checkbox" id="featChat" checked> Group Chat</label>
+          <label><input type="checkbox" id="featGifs" checked> GIF Reactions</label>
+          <label><input type="checkbox" id="featMemes" checked> Meme Replies</label>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Chat & Reactions</h3>
+        <div class="control-group">
+          <label>Chat Style</label>
+          <select id="chatStyle">
+            <option value="activity">Per-Activity Threads</option>
+            <option value="unified" selected>Unified Group Chat</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="reactEmoji" checked> Emoji Reactions</label>
+          <label><input type="checkbox" id="reactFloat" checked> Floating Reactions</label>
+          <label><input type="checkbox" id="reactGif" checked> GIF Search (Giphy)</label>
+          <label><input type="checkbox" id="reactVoice"> Voice Notes</label>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Gamification</h3>
+        <div class="control-group">
+          <label>Challenge Style</label>
+          <select id="challengeStyle">
+            <option value="cooperative">Cooperative (Team Goals)</option>
+            <option value="competitive">Competitive (Individual)</option>
+            <option value="mixed" selected>Mixed</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Rewards</label>
+          <select id="rewards">
+            <option value="badges">Badges & Achievements</option>
+            <option value="points" selected>Points System</option>
+            <option value="titles">Fun Titles</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Race Theme</label>
+          <select id="raceTheme">
+            <option value="horse">🏇 Horse Race</option>
+            <option value="car">🏎️ Race Cars</option>
+            <option value="rocket">🚀 Space Race</option>
+            <option value="runner">🏃 Runners</option>
+            <option value="beer">🍺 Beer Run</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Notifications</h3>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="notifyActivity" checked> Activity Updates</label>
+          <label><input type="checkbox" id="notifyMilestones" checked> Milestone Alerts</label>
+          <label><input type="checkbox" id="notifyReminders" checked> Schedule Reminders</label>
+          <label><input type="checkbox" id="notifyPhotos"> Photo Prompts</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-container">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" id="phone-screen">
+          <!-- Dynamic content here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-output">
+    <div class="prompt-header">
+      <h3>Generated App Specification</h3>
+      <button class="copy-btn" id="copyBtn">Copy Prompt</button>
+    </div>
+    <div class="prompt-text" id="promptText"></div>
+  </div>
+
+  <script>
+    const state = {
+      view: 'schedule',
+      trackers: {
+        drinks: true,
+        shots: true,
+        fines: true,
+        photos: true,
+        falls: false,
+        golfwins: false
+      },
+      features: {
+        polls: true,
+        challenges: true,
+        leaderboard: true,
+        reactions: true,
+        photos: true,
+        splitBills: false,
+        chat: true,
+        gifs: true,
+        memes: true
+      },
+      chatStyle: 'unified',
+      chatFeatures: {
+        emoji: true,
+        float: true,
+        gif: true,
+        voice: false
+      },
+      challengeStyle: 'mixed',
+      rewards: 'points',
+      raceTheme: 'horse',
+      raceCategory: 'drinks',
+      raceTimeframe: 'today',
+      notifications: {
+        activity: true,
+        milestones: true,
+        reminders: true,
+        photos: false
+      }
+    };
+
+    const trackerEmojis = {
+      drinks: '🍺',
+      shots: '🥃',
+      fines: '💸',
+      photos: '📸',
+      falls: '🤦',
+      golfwins: '⛳'
+    };
+
+    const trackerLabels = {
+      drinks: 'Drinks',
+      shots: 'Shots',
+      fines: 'Fines',
+      photos: 'Photos',
+      falls: 'Falls',
+      golfwins: 'Holes Won'
+    };
+
+    const sampleActivities = [
+      // Thursday
+      { title: 'Arrivals', emoji: '✈️', type: 'travel', time: '3:00 PM', day: 'Thursday', location: 'Lisbon', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Shopping - Booze & Brekfasts', emoji: '🛒', type: 'food', time: '5:00 PM', day: 'Thursday', location: 'Local shops', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Dinner at Villa', emoji: '🍝', type: 'food', time: '7:00 PM', day: 'Thursday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Drinks & Early Night', emoji: '🍻', type: 'social', time: '9:00 PM', day: 'Thursday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Friday
+      { title: 'Mega Breakfast', emoji: '🍳', type: 'food', time: '9:00 AM', day: 'Friday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Golf (18 holes)', emoji: '⛳', type: 'outdoor', time: '10:00 AM', day: 'Friday', location: 'Chilli booking', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'now' },
+      { title: 'Drinks', emoji: '🍺', type: 'social', time: '5:00 PM', day: 'Friday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Dinner at Villa', emoji: '🥘', type: 'food', time: '7:00 PM', day: 'Friday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Night Out', emoji: '🎉', type: 'social', time: '10:00 PM', day: 'Friday', location: 'Urban Beach / Lust', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Saturday
+      { title: 'Mega Breakfast', emoji: '🍳', type: 'food', time: '9:00 AM', day: 'Saturday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Swim/Relax', emoji: '🏊', type: 'outdoor', time: '11:00 AM', day: 'Saturday', location: 'Villa Pool', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Padel', emoji: '🎾', type: 'outdoor', time: '12:00 PM', day: 'Saturday', location: 'TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Drinks & Early Dinner', emoji: '🍹', type: 'food', time: '5:00 PM', day: 'Saturday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Bar Crawl - Bairro Alto', emoji: '🍻', type: 'social', time: '6:00 PM', day: 'Saturday', location: 'Bairro Alto', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Night Out', emoji: '🪩', type: 'social', time: '10:00 PM', day: 'Saturday', location: 'TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Sunday
+      { title: 'Golf (9 holes)', emoji: '⛳', type: 'outdoor', time: '10:00 AM', day: 'Sunday', location: 'TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Beach', emoji: '🏖️', type: 'outdoor', time: '2:00 PM', day: 'Sunday', location: 'Lisbon Beach', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Dinner Out', emoji: '🍽️', type: 'food', time: '7:00 PM', day: 'Sunday', location: 'Restaurant TBD', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      { title: 'Relax', emoji: '😴', type: 'social', time: '9:00 PM', day: 'Sunday', location: 'Villa', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+      // Monday
+      { title: 'Departures', emoji: '✈️', type: 'travel', time: '9:00 AM', day: 'Monday', location: 'Lisbon Airport', people: ['Joe', 'Bobi', 'R', 'M', 'D'], status: 'upcoming' },
+    ];
+
+    const feedItems = [
+      { person: 'Joe', action: 'got fined!', emoji: '💸', time: '2 min ago', color: '#f78166' },
+      { person: 'Bobi', action: 'added a shot', emoji: '🥃', time: '5 min ago', color: '#3fb950' },
+      { person: 'R', action: 'took a photo', emoji: '📸', time: '8 min ago', color: '#a371f7' },
+      { person: 'M', action: 'added a drink', emoji: '🍺', time: '12 min ago', color: '#58a6ff' },
+    ];
+
+    const challenges = [
+      { title: 'First Round', desc: 'Everyone has at least one drink', emoji: '🍻', progress: 80, total: '4/5 lads', active: true },
+      { title: 'Joe\'s Fines', desc: 'Get Joe fined 10 times', emoji: '💸', progress: 30, total: '3/10 fines', active: true },
+      { title: 'Golf Legends', desc: 'Complete both golf rounds', emoji: '⛳', progress: 50, total: '1/2 rounds', active: true },
+      { title: 'Bairro Alto Crawl', desc: 'Hit 5 bars in Bairro Alto', emoji: '🍻', progress: 0, total: 'Saturday night', active: false },
+      { title: 'Survivor', desc: 'Make it to Monday departures', emoji: '✈️', progress: 25, total: 'Day 1/4', active: false },
+    ];
+
+    // Event listeners
+    document.querySelectorAll('.view-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        state.view = tab.dataset.view;
+        renderView();
+      });
+    });
+
+    document.querySelectorAll('[data-tracker]').forEach(cb => {
+      cb.addEventListener('change', e => {
+        state.trackers[e.target.dataset.tracker] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    ['featPolls', 'featChallenges', 'featLeaderboard', 'featReactions', 'featPhotos', 'featSplitBills', 'featChat', 'featGifs', 'featMemes'].forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        const key = id.replace('feat', '').toLowerCase();
+        state.features[key] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    document.getElementById('chatStyle').addEventListener('change', e => {
+      state.chatStyle = e.target.value;
+      updateAll();
+    });
+
+    ['reactEmoji', 'reactFloat', 'reactGif', 'reactVoice'].forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        const key = id.replace('react', '').toLowerCase();
+        state.chatFeatures[key] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    ['notifyActivity', 'notifyMilestones', 'notifyReminders', 'notifyPhotos'].forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        const key = id.replace('notify', '').toLowerCase();
+        state.notifications[key] = e.target.checked;
+        updateAll();
+      });
+    });
+
+    document.getElementById('challengeStyle').addEventListener('change', e => {
+      state.challengeStyle = e.target.value;
+      updateAll();
+    });
+
+    document.getElementById('rewards').addEventListener('change', e => {
+      state.rewards = e.target.value;
+      updateAll();
+    });
+
+    document.getElementById('raceTheme').addEventListener('change', e => {
+      state.raceTheme = e.target.value;
+      updateAll();
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const text = document.getElementById('promptText').textContent;
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy Prompt';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+
+    function getActiveTrackers() {
+      return Object.entries(state.trackers).filter(([k, v]) => v).map(([k]) => k);
+    }
+
+    function renderScheduleView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers().slice(0, 3);
+      const activity = sampleActivities[1]; // Current activity
+
+      screen.innerHTML = `
+        <div class="app-nav">
+          <button>Thu</button>
+          <button class="active">Fri</button>
+          <button>Sat</button>
+          <button>Sun</button>
+          <button>Mon</button>
+        </div>
+        <div class="card-area">
+          <div class="card-stack">
+            ${sampleActivities.filter(a => a.day === 'Friday').slice(0, 3).reverse().map((act, i) => {
+              const offset = (2 - i) * 6;
+              const scale = 1 - (2 - i) * 0.03;
+              return `
+                <div class="swipe-card ${act.type}" style="transform: translateY(${offset}px) scale(${scale}); z-index: ${i};">
+                  <div class="card-header">
+                    <div class="card-emoji">${act.emoji}</div>
+                    <div class="card-status ${act.status}">${act.status === 'now' ? '🔴 NOW' : 'UPCOMING'}</div>
+                  </div>
+                  <div class="card-title">${act.title}</div>
+                  <div class="card-time">${act.time}</div>
+                  <div class="card-location">📍 ${act.location}</div>
+                  <div class="card-people">
+                    ${act.people.slice(0, 4).map((p, j) => `<div class="avatar" style="background: ${['#f78166', '#3fb950', '#a371f7', '#58a6ff'][j % 4]}">${p}</div>`).join('')}
+                    ${act.people.length > 4 ? `<div class="avatar" style="background: var(--surface-2)">+${act.people.length - 4}</div>` : ''}
+                  </div>
+                  ${activeTrackers.length > 0 ? `
+                    <div class="card-trackers">
+                      ${activeTrackers.map(t => `
+                        <div class="card-tracker">
+                          ${trackerEmojis[t]} <span class="count">${Math.floor(Math.random() * 5)}</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="swipe-actions">
+            <button class="swipe-btn skip">⏭️</button>
+            <button class="swipe-btn info">ℹ️</button>
+            <button class="swipe-btn checkin">✓</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLiveView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers();
+      const activity = sampleActivities[1];
+
+      screen.innerHTML = `
+        <div class="live-activity">
+          <div class="current-activity">
+            <div class="label">Currently at</div>
+            <div class="title">${activity.emoji} ${activity.title}</div>
+          </div>
+
+          <div class="tracker-buttons">
+            ${activeTrackers.slice(0, 4).map(t => `
+              <div class="tracker-btn" data-tracker="${t}">
+                <div class="emoji">${trackerEmojis[t]}</div>
+                <div class="count">${t === 'spending' ? '$47' : t === 'steps' ? '2.4k' : Math.floor(Math.random() * 8) + 1}</div>
+                <div class="label">${trackerLabels[t]}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="quick-actions">
+            ${state.features.polls ? '<div class="quick-action"><span class="icon">📊</span>Poll</div>' : ''}
+            ${state.features.photos ? '<div class="quick-action"><span class="icon">📸</span>Photo</div>' : ''}
+            ${state.features.reactions ? '<div class="quick-action"><span class="icon">🎉</span>React</div>' : ''}
+            ${state.features.splitBills ? '<div class="quick-action"><span class="icon">💳</span>Split</div>' : ''}
+          </div>
+
+          <div class="activity-feed">
+            ${feedItems.map(item => `
+              <div class="feed-item">
+                <div class="feed-avatar" style="background: ${item.color}">${item.person}</div>
+                <div class="feed-content">
+                  <div class="text"><strong>${item.person}</strong> ${item.action} ${item.emoji}</div>
+                  <div class="time">${item.time}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStatsView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers();
+
+      const raceData = [
+        { name: 'Joe', score: 8, color: '#f78166' },
+        { name: 'Bobi', score: 6, color: '#3fb950' },
+        { name: 'Ryan', score: 5, color: '#a371f7' },
+        { name: 'M', score: 7, color: '#58a6ff' },
+        { name: 'D', score: 4, color: '#f0c000' }
+      ];
+      const maxScore = Math.max(...raceData.map(r => r.score));
+      const goalScore = 10;
+
+      screen.innerHTML = `
+        <div class="stats-view">
+          <div class="race-container">
+            <div class="race-header">
+              <h3>🏁 Live Race</h3>
+              <span class="race-category">${trackerEmojis[activeTrackers[0]] || '🍺'} ${trackerLabels[activeTrackers[0]] || 'Drinks'}</span>
+            </div>
+
+            <div class="race-tabs">
+              ${activeTrackers.slice(0, 3).map((t, i) => `
+                <button class="race-tab ${i === 0 ? 'active' : ''}">${trackerEmojis[t]}</button>
+              `).join('')}
+            </div>
+
+            <div class="race-track">
+              <div class="race-finish"></div>
+              ${raceData.map((racer, i) => `
+                <div class="race-lane">
+                  <div class="race-avatar" style="background: ${racer.color}">${racer.name[0]}</div>
+                  <div class="race-progress">
+                    <div class="race-bar ${state.raceTheme}" style="width: ${(racer.score / goalScore) * 100}%; background: linear-gradient(90deg, ${racer.color}88, ${racer.color});">
+                      <span class="race-score">${racer.score}</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="race-timeframe">
+              <button class="active">Today</button>
+              <button>This Trip</button>
+              <button>All Time</button>
+            </div>
+          </div>
+
+          ${activeTrackers.slice(0, 2).map(t => `
+            <div class="stat-card">
+              <div class="stat-title">Group Total ${trackerLabels[t]}</div>
+              <div class="stat-value">
+                <span class="stat-emoji">${trackerEmojis[t]}</span>
+                ${t === 'spending' ? '$234' : t === 'steps' ? '12,456' : Math.floor(Math.random() * 30) + 10}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderChallengesView() {
+      const screen = document.getElementById('phone-screen');
+
+      screen.innerHTML = `
+        <div class="challenges-view">
+          ${challenges.map(c => `
+            <div class="challenge-card ${c.active ? 'active' : ''}">
+              <div class="challenge-header">
+                <div class="challenge-emoji">${c.emoji}</div>
+                ${c.active ? '<div class="challenge-badge">In Progress</div>' : ''}
+              </div>
+              <div class="challenge-title">${c.title}</div>
+              <div class="challenge-desc">${c.desc}</div>
+              <div class="challenge-progress">
+                <div class="challenge-progress-bar" style="width: ${c.progress}%"></div>
+              </div>
+              <div class="challenge-status">${c.total}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderChatView() {
+      const screen = document.getElementById('phone-screen');
+
+      const chatMessages = [
+        { name: 'Joe', text: 'Lads what time we teeing off Friday? ⛳', time: '2:34 PM', color: '#f78166', own: false },
+        { name: 'Bobi', text: '', gif: '🏌️', gifLabel: 'golf swing', time: '2:35 PM', color: '#3fb950', own: false, reactions: [{ emoji: '😂', count: 3 }, { emoji: '🔥', count: 2 }] },
+        { name: 'You', text: '10am at Chilli. Don\'t be late or that\'s a fine 💸', time: '2:36 PM', color: '#58a6ff', own: true },
+        { name: 'M', text: '', gif: '🍻', gifLabel: 'beers clinking', time: '2:37 PM', color: '#a371f7', own: false },
+        { name: 'D', text: 'Urban Beach or Lust for Friday night?', time: '2:40 PM', color: '#f0c000', own: false, reactions: [{ emoji: '🔥', count: 4 }] },
+      ];
+
+      screen.innerHTML = `
+        <div class="chat-view">
+          <div class="chat-header-tabs">
+            <button class="active">Group Chat</button>
+            <button>⛳ Golf</button>
+            <button>🪩 Night Out</button>
+          </div>
+
+          ${state.chatFeatures.float ? `
+          <div class="reaction-picker">
+            <button>😂</button>
+            <button>🔥</button>
+            <button>❤️</button>
+            <button>🍺</button>
+            <button>🎉</button>
+            <button>👀</button>
+            <button>💀</button>
+            <button>🙌</button>
+          </div>
+          ` : ''}
+
+          <div class="chat-messages">
+            ${state.chatStyle === 'activity' || state.chatStyle === 'both' ? `
+              <div class="activity-comment">
+                <div class="activity-comment-header">
+                  <span class="activity-tag">🍻 Pub Crawl</span>
+                  <span style="font-size: 11px; color: var(--text-dim);">3 comments</span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-dim);">Latest: "Can't wait!" - Alex</div>
+              </div>
+            ` : ''}
+
+            ${chatMessages.map(msg => `
+              <div class="chat-message ${msg.own ? 'own' : ''}">
+                <div class="chat-avatar" style="background: ${msg.color}">${msg.name[0]}</div>
+                <div class="chat-bubble">
+                  ${!msg.own ? `<div class="name">${msg.name}</div>` : ''}
+                  ${msg.text ? `<div class="text">${msg.text}</div>` : ''}
+                  ${msg.gif ? `<div class="gif">${msg.gif}<br><span style="font-size: 10px; color: var(--text-dim);">${msg.gifLabel}</span></div>` : ''}
+                  ${msg.reactions ? `
+                    <div class="chat-reactions">
+                      ${msg.reactions.map(r => `<span class="chat-reaction">${r.emoji} <span class="count">${r.count}</span></span>`).join('')}
+                    </div>
+                  ` : ''}
+                  <div class="time">${msg.time}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" placeholder="Message the group...">
+            <div class="chat-actions">
+              ${state.chatFeatures.gif ? '<button class="chat-action-btn">GIF</button>' : ''}
+              ${state.chatFeatures.voice ? '<button class="chat-action-btn">🎤</button>' : ''}
+              <button class="chat-action-btn" style="background: var(--accent);">➤</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRaceView() {
+      const screen = document.getElementById('phone-screen');
+      const activeTrackers = getActiveTrackers();
+
+      const raceData = [
+        { name: 'Joe', scores: { drinks: 8, shots: 5, fines: 3 }, color: '#f78166' },
+        { name: 'Bobi', scores: { drinks: 6, shots: 4, fines: 1 }, color: '#3fb950' },
+        { name: 'Ryan', scores: { drinks: 5, shots: 6, fines: 2 }, color: '#a371f7' },
+        { name: 'M', scores: { drinks: 7, shots: 3, fines: 0 }, color: '#58a6ff' },
+        { name: 'D', scores: { drinks: 4, shots: 2, fines: 1 }, color: '#f0c000' }
+      ];
+
+      const currentCategory = activeTrackers[0] || 'drinks';
+      const sortedRacers = [...raceData].sort((a, b) => (b.scores[currentCategory] || 0) - (a.scores[currentCategory] || 0));
+      const maxScore = Math.max(...sortedRacers.map(r => r.scores[currentCategory] || 0));
+      const goalScore = currentCategory === 'spending' ? 100 : currentCategory === 'photos' ? 20 : 10;
+
+      screen.innerHTML = `
+        <div class="stats-view">
+          <div class="race-container" style="margin-bottom: 12px;">
+            <div class="race-header">
+              <h3>🏁 ${currentCategory === 'drinks' ? 'Drink' : currentCategory === 'photos' ? 'Photo' : 'Spending'} Race</h3>
+              <span class="race-category">Goal: ${currentCategory === 'spending' ? '$' : ''}${goalScore}</span>
+            </div>
+
+            <div class="race-tabs">
+              ${activeTrackers.slice(0, 4).map((t, i) => `
+                <button class="race-tab ${i === 0 ? 'active' : ''}" onclick="this.parentElement.querySelectorAll('.race-tab').forEach(b => b.classList.remove('active')); this.classList.add('active');">${trackerEmojis[t]} ${trackerLabels[t]}</button>
+              `).join('')}
+            </div>
+
+            <div class="race-track" style="padding: 12px;">
+              <div class="race-finish"></div>
+              ${sortedRacers.map((racer, i) => {
+                const score = racer.scores[currentCategory] || 0;
+                const percentage = Math.min((score / goalScore) * 100, 100);
+                return `
+                <div class="race-lane" style="padding: 10px 0;">
+                  <div class="race-avatar" style="background: ${racer.color}; width: 32px; height: 32px; font-size: 12px;">${racer.name[0]}</div>
+                  <div class="race-progress" style="height: 32px;">
+                    <div class="race-bar ${state.raceTheme}" style="width: ${percentage}%; background: linear-gradient(90deg, ${racer.color}99, ${racer.color}); min-width: 40px;">
+                      <span class="race-score" style="font-size: 14px;">${currentCategory === 'spending' ? '$' : ''}${score}</span>
+                    </div>
+                  </div>
+                </div>
+              `}).join('')}
+            </div>
+
+            <div class="race-timeframe">
+              <button class="active">Today</button>
+              <button>This Trip</button>
+              <button>All Time</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div class="stat-card" style="padding: 12px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 4px;">👑</div>
+              <div style="font-size: 13px; font-weight: 600;">${sortedRacers[0].name}</div>
+              <div style="font-size: 11px; color: var(--text-dim);">Current Leader</div>
+            </div>
+            <div class="stat-card" style="padding: 12px; text-align: center;">
+              <div style="font-size: 24px; margin-bottom: 4px;">🔥</div>
+              <div style="font-size: 13px; font-weight: 600;">Riley</div>
+              <div style="font-size: 11px; color: var(--text-dim);">Fastest Climber</div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="margin-top: 8px; padding: 12px;">
+            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">Recent Activity</div>
+            <div style="font-size: 13px;">🍺 <strong>Riley</strong> just added a drink! <span style="color: var(--text-dim);">12s ago</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderView() {
+      switch (state.view) {
+        case 'schedule': renderScheduleView(); break;
+        case 'live': renderLiveView(); break;
+        case 'race': renderRaceView(); break;
+        case 'chat': renderChatView(); break;
+        case 'stats': renderStatsView(); break;
+        case 'challenges': renderChallengesView(); break;
+      }
+    }
+
+    function updatePrompt() {
+      const prompt = document.getElementById('promptText');
+      const activeTrackers = getActiveTrackers();
+      const activeFeatures = Object.entries(state.features).filter(([k, v]) => v).map(([k]) => k);
+
+      let text = `Build a group activity app with card-swipe scheduling and live interactive tracking.
+
+CORE CONCEPT:
+A mobile app for groups to manage their shared schedule while tracking fun stats and completing challenges together during activities. Swipe through upcoming activities, tap to track things like drinks or photos, and compete on leaderboards.
+
+SCHEDULE VIEW (Card Swipe):
+- Stack of cards showing upcoming activities
+- Swipe right to check in, left to skip, up for details
+- Each card shows: activity name, time, location, who's going
+- Cards display live tracker counts from current activity
+
+LIVE TRACKING:
+Track these items with tap-to-increment buttons:
+${activeTrackers.map(t => `- ${trackerEmojis[t]} ${trackerLabels[t]}`).join('\n')}
+
+CUSTOM TRACKER CREATION:
+- Users can create their own trackers with custom name + emoji
+- Preset packs available (Party Night, Beach Day, Road Trip, etc.)
+- Each tracker can have:
+  - Custom emoji (picker)
+  - Name (editable)
+  - Optional goal/target number
+  - Toggle for leaderboard inclusion
+- Group admin can lock/unlock which trackers are available
+
+Each tracker should:
+- Show individual counts per person
+- Update in real-time across all group members' phones
+- Display running totals on activity cards
+- Feed into leaderboards and challenges
+
+INTERACTIVE FEATURES:
+${activeFeatures.includes('polls') ? '- Quick Polls: One-tap voting for group decisions ("Where to eat?", "Stay or go?")' : ''}
+${activeFeatures.includes('challenges') ? '- Group Challenges: Shared goals to complete together or compete on' : ''}
+${activeFeatures.includes('leaderboard') ? '- Leaderboards: Rankings for tracked items (most drinks, most photos, etc.)' : ''}
+${activeFeatures.includes('reactions') ? '- Live Reactions: Send emoji reactions that pop up on everyone\'s screen' : ''}
+${activeFeatures.includes('photos') ? '- Photo Moments: Prompt for group photos, shared album' : ''}
+${activeFeatures.includes('splitbills') ? '- Bill Splitting: Track spending and split costs at end of activity' : ''}
+${activeFeatures.includes('chat') ? '- Group Chat: Real-time messaging with the whole group' : ''}
+${activeFeatures.includes('gifs') ? '- GIF Reactions: Search and send GIFs via Giphy/Tenor integration' : ''}
+${activeFeatures.includes('memes') ? '- Meme Replies: Quick meme responses and inside joke sharing' : ''}
+
+CHAT & SOCIAL FEATURES:
+- Chat style: ${state.chatStyle === 'activity' ? 'Per-activity comment threads (discuss specific activities)' : state.chatStyle === 'unified' ? 'Single unified group chat' : 'Both activity threads AND main group chat'}
+${state.chatFeatures.emoji ? '- Emoji reactions on messages (tap to react)' : ''}
+${state.chatFeatures.float ? '- Floating reactions that pop up on everyone\'s screen in real-time (party mode!)' : ''}
+${state.chatFeatures.gif ? '- GIF search integration (Giphy/Tenor) for sending GIF reactions' : ''}
+${state.chatFeatures.voice ? '- Voice notes for quick audio messages' : ''}
+
+GAMIFICATION:
+- Challenge style: ${state.challengeStyle === 'cooperative' ? 'Cooperative team goals everyone works toward together' : state.challengeStyle === 'competitive' ? 'Competitive individual rankings' : 'Mix of team goals and individual competition'}
+- Rewards: ${state.rewards === 'badges' ? 'Unlock badges and achievements' : state.rewards === 'points' ? 'Earn points for tracking and challenges' : state.rewards === 'titles' ? 'Earn fun titles like "Party Captain" or "Photographer"' : 'No explicit rewards, just fun tracking'}
+
+LIVE RACE LEADERBOARD:
+- Animated horse-race style visualization showing everyone competing in real-time
+- Race theme: ${state.raceTheme === 'horse' ? '🏇 Horse racing' : state.raceTheme === 'car' ? '🏎️ Race cars' : state.raceTheme === 'rocket' ? '🚀 Space rockets' : state.raceTheme === 'runner' ? '🏃 Runners' : '🍺 Beer mugs'}
+- Progress bars animate as people track items
+- Switch between tracking categories (drinks, photos, etc.)
+- Timeframe filters: Today, This Trip, All Time
+- Finish line showing the goal/target
+- Updates instantly when anyone logs something
+
+NOTIFICATIONS:
+${state.notifications.activity ? '- Activity updates when someone tracks something' : ''}
+${state.notifications.milestones ? '- Milestone alerts ("Group hit 20 drinks!")' : ''}
+${state.notifications.reminders ? '- Schedule reminders before activities start' : ''}
+${state.notifications.photos ? '- Photo prompts at key moments' : ''}
+
+TECH REQUIREMENTS:
+- Real-time sync across all group members (WebSocket/Firebase)
+- Works on iOS and Android
+- Offline support with sync when back online
+- Push notifications
+- Camera integration for photos`;
+
+      prompt.textContent = text;
+    }
+
+    function updateAll() {
+      renderView();
+      updatePrompt();
+    }
+
+    // Initialize
+    updateAll();
+  </script>
+</body>
+</html>
