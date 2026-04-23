@@ -11039,21 +11039,37 @@ ${ua}
             img.src = dataUrl;
         }
 
-        function syncParticipantProfileImage(participant) {
+        async function syncParticipantProfileImage(participant) {
             if (!db) return;
-            const participantIndex = state.participants.findIndex(p => p.name === participant.name);
-            if (participantIndex >= 0) {
-                // Update the full participant object to ensure profileImage is included
-                db.ref(`trips/${TRIP_ID}/participants/${participantIndex}`).set({
-                    name: participant.name,
-                    color: participant.color,
-                    profileImage: participant.profileImage || null
-                }).then(() => {
+
+            try {
+                // Get current participants from Firebase to find the correct key
+                const snapshot = await db.ref(`trips/${TRIP_ID}/participants`).once('value');
+                const data = snapshot.val();
+
+                if (!data) return;
+
+                // Find the key for this participant by name
+                let participantKey = null;
+                for (const [key, value] of Object.entries(data)) {
+                    if (value.name === participant.name) {
+                        participantKey = key;
+                        break;
+                    }
+                }
+
+                if (participantKey !== null) {
+                    // Update only the profileImage field, preserving other data
+                    await db.ref(`trips/${TRIP_ID}/participants/${participantKey}`).update({
+                        profileImage: participant.profileImage || null
+                    });
                     console.log('Profile image synced to Firebase');
                     renderView();
-                }).catch(err => {
-                    console.error('Failed to sync profile image:', err);
-                });
+                } else {
+                    console.error('Participant not found in Firebase:', participant.name);
+                }
+            } catch (err) {
+                console.error('Failed to sync profile image:', err);
             }
         }
 
