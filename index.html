@@ -4376,7 +4376,7 @@
     <!-- Auth Screen (Firebase Email/Password) -->
     <div id="authScreen" class="auth-screen hidden">
         <div class="auth-logo">
-            <img src="/logo.png" alt="RALLII" style="width: 200px; height: auto;">
+            <img src="/logo.png" alt="RALLII" style="width: 200px; height: auto; filter: brightness(0) saturate(100%) invert(19%) sepia(15%) saturate(749%) hue-rotate(182deg) brightness(95%) contrast(92%);">
             <p style="color: #666; font-size: 14px; font-weight: 500; margin-top: 12px; letter-spacing: 2px; text-align: center;">LISBON 2026</p>
         </div>
 
@@ -9789,7 +9789,6 @@ ${ua}
                             <div class="onboarding-emoji">🎉</div>
                             <div class="onboarding-title">Welcome to Joe's Stag!</div>
                             <div class="onboarding-subtitle" style="margin-bottom: 0;">Lisbon 2026 is going to be legendary. Let's get you set up with everything you need for the trip.</div>
-                            <div style="font-size: 10px; color: #999; margin-top: 20px;">DEBUG: v7 - You should NOT see this without signing in first!</div>
                         </div>
                     `;
                     footerEl.innerHTML = `
@@ -11421,9 +11420,6 @@ ${ua}
                 const splash = document.getElementById('splashScreen');
                 splash.classList.add('fade-out');
                 setTimeout(() => splash.classList.add('hidden'), 400);
-
-                // DEBUG: Show what Firebase returned
-                alert('Firebase user: ' + (user ? user.email || user.uid : 'NULL - should show auth screen'));
 
                 if (user) {
                     // User is signed in
