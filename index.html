@@ -4399,6 +4399,7 @@
             <input type="text" class="auth-input" id="authSignupName" placeholder="Your Name" autocomplete="name">
             <input type="email" class="auth-input" id="authSignupEmail" placeholder="Email" autocomplete="email">
             <input type="password" class="auth-input" id="authSignupPassword" placeholder="Password (min 6 characters)" autocomplete="new-password">
+            <input type="text" class="auth-input" id="authSignupCode" placeholder="Invite Code" autocomplete="off" style="text-transform: uppercase;">
             <button type="button" class="auth-btn" id="authSignupBtn" onclick="handleAuthSignup()">Create Account</button>
             <div class="auth-error" id="authSignupError"></div>
         </div>
@@ -4553,10 +4554,13 @@
         }
 
         // Handle signup
+        const INVITE_CODE = 'JOESTAG2026';
+
         async function handleAuthSignup() {
             const name = document.getElementById('authSignupName').value.trim();
             const email = document.getElementById('authSignupEmail').value.trim();
             const password = document.getElementById('authSignupPassword').value;
+            const code = document.getElementById('authSignupCode').value.trim().toUpperCase();
             const errorEl = document.getElementById('authSignupError');
             const btn = document.getElementById('authSignupBtn');
 
@@ -4572,6 +4576,11 @@
 
             if (password.length < 6) {
                 errorEl.textContent = 'Password must be at least 6 characters';
+                return;
+            }
+
+            if (code !== INVITE_CODE) {
+                errorEl.textContent = 'Invalid invite code';
                 return;
             }
 
@@ -11424,6 +11433,9 @@ ${ua}
                 if (e.key === 'Enter') document.getElementById('authSignupPassword').focus();
             });
             document.getElementById('authSignupPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('authSignupCode').focus();
+            });
+            document.getElementById('authSignupCode').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') handleAuthSignup();
             });
 
