@@ -4374,7 +4374,7 @@
     </div>
 
     <!-- Auth Screen (Firebase Email/Password) -->
-    <div id="authScreen" class="auth-screen">
+    <div id="authScreen" class="auth-screen hidden">
         <div class="auth-logo">
             <img src="/logo.png" alt="RALLII" style="width: 200px; height: auto;">
             <p style="color: #666; font-size: 14px; font-weight: 500; margin-top: 12px; letter-spacing: 2px; text-align: center;">LISBON 2026</p>
@@ -11369,18 +11369,10 @@ ${ua}
             const splash = document.getElementById('splashScreen');
             const splashShown = sessionStorage.getItem('rallii_splash_shown');
 
-            if (splashShown) {
-                // Already shown this session - hide immediately
-                splash.classList.add('hidden');
-            } else {
-                // First load this session - show animation then mark as shown
+            // Splash is now controlled by Firebase auth state listener
+            // Just mark that we've loaded (for animation purposes)
+            if (!splashShown) {
                 sessionStorage.setItem('rallii_splash_shown', 'true');
-                setTimeout(() => {
-                    splash.classList.add('fade-out');
-                    setTimeout(() => {
-                        splash.classList.add('hidden');
-                    }, 400);
-                }, 2500);
             }
 
             // Setup login form handlers
@@ -11418,9 +11410,17 @@ ${ua}
                 if (e.key === 'Enter') handleAuthSignup();
             });
 
-            // Firebase Auth State Listener
+            // Firebase Auth State Listener - this determines what to show after splash
+            let authStateKnown = false;
             auth.onAuthStateChanged((user) => {
                 console.log('Firebase Auth State:', user ? 'SIGNED IN as ' + user.email : 'NOT SIGNED IN');
+                authStateKnown = true;
+
+                // Hide splash now that we know auth state
+                const splash = document.getElementById('splashScreen');
+                splash.classList.add('fade-out');
+                setTimeout(() => splash.classList.add('hidden'), 400);
+
                 if (user) {
                     // User is signed in
                     currentAuthUser = user;
@@ -11441,6 +11441,17 @@ ${ua}
                     showAuthScreen();
                 }
             });
+
+            // Fallback: if auth state takes too long, show auth screen anyway
+            setTimeout(() => {
+                if (!authStateKnown) {
+                    console.log('Auth timeout - showing auth screen');
+                    const splash = document.getElementById('splashScreen');
+                    splash.classList.add('fade-out');
+                    setTimeout(() => splash.classList.add('hidden'), 400);
+                    showAuthScreen();
+                }
+            }, 5000);
 
             // Register Service Worker for PWA
             if ('serviceWorker' in navigator) {
