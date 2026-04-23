@@ -11369,10 +11369,27 @@ ${ua}
             const splash = document.getElementById('splashScreen');
             const splashShown = sessionStorage.getItem('rallii_splash_shown');
 
-            // Splash is now controlled by Firebase auth state listener
-            // Just mark that we've loaded (for animation purposes)
-            if (!splashShown) {
+            // Track splash animation and auth state
+            let splashMinTimeElapsed = false;
+            let authReady = false;
+
+            function hideSplashIfReady() {
+                if (splashMinTimeElapsed && authReady) {
+                    splash.classList.add('fade-out');
+                    setTimeout(() => splash.classList.add('hidden'), 400);
+                }
+            }
+
+            if (splashShown) {
+                // Already shown this session - hide quickly after auth
+                splashMinTimeElapsed = true;
+            } else {
+                // First load - show animation for 2.5s
                 sessionStorage.setItem('rallii_splash_shown', 'true');
+                setTimeout(() => {
+                    splashMinTimeElapsed = true;
+                    hideSplashIfReady();
+                }, 2500);
             }
 
             // Setup login form handlers
@@ -11411,15 +11428,8 @@ ${ua}
             });
 
             // Firebase Auth State Listener - this determines what to show after splash
-            let authStateKnown = false;
             auth.onAuthStateChanged((user) => {
-                console.log('Firebase Auth State:', user ? 'SIGNED IN as ' + user.email : 'NOT SIGNED IN');
-                authStateKnown = true;
-
-                // Hide splash now that we know auth state
-                const splash = document.getElementById('splashScreen');
-                splash.classList.add('fade-out');
-                setTimeout(() => splash.classList.add('hidden'), 400);
+                authReady = true;
 
                 if (user) {
                     // User is signed in
@@ -11433,23 +11443,22 @@ ${ua}
 
                     // Hide auth screen and proceed
                     document.getElementById('authScreen').classList.add('hidden');
+                    hideSplashIfReady();
                     checkSession();
                 } else {
                     // User is not signed in - show auth screen
-                    console.log('Showing auth screen');
                     currentAuthUser = null;
                     showAuthScreen();
+                    hideSplashIfReady();
                 }
             });
 
             // Fallback: if auth state takes too long, show auth screen anyway
             setTimeout(() => {
-                if (!authStateKnown) {
-                    console.log('Auth timeout - showing auth screen');
-                    const splash = document.getElementById('splashScreen');
-                    splash.classList.add('fade-out');
-                    setTimeout(() => splash.classList.add('hidden'), 400);
+                if (!authReady) {
+                    authReady = true;
                     showAuthScreen();
+                    hideSplashIfReady();
                 }
             }, 5000);
 
