@@ -11422,6 +11422,9 @@ ${ua}
                 splash.classList.add('fade-out');
                 setTimeout(() => splash.classList.add('hidden'), 400);
 
+                // DEBUG: Show what Firebase returned
+                alert('Firebase user: ' + (user ? user.email || user.uid : 'NULL - should show auth screen'));
+
                 if (user) {
                     // User is signed in
                     currentAuthUser = user;
