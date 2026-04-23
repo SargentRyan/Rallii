@@ -11130,16 +11130,22 @@ ${ua}
                     <h3>👥 Manage Participants</h3>
 
                     <div id="participantsList" style="margin-bottom: 16px;">
-                        ${state.participants.map((p, i) => `
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--surface); border-radius: 10px; margin-bottom: 8px;">
-                                <div style="width: 36px; height: 36px; border-radius: 50%; background: ${p.color}; ${p.profileImage ? `background-image: url('${p.profileImage}'); background-size: cover; background-position: center;` : ''} display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600;">
-                                    ${p.profileImage ? '' : p.name[0].toUpperCase()}
+                        ${(() => {
+                            let firstMyNameIndex = state.participants.findIndex(p => p.name === state.myName);
+                            return state.participants.map((p, i) => {
+                                // Allow delete unless it's the FIRST entry with user's name
+                                const canDelete = !(p.name === state.myName && i === firstMyNameIndex);
+                                return `
+                                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--surface); border-radius: 10px; margin-bottom: 8px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: ${p.color}; ${p.profileImage ? `background-image: url('${p.profileImage}'); background-size: cover; background-position: center;` : ''} display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600;">
+                                        ${p.profileImage ? '' : p.name[0].toUpperCase()}
+                                    </div>
+                                    <span style="flex: 1; font-weight: 500;">${p.name}${p.name === state.myName && i === firstMyNameIndex ? ' (You)' : ''}</span>
+                                    <input type="color" value="${p.color}" onchange="updateParticipantColor(${i}, this.value)" style="width: 32px; height: 32px; border: none; cursor: pointer; border-radius: 6px; background: ${p.color};">
+                                    ${canDelete ? `<button onclick="removeParticipant(${i})" style="width: 32px; height: 32px; border-radius: 50%; border: none; background: #ff3b30; color: #fff; cursor: pointer; font-size: 18px;">×</button>` : '<span style="width: 32px;"></span>'}
                                 </div>
-                                <span style="flex: 1; font-weight: 500;">${p.name}</span>
-                                <input type="color" value="${p.color}" onchange="updateParticipantColor(${i}, this.value)" style="width: 32px; height: 32px; border: none; cursor: pointer; border-radius: 6px;">
-                                ${p.name !== state.myName ? `<button onclick="removeParticipant(${i})" style="width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--accent-4); color: #fff; cursor: pointer;">×</button>` : '<span style="width: 32px;"></span>'}
-                            </div>
-                        `).join('')}
+                            `}).join('');
+                        })()}
                     </div>
 
                     <div style="display: flex; gap: 8px; margin-bottom: 16px;">
@@ -11518,38 +11524,18 @@ ${ua}
                 return;
             }
 
-            // Wait for Supabase to be ready
-            if (!initSupabase()) {
-                // If Supabase isn't loaded yet, wait and retry
-                setTimeout(checkSession, 100);
-                return;
-            }
-
-            if (loadSession() && state.eventId) {
-                try {
-                    const { data: event } = await supabase
-                        .from('events')
-                        .select()
-                        .eq('id', state.eventId)
-                        .single();
-
-                    if (event) {
-                        state.eventName = event.name;
-                        await loadEventData();
-                        setupRealtimeSubscriptions();
-                        showMainApp();
-                        return;
-                    }
-                } catch (err) {
-                    clearSession();
-                }
-            }
-
-            // Check if user has completed onboarding before
+            // Check if user has completed onboarding (stored in localStorage)
             const hasOnboarded = localStorage.getItem('rallii_onboarded');
+
             if (hasOnboarded) {
-                // They've onboarded before, show simple login
-                showLoginScreen();
+                // User has onboarded - go straight to main app with Firebase data
+                state.myName = currentAuthUser.displayName || localStorage.getItem('rallii_myName') || '';
+                state.eventCode = 'LISBON';
+                state.eventName = 'Lisbon 2026';
+
+                // Initialize Firebase trip if needed
+                await initializeFirebaseTrip();
+                showMainApp();
             } else {
                 // New user, show onboarding
                 startOnboarding();
