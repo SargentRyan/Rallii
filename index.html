@@ -4655,6 +4655,7 @@
 
         // Show auth screen
         function showAuthScreen() {
+            console.log('showAuthScreen called');
             document.getElementById('authScreen').classList.remove('hidden');
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('onboardingScreen').classList.add('hidden');
@@ -9753,8 +9754,10 @@ ${ua}
                             window.navigator.standalone === true;
 
         function startOnboarding() {
+            console.log('startOnboarding called, currentAuthUser:', !!currentAuthUser);
             // MUST be authenticated first
             if (!currentAuthUser) {
+                console.log('No auth user, redirecting to auth screen');
                 showAuthScreen();
                 return;
             }
@@ -11417,6 +11420,7 @@ ${ua}
 
             // Firebase Auth State Listener
             auth.onAuthStateChanged((user) => {
+                console.log('Firebase Auth State:', user ? 'SIGNED IN as ' + user.email : 'NOT SIGNED IN');
                 if (user) {
                     // User is signed in
                     currentAuthUser = user;
@@ -11432,6 +11436,7 @@ ${ua}
                     checkSession();
                 } else {
                     // User is not signed in - show auth screen
+                    console.log('Showing auth screen');
                     currentAuthUser = null;
                     showAuthScreen();
                 }
