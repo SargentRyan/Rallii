@@ -9727,13 +9727,18 @@ ${ua}
         }
 
         function showLoginScreen() {
+            // MUST be authenticated first
+            if (!currentAuthUser) {
+                showAuthScreen();
+                return;
+            }
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('onboardingScreen').classList.add('hidden');
             document.getElementById('authScreen').classList.add('hidden');
 
             // Pre-fill name from Firebase if available
-            if (currentAuthUser && currentAuthUser.displayName) {
+            if (currentAuthUser.displayName) {
                 document.getElementById('nameInput').value = currentAuthUser.displayName;
             }
         }
@@ -9748,9 +9753,14 @@ ${ua}
                             window.navigator.standalone === true;
 
         function startOnboarding() {
+            // MUST be authenticated first
+            if (!currentAuthUser) {
+                showAuthScreen();
+                return;
+            }
             onboardingStep = 0;
             // Pre-fill name from Firebase auth if available
-            onboardingName = (currentAuthUser && currentAuthUser.displayName) ? currentAuthUser.displayName : '';
+            onboardingName = currentAuthUser.displayName || '';
             onboardingProfileImage = null;
             document.getElementById('onboardingScreen').classList.remove('hidden');
             document.getElementById('loginScreen').classList.add('hidden');
