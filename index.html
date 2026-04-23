@@ -11166,23 +11166,22 @@ ${ua}
             }
 
             const color = defaultColors[state.participants.length % defaultColors.length];
-            const newParticipant = { name, color };
+            const newParticipant = { name, color, joinedAt: new Date().toISOString() };
 
-            // Add to database
-            if (state.eventId && supabase) {
+            // Add to Firebase
+            if (db) {
                 try {
-                    const { data } = await supabase
-                        .from('participants')
-                        .insert({ event_id: state.eventId, name, color })
-                        .select()
-                        .single();
-                    if (data) newParticipant.id = data.id;
+                    const snapshot = await db.ref(`trips/${TRIP_ID}/participants`).once('value');
+                    const data = snapshot.val();
+                    const newIndex = data ? Object.keys(data).length : 0;
+                    await db.ref(`trips/${TRIP_ID}/participants/${newIndex}`).set(newParticipant);
                 } catch (e) {
                     console.error('Failed to add participant:', e);
+                    showToast('Failed to add participant');
+                    return;
                 }
             }
 
-            state.participants.push(newParticipant);
             showToast(`${name} added!`);
             showManageParticipantsModal();
         }
@@ -11193,36 +11192,50 @@ ${ua}
 
             if (!confirm(`Remove ${participant.name}?`)) return;
 
-            // Remove from database
-            if (participant.id && supabase) {
+            // Remove from Firebase
+            if (db) {
                 try {
-                    await supabase
-                        .from('participants')
-                        .delete()
-                        .eq('id', participant.id);
+                    const snapshot = await db.ref(`trips/${TRIP_ID}/participants`).once('value');
+                    const data = snapshot.val();
+                    if (data) {
+                        for (const [key, value] of Object.entries(data)) {
+                            if (value.name === participant.name) {
+                                await db.ref(`trips/${TRIP_ID}/participants/${key}`).remove();
+                                break;
+                            }
+                        }
+                    }
                 } catch (e) {
                     console.error('Failed to remove participant:', e);
                 }
             }
 
-            state.participants.splice(index, 1);
             showToast(`${participant.name} removed`);
             showManageParticipantsModal();
         }
 
-        window.updateParticipantColor = function(index, color) {
+        window.updateParticipantColor = async function(index, color) {
             const participant = state.participants[index];
             if (!participant) return;
 
             participant.color = color;
 
-            // Update in database
-            if (participant.id && supabase) {
-                supabase
-                    .from('participants')
-                    .update({ color })
-                    .eq('id', participant.id)
-                    .then(() => {});
+            // Update in Firebase
+            if (db) {
+                try {
+                    const snapshot = await db.ref(`trips/${TRIP_ID}/participants`).once('value');
+                    const data = snapshot.val();
+                    if (data) {
+                        for (const [key, value] of Object.entries(data)) {
+                            if (value.name === participant.name) {
+                                await db.ref(`trips/${TRIP_ID}/participants/${key}`).update({ color });
+                                break;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to update participant color:', e);
+                }
             }
 
             renderView();
