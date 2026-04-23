@@ -11436,6 +11436,12 @@ ${ua}
         });
 
         async function checkSession() {
+            // MUST be authenticated with Firebase first
+            if (!currentAuthUser) {
+                showAuthScreen();
+                return;
+            }
+
             // Wait for Supabase to be ready
             if (!initSupabase()) {
                 // If Supabase isn't loaded yet, wait and retry
