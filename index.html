@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RALLII</title>
+    <title>Ralli</title>
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
     <meta name="theme-color" content="#E4FF5A">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="RALLII">
+    <meta name="apple-mobile-web-app-title" content="Ralli">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -60,6 +60,14 @@
             --brand-blue: #E4FF5A;
             --brand-lime: #E4FF5A;
             --brand-text: #2d3748;
+            /* Brand color palette */
+            --ralli-yellow: #E4FF5A;
+            --soft-blue: #7EB3D8;
+            --burgundy: #7A1F1F;
+            --magenta: #C41E7B;
+            --ice-blue: #E3F3FC;
+            --coral: #F06B6B;
+            --hot-pink: #E84B8A;
             --glass: rgba(255, 255, 255, 0.7);
             --glass-strong: rgba(255, 255, 255, 0.9);
             --glass-border: rgba(255, 255, 255, 0.9);
@@ -379,6 +387,300 @@
             animation: revealUp 0.5s ease 0.7s forwards, gradientShift 3s ease infinite, highlightGlow 2s ease-in-out infinite;
             opacity: 0;
             box-shadow: 0 4px 12px rgba(155, 181, 201, 0.4);
+        }
+
+        /* Story-style Wrapped */
+        .story-wrapped-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .story-progress-bar {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            background: white;
+            z-index: 10;
+        }
+
+        .story-progress-segment {
+            flex: 1;
+            height: 3px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .story-progress-segment.complete {
+            background: #6B7280;
+        }
+
+        .story-progress-segment.active .story-progress-fill {
+            width: 100%;
+            height: 100%;
+            background: #6B7280;
+            animation: storyProgressFill 5s linear forwards;
+        }
+
+        @keyframes storyProgressFill {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .story-slides-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .story-slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .story-slide.exit {
+            opacity: 0;
+            transform: scale(1.05);
+        }
+
+        /* Slide Backgrounds */
+        .story-slide-intro { background: #E4FF5A; }
+        .story-slide-stats { background: #7EB3D8; }
+        .story-slide-drinks { background: #F06B6B; }
+        .story-slide-golf { background: #7A1F1F; }
+        .story-slide-spending { background: #C41E7B; }
+        .story-slide-photos { background: #E3F3FC; }
+        .story-slide-superlative { background: #E84B8A; }
+        .story-slide-message { background: #7EB3D8; }
+        .story-slide-group { background: #E4FF5A; }
+        .story-slide-outro { background: #E4FF5A; }
+
+        .story-slide-emoji {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: storyBounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes storyBounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .story-slide-pretitle {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 12px;
+        }
+
+        .story-slide-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .story-slide-stat {
+            font-size: 96px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 16px;
+            animation: storyCountUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes storyCountUp {
+            0% { transform: translateY(40px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .story-slide-subtitle {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        .story-slide-context {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 24px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+        }
+
+        .story-slide-rank {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #E4FF5A;
+            margin-top: 16px;
+        }
+
+        .story-slide-quote {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
+            max-width: 300px;
+            margin-bottom: 24px;
+        }
+
+        .story-slide-quote::before {
+            content: '"';
+            font-size: 48px;
+            display: block;
+            opacity: 0.5;
+            margin-bottom: -10px;
+        }
+
+        .story-slide-attribution {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .story-superlative-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 16px 32px;
+            border-radius: 20px;
+            margin-top: 24px;
+        }
+
+        .story-superlative-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+        }
+
+        .story-superlative-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .story-nav-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: #6B7280;
+            animation: storyPulse 2s infinite;
+        }
+
+        @keyframes storyPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .story-tap-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            z-index: 5;
+        }
+
+        .story-tap-zone.left { left: 0; }
+        .story-tap-zone.right { right: 0; }
+
+        .story-share-button {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: #1A1A2E;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px 40px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .story-slide.active .story-share-button {
+            opacity: 1;
+        }
+
+        .story-share-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        .story-intro-logo {
+            margin-bottom: 12px;
+        }
+
+        .story-intro-logo img {
+            height: 36px;
+            width: auto;
+            filter: brightness(0) saturate(100%) invert(19%) sepia(15%) saturate(749%) hue-rotate(182deg) brightness(95%) contrast(92%);
+        }
+
+        .story-intro-flag {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .story-intro-year {
+            font-size: 18px;
+            font-weight: 600;
+            color: #6B7280;
+        }
+
+        /* Dark text for light backgrounds */
+        .story-slide-intro .story-slide-pretitle,
+        .story-slide-intro .story-slide-title,
+        .story-slide-intro .story-slide-subtitle,
+        .story-slide-photos .story-slide-pretitle,
+        .story-slide-photos .story-slide-title,
+        .story-slide-photos .story-slide-subtitle,
+        .story-slide-photos .story-slide-stat,
+        .story-slide-group .story-slide-pretitle,
+        .story-slide-group .story-slide-title,
+        .story-slide-group .story-slide-subtitle,
+        .story-slide-outro .story-slide-pretitle,
+        .story-slide-outro .story-slide-title,
+        .story-slide-outro .story-slide-subtitle {
+            color: #1A1A2E;
+        }
+
+        .story-slide-photos .story-slide-context,
+        .story-slide-group .story-slide-context {
+            color: #6B7280;
+            background: rgba(0,0,0,0.05);
         }
 
         html, body {
@@ -1178,6 +1480,38 @@
             content: '🍺';
         }
 
+        /* Colored race bars - brand palette */
+        .race-bar.color-1 { background: linear-gradient(90deg, var(--coral), #ff8787); }
+        .race-bar.color-2 { background: linear-gradient(90deg, var(--magenta), #d94f9a); }
+        .race-bar.color-3 { background: linear-gradient(90deg, var(--hot-pink), #f06da8); }
+        .race-bar.color-4 { background: linear-gradient(90deg, var(--burgundy), #9a3535); }
+        .race-bar.color-5 { background: linear-gradient(90deg, var(--soft-blue), #9dcae8); }
+        .race-bar.color-6 { background: linear-gradient(90deg, #9BB5C9, #b5cad9); }
+        .race-bar.color-7 { background: linear-gradient(90deg, #8b9dc3, #a8b8d4); }
+        .race-bar.color-8 { background: linear-gradient(90deg, #b59bc3, #c9b4d4); }
+        .race-bar.color-9 { background: linear-gradient(90deg, #9bc3a8, #b4d4c0); }
+        .race-bar.color-10 { background: linear-gradient(90deg, #c3ab9b, #d4c4b4); }
+        .race-bar.color-11 { background: linear-gradient(90deg, #a89bc3, #bdb4d4); }
+
+        /* Status pills/badges */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .status-pill.coral { background: var(--coral); }
+        .status-pill.magenta { background: var(--magenta); }
+        .status-pill.hot-pink { background: var(--hot-pink); }
+        .status-pill.burgundy { background: var(--burgundy); }
+        .status-pill.blue { background: var(--soft-blue); color: var(--text); }
+        .status-pill.yellow { background: var(--ralli-yellow); color: var(--text); }
+
         .race-score {
             font-size: 13px;
             font-weight: 600;
@@ -1967,17 +2301,32 @@
         /* Toast notification */
         .toast {
             position: fixed;
-            bottom: 100px;
+            bottom: 120px;
             left: 50%;
-            transform: translateX(-50%);
-            background: var(--text);
-            color: var(--bg);
-            padding: 12px 24px;
-            border-radius: 24px;
-            font-size: 14px;
-            font-weight: 500;
+            transform: translateX(-50%) scale(0.8);
+            background: var(--coral);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 999px;
+            font-size: 16px;
+            font-weight: 700;
             z-index: 1000;
-            animation: toastIn 0.3s ease-out;
+            animation: toastPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+        }
+
+        .toast.coral { background: var(--coral); }
+        .toast.magenta { background: var(--magenta); }
+        .toast.hot-pink { background: var(--hot-pink); }
+        .toast.burgundy { background: var(--burgundy); }
+        .toast.blue { background: var(--soft-blue); color: var(--text); }
+        .toast.yellow { background: var(--ralli-yellow); color: var(--text); }
+
+        @keyframes toastPop {
+            0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+            50% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
         }
 
         @keyframes toastIn {
@@ -4369,14 +4718,14 @@
     <!-- Splash Screen -->
     <div id="splashScreen">
         <div class="splash-logo">
-            <img src="/logo.png" alt="RAAAALLII" style="width: 200px; height: auto;">
+            <img src="/logo.png" alt="Ralli" style="width: 200px; height: auto;">
         </div>
     </div>
 
     <!-- Auth Screen (Firebase Email/Password) -->
     <div id="authScreen" class="auth-screen hidden">
         <div class="auth-logo">
-            <img src="/logo.png" alt="RALLII" style="width: 200px; height: auto; filter: brightness(0) saturate(100%) invert(19%) sepia(15%) saturate(749%) hue-rotate(182deg) brightness(95%) contrast(92%);">
+            <img src="/logo.png" alt="Ralli" style="width: 200px; height: auto; filter: brightness(0) saturate(100%) invert(19%) sepia(15%) saturate(749%) hue-rotate(182deg) brightness(95%) contrast(92%);">
             <p style="color: #666; font-size: 14px; font-weight: 500; margin-top: 12px; letter-spacing: 2px; text-align: center;">LISBON 2026</p>
         </div>
 
@@ -4408,7 +4757,7 @@
     <!-- Login Screen (simplified - just name entry) -->
     <div id="loginScreen" class="login-screen hidden">
         <div class="login-logo">
-            <img src="/logo.png" alt="RAAAALLII" style="width: 240px; height: auto;">
+            <img src="/logo.png" alt="Ralli" style="width: 240px; height: auto;">
             <p style="color: #666; font-size: 16px; font-weight: 500; margin-top: 16px; letter-spacing: 2px; text-align: center;">LISBON 2026</p>
         </div>
 
@@ -4431,7 +4780,7 @@
     <div id="mainApp" class="hidden">
     <div class="app-header">
         <div class="header-top">
-            <h1 style="margin: 0;"><img src="/logo.png" alt="RAAAALLII" style="height: 40px; width: auto; vertical-align: middle;"></h1>
+            <h1 style="margin: 0;"><img src="/logo.png" alt="Ralli" style="height: 40px; width: auto; vertical-align: middle;"></h1>
             <div class="header-actions">
                 <button class="header-btn" onclick="showAccommodationInfo()">🏨</button>
                 <button class="header-btn wrapped-icon" id="wrappedIcon" onclick="showWrappedPanel()">🎁</button>
@@ -4711,6 +5060,21 @@
         initSupabase();
 
         // App State
+        // Brand color palette for race bars and avatars
+        const brandColors = [
+            '#F06B6B', // coral
+            '#C41E7B', // magenta
+            '#E84B8A', // hot-pink
+            '#7A1F1F', // burgundy
+            '#7EB3D8', // soft-blue
+            '#9BB5C9', // accent blue
+            '#8b9dc3', // muted blue
+            '#b59bc3', // muted purple
+            '#9bc3a8', // muted green
+            '#c3ab9b', // muted tan
+            '#a89bc3'  // muted lavender
+        ];
+
         const state = {
             view: 'brief',
             selectedDay: 'Friday',
@@ -4738,6 +5102,7 @@
                 { name: 'Group 3', players: [], scores: {} }
             ],
             selectedGolfGroup: 0,
+            currentGolfHole: 0, // 0-indexed, which hole we're playing
             activities: [], // Schedule events
             expenses: [], // Bill splitting
             accommodation: {
@@ -4802,31 +5167,38 @@
 
         const defaultActivities = [
             // Thursday
-            { title: 'Arrivals', emoji: '✈️', type: 'travel', time: '14:00 - 15:00', day: 'Thursday', location: 'Lisbon Airport' },
-            { title: 'Big Food Shop', emoji: '🛒', type: 'food', time: '17:00 - 18:00', day: 'Thursday', location: 'Booze & Breakie run', note: 'Stock up the villa' },
-            { title: 'Dinner at Villa', emoji: '🍝', type: 'food', time: '19:00 - 21:00', day: 'Thursday', location: 'Villa' },
-            { title: 'Drinks', emoji: '🍻', type: 'social', time: '21:00 - 23:00', day: 'Thursday', location: 'Villa' },
+            { title: 'Arrivals', emoji: '✈️', type: 'travel', time: '15:00', day: 'Thursday', location: 'Lisbon Airport' },
+            { title: 'Shopping', emoji: '🛒', type: 'food', time: '17:00 - 18:00', day: 'Thursday', location: 'Booze & Breakfasts run', note: 'Stock up the villa' },
+            { title: 'Dinner at Villa', emoji: '🍝', type: 'food', time: '19:00 - 20:00', day: 'Thursday', location: 'Villa' },
+            { title: 'Drinks', emoji: '🍻', type: 'social', time: '21:00 - 22:00', day: 'Thursday', location: 'Villa' },
+            { title: 'Early Night', emoji: '😴', type: 'social', time: '23:00', day: 'Thursday', location: 'Villa', note: 'Rest up for golf' },
 
             // Friday
             { title: 'Mega Breakfast', emoji: '🍳', type: 'food', time: '09:00', day: 'Friday', location: 'Villa' },
-            { title: 'Golf (18 Holes)', emoji: '⛳', type: 'outdoor', time: '10:00 - 16:00', day: 'Friday', location: 'Aroeira II', status: 'now' },
-            { title: 'Drinks', emoji: '🍺', type: 'social', time: '17:00 - 19:00', day: 'Friday', location: 'Villa' },
-            { title: 'Dinner at Villa', emoji: '🥘', type: 'food', time: '19:00 - 21:00', day: 'Friday', location: 'Villa' },
-            { title: 'Drinks & Party', emoji: '🎉', type: 'social', time: '21:00 - ∞', day: 'Friday', location: 'Villa → ???', note: 'Until the break of dawn' },
+            { title: 'Golf (18 Holes)', emoji: '⛳', type: 'outdoor', time: '10:00 - 16:00', day: 'Friday', location: 'As per Chilli booking' },
+            { title: 'Drinks', emoji: '🍺', type: 'social', time: '17:00 - 18:00', day: 'Friday', location: 'Villa' },
+            { title: 'Dinner at Villa', emoji: '🥘', type: 'food', time: '19:00 - 20:00', day: 'Friday', location: 'Villa' },
+            { title: 'Drinks', emoji: '🍻', type: 'social', time: '21:00', day: 'Friday', location: 'Villa' },
+            { title: 'Night Out', emoji: '🎉', type: 'social', time: '22:00 - ∞', day: 'Friday', location: 'TBC', note: 'Until the break of dawn' },
 
             // Saturday
             { title: 'Mega Breakfast', emoji: '🍳', type: 'food', time: '09:00', day: 'Saturday', location: 'Villa' },
-            { title: 'Downtime / Padel', emoji: '🎾', type: 'outdoor', time: '11:00 - 17:00', day: 'Saturday', location: 'Villa / Courts TBC' },
-            { title: 'Drinks & Early Dinner', emoji: '🍹', type: 'food', time: '17:00 - 18:00', day: 'Saturday', location: 'Villa' },
-            { title: 'Bar Crawl / Night Out', emoji: '🪩', type: 'social', time: '18:00 - ∞', day: 'Saturday', location: 'Bairro Alto', note: 'Until the break of dawn' },
+            { title: 'Swim / Relax', emoji: '🏊', type: 'outdoor', time: '11:00', day: 'Saturday', location: 'Villa' },
+            { title: 'Padel', emoji: '🎾', type: 'outdoor', time: '12:00 - 15:00', day: 'Saturday', location: 'Courts TBC', note: 'Alternative: Boat party on Tagus river' },
+            { title: 'Swim / Relax', emoji: '🏊', type: 'outdoor', time: '16:00', day: 'Saturday', location: 'Villa' },
+            { title: 'Drinks & Early Dinner', emoji: '🍹', type: 'food', time: '17:00', day: 'Saturday', location: 'Villa' },
+            { title: 'Bar Crawl', emoji: '🍻', type: 'social', time: '18:00', day: 'Saturday', location: 'Into the city', note: 'Early bar crawl before night out' },
+            { title: 'Portugal vs Chile', emoji: '⚽', type: 'social', time: '20:00', day: 'Saturday', location: 'TBC', note: 'Football!' },
+            { title: 'Night Out', emoji: '🪩', type: 'social', time: '22:00 - ∞', day: 'Saturday', location: 'Bairro Alto', note: 'Until the break of dawn' },
 
             // Sunday
-            { title: 'Golf (9 Holes)', emoji: '⛳', type: 'outdoor', time: '09:00', day: 'Sunday', location: 'TBC' },
-            { title: 'Beach Boiz', emoji: '🏖️', type: 'outdoor', time: '14:00 - 20:00', day: 'Sunday', location: 'Beach TBC' },
-            { title: 'Finale Dinner', emoji: '🍽️', type: 'food', time: '19:00', day: 'Sunday', location: 'Restaurant TBC', note: 'Last supper' },
+            { title: 'Golf (9 Holes)', emoji: '⛳', type: 'outdoor', time: '10:00 - 13:00', day: 'Sunday', location: 'Location TBD' },
+            { title: 'Beach', emoji: '🏖️', type: 'outdoor', time: '14:00 - 20:00', day: 'Sunday', location: 'Beach TBC' },
+            { title: 'Dinner Out', emoji: '🍽️', type: 'food', time: '21:00 - 22:00', day: 'Sunday', location: 'Restaurant TBC', note: 'Last supper' },
+            { title: 'Relax', emoji: '😌', type: 'social', time: '22:00 - 23:00', day: 'Sunday', location: 'Villa', note: 'Wind down' },
 
             // Monday
-            { title: 'Departures', emoji: '✈️', type: 'travel', time: '09:00', day: 'Monday', location: 'Lisbon Airport', note: 'Safe travels lads' }
+            { title: 'Departures', emoji: '✈️', type: 'travel', time: '10:00', day: 'Monday', location: 'Lisbon Airport', note: 'Safe travels lads' }
         ];
 
         const challenges = [
@@ -4914,7 +5286,7 @@
             try {
                 const snapshot = await db.ref(`trips/${TRIP_ID}`).once('value');
                 if (!snapshot.exists()) {
-                    // First time: create empty trip structure
+                    // First time: create trip structure
                     await db.ref(`trips/${TRIP_ID}`).set({
                         meta: {
                             name: 'Lisbon 2026',
@@ -4932,12 +5304,38 @@
                         ralliiChecks: {},
                         messages: {}
                     });
-                    console.log('Firebase: Trip initialized (empty)');
+                    console.log('Firebase: Trip initialized');
+                } else {
+                    // Check if activities are missing or empty, restore if needed
+                    const data = snapshot.val();
+                    const activities = data?.activities;
+                    if (!activities || Object.keys(activities).length === 0) {
+                        await db.ref(`trips/${TRIP_ID}/activities`).set(
+                            defaultActivities.reduce((acc, a, i) => {
+                                acc[i] = a;
+                                return acc;
+                            }, {})
+                        );
+                        console.log('Firebase: Activities restored from defaults');
+                    }
                 }
                 firebaseInitialized = true;
             } catch (error) {
                 console.error('Firebase init error:', error);
             }
+        }
+
+        // Manual reset schedule function (call from console if needed)
+        async function resetScheduleToDefaults() {
+            if (!db) return;
+            await db.ref(`trips/${TRIP_ID}/activities`).set(
+                defaultActivities.reduce((acc, a, i) => {
+                    acc[i] = a;
+                    return acc;
+                }, {})
+            );
+            console.log('Schedule reset to defaults');
+            location.reload();
         }
 
         // Set up real-time listeners
@@ -5492,7 +5890,30 @@
                 updateLeaderSection();
             }
 
-            showToast(`+1 ${trackers.find(t => t.id === trackerId)?.emoji || ''}`);
+            // Fun toast messages
+            const tracker = trackers.find(t => t.id === trackerId);
+            const count = state.trackerCounts[trackerId][state.myName];
+            const emoji = tracker?.emoji || '';
+
+            // Milestone messages
+            const milestones = {
+                5: ['5 down!', 'Warming up', 'Nice start'],
+                10: ['Double digits!', 'In the zone', '10!'],
+                15: ['Going strong!', 'On a roll', 'Legend'],
+                20: ['20! 🔥', 'Unstoppable', 'Machine'],
+                25: ['25! Beast mode', 'Hall of fame', 'Iconic']
+            };
+
+            let msg;
+            if (milestones[count]) {
+                msg = `${emoji} ${milestones[count][Math.floor(Math.random() * milestones[count].length)]}`;
+            } else if (count === 1) {
+                msg = `${emoji} First one!`;
+            } else {
+                const quickMessages = [`+1 ${emoji}`, `${emoji} Nice!`, `${emoji} ${count}!`, `Another ${emoji}`];
+                msg = quickMessages[Math.floor(Math.random() * quickMessages.length)];
+            }
+            showToast(msg);
 
             // Sync to Firebase
             syncTrackerIncrement(trackerId, state.myName);
@@ -5676,14 +6097,16 @@
             return 'Good Evening';
         }
 
-        function showToast(message) {
+        function showToast(message, colorClass = null) {
             const existing = document.querySelector('.toast');
             if (existing) existing.remove();
             const toast = document.createElement('div');
-            toast.className = 'toast';
+            const colors = ['coral', 'magenta', 'hot-pink', 'burgundy', 'blue', 'yellow'];
+            const randomColor = colorClass || colors[Math.floor(Math.random() * colors.length)];
+            toast.className = `toast ${randomColor}`;
             toast.textContent = message;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            setTimeout(() => toast.remove(), 1800);
         }
 
         // Install prompt functions
@@ -6421,13 +6844,15 @@
                         </div>
                         <div class="race-track">
                             <div class="race-finish"></div>
-                            ${raceData.length ? raceData.map(racer => {
+                            ${raceData.length ? raceData.map((racer, idx) => {
                                 const percentage = Math.min((racer.score / goalScore) * 100, 100);
+                                const colorClass = `color-${(idx % 11) + 1}`;
+                                const avatarColor = brandColors[idx % brandColors.length];
                                 return `
                                     <div class="race-lane">
-                                        <div class="race-avatar" style="background: ${racer.color}; ${getPersonProfileImage(racer.name) ? `background-image: url('${getPersonProfileImage(racer.name)}'); background-size: cover; background-position: center;` : ''}">${getPersonProfileImage(racer.name) ? '' : racer.name[0]}</div>
+                                        <div class="race-avatar" style="background: ${avatarColor}; ${getPersonProfileImage(racer.name) ? `background-image: url('${getPersonProfileImage(racer.name)}'); background-size: cover; background-position: center;` : ''}">${getPersonProfileImage(racer.name) ? '' : racer.name[0]}</div>
                                         <div class="race-progress">
-                                            <div class="race-bar ${state.raceTheme}" style="width: ${Math.max(percentage, 5)}%; background: linear-gradient(90deg, ${racer.color}99, ${racer.color});">
+                                            <div class="race-bar ${state.raceTheme} ${colorClass}" style="width: ${Math.max(percentage, 5)}%;">
                                                 <span class="race-score">${racer.score}</span>
                                             </div>
                                         </div>
@@ -8073,6 +8498,71 @@
 
         let wrappedSlide = 0;
 
+        let storyCurrentSlide = 0;
+        let storyTotalSlides = 10;
+
+        function storyNextSlide() {
+            if (storyCurrentSlide < storyTotalSlides - 1) {
+                storyGoToSlide(storyCurrentSlide + 1);
+            }
+        }
+
+        function storyPrevSlide() {
+            if (storyCurrentSlide > 0) {
+                storyGoToSlide(storyCurrentSlide - 1);
+            }
+        }
+
+        function storyGoToSlide(index) {
+            if (index < 0 || index >= storyTotalSlides) return;
+
+            const slides = document.querySelectorAll('.story-slide');
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active', 'exit');
+                if (i === storyCurrentSlide && index > storyCurrentSlide) {
+                    slide.classList.add('exit');
+                }
+            });
+
+            storyCurrentSlide = index;
+            if (slides[storyCurrentSlide]) {
+                slides[storyCurrentSlide].classList.add('active');
+            }
+            storyUpdateProgress();
+        }
+
+        function storyUpdateProgress() {
+            const segments = document.querySelectorAll('.story-progress-segment');
+            segments.forEach((seg, i) => {
+                seg.classList.remove('active', 'complete');
+                seg.innerHTML = '';
+                if (i < storyCurrentSlide) {
+                    seg.classList.add('complete');
+                } else if (i === storyCurrentSlide) {
+                    seg.classList.add('active');
+                    seg.innerHTML = '<div class="story-progress-fill"></div>';
+                }
+            });
+        }
+
+        function closeWrapped() {
+            storyCurrentSlide = 0;
+            state.view = 'brief';
+            renderView();
+        }
+
+        function shareWrappedStory() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Lisbon 2026 Wrapped',
+                    text: 'Check out my Ralli Wrapped from Lisbon 2026!',
+                    url: window.location.href
+                });
+            } else {
+                alert('Share functionality coming soon!');
+            }
+        }
+
         function renderWrappedView() {
             const screen = document.getElementById('screen');
             screen.className = 'screen wrapped-screen';
@@ -8113,209 +8603,146 @@
                 const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
                 return entries[0] ? { name: entries[0][0], count: entries[0][1] } : null;
             };
+            const getRank = (counts, name) => {
+                const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+                const idx = sorted.findIndex(([n]) => n === name);
+                return idx >= 0 ? idx + 1 : sorted.length + 1;
+            };
 
             const totalDrinks = getTotal(drinkCounts);
-            const totalClubs = getTotal(clubCounts);
             const totalBirdies = getTotal(birdieCounts);
-            const totalHoleInOnes = getTotal(holeinOneCounts);
-            const totalMessages = (state.messages || []).length;
+            const participantCount = (state.participants || []).length || 11;
 
-            const drinkLeader = getLeader(drinkCounts);
-            const clubLeader = getLeader(clubCounts);
-            const birdieLeader = getLeader(birdieCounts);
-            const holeInOneLeader = getLeader(holeinOneCounts);
+            const myName = state.myName || 'You';
+            const myDrinks = drinkCounts[myName] || 0;
+            const myBirdies = birdieCounts[myName] || 0;
+            const myDrinkRank = getRank(drinkCounts, myName);
+            const myBirdieRank = getRank(birdieCounts, myName);
+            const myDrinkPercent = totalDrinks > 0 ? Math.round((myDrinks / totalDrinks) * 100) : 0;
 
-            const overallScores = {};
-            (state.participants || []).forEach(p => {
-                overallScores[p.name] = (drinkCounts[p.name] || 0) + (clubCounts[p.name] || 0) + (birdieCounts[p.name] || 0);
-            });
-            const overallLeader = getLeader(overallScores);
+            // Photos count
+            const allPhotos = typeof getAllPhotos === 'function' ? getAllPhotos() : [];
+            const myPhotos = allPhotos.filter(p => {
+                const by = (p.by || p.takenBy || '').toLowerCase();
+                return by === myName.toLowerCase() || by === 'you';
+            }).length;
 
-            const messageCounts = {};
-            (state.messages || []).forEach(m => {
-                if (m.name) messageCounts[m.name] = (messageCounts[m.name] || 0) + 1;
-            });
-            const chatLeader = getLeader(messageCounts);
+            // Expenses
+            const myExpenses = (state.expenses || []).reduce((sum, e) => {
+                if (e.paidBy === myName) return sum + (e.amount || 0);
+                return sum;
+            }, 0);
 
-            const completedChallenges = (state.customChallenges || []).filter(c => c.status === 'completed').length;
-            const failedChallenges = (state.customChallenges || []).filter(c => c.status === 'failed').length;
-
-            const myDrinks = drinkCounts[state.myName] || 0;
-            const myClubs = clubCounts[state.myName] || 0;
-            const myBirdies = birdieCounts[state.myName] || 0;
-            const myMessages = messageCounts[state.myName] || 0;
-            const myLosses = (state.customChallenges || []).filter(c => c.assignedTo === state.myName && c.status === 'failed').length;
-
-            // Define slides with white cards and reveal animations
-            const slides = [
-                // Slide 0: Intro
-                {
-                    emoji: '🎁',
-                    label: '',
-                    value: 'Your RALLII Wrapped',
-                    valueClass: 'name',
-                    subtitle: state.eventName || 'Trip',
-                    hint: 'Swipe to begin →'
-                },
-                // Slide 1: Trip Champion
-                {
-                    emoji: '👑',
-                    label: 'TRIP CHAMPION',
-                    value: overallLeader?.name || 'TBD',
-                    valueClass: 'name',
-                    subtitle: `${overallLeader?.count || 0} total points`,
-                    highlight: overallLeader ? '1st Place' : null
-                },
-                // Slide 2: Drinks
-                {
-                    emoji: '🍺',
-                    label: 'TOTAL DRINKS',
-                    value: totalDrinks,
-                    subtitle: 'drinks consumed',
-                    highlight: drinkLeader ? `👑 ${drinkLeader.name} (${drinkLeader.count})` : null
-                },
-                // Slide 3: Clubs Visited
-                {
-                    emoji: '🪩',
-                    label: 'CLUBS VISITED',
-                    value: totalClubs,
-                    subtitle: 'clubs hit up',
-                    highlight: clubLeader ? `👑 ${clubLeader.name} (${clubLeader.count})` : null
-                },
-                // Slide 4: Birdies
-                {
-                    emoji: '🐦',
-                    label: 'TOTAL BIRDIES',
-                    value: totalBirdies,
-                    subtitle: 'birdies scored',
-                    highlight: birdieLeader ? `👑 ${birdieLeader.name} (${birdieLeader.count})` : null
-                },
-                // Slide 5: Hole in One King
-                {
-                    emoji: '🕳️',
-                    label: 'HOLE IN ONE KING',
-                    value: holeInOneLeader?.name || 'Nobody!',
-                    valueClass: 'name',
-                    subtitle: holeInOneLeader ? `${holeInOneLeader.count} hole in one${holeInOneLeader.count > 1 ? 's' : ''}` : 'No hole in ones yet',
-                    highlight: holeInOneLeader ? '🏆 Legend!' : '⛳ Keep trying!'
-                },
-                // Slide 6: Chat
-                {
-                    emoji: '💬',
-                    label: 'MESSAGES SENT',
-                    value: totalMessages,
-                    subtitle: 'in group chat',
-                    highlight: chatLeader ? `🗣️ ${chatLeader.name} (${chatLeader.count})` : null
-                },
-                // Slide 7: Challenges
-                {
-                    emoji: '🏆',
-                    label: 'CHALLENGES',
-                    custom: `
-                        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 16px;">
-                            <div style="text-align: center; animation: revealScale 0.6s ease 0.3s forwards; opacity: 0;">
-                                <div style="font-size: 48px; font-weight: 800; color: #10b981;">${completedChallenges}</div>
-                                <div style="font-size: 13px; color: #888;">Completed ✓</div>
-                            </div>
-                            <div style="text-align: center; animation: revealScale 0.6s ease 0.5s forwards; opacity: 0;">
-                                <div style="font-size: 48px; font-weight: 800; color: #ef4444;">${failedChallenges}</div>
-                                <div style="font-size: 13px; color: #888;">Failed ✗</div>
-                            </div>
-                        </div>
-                    `
-                },
-                // Slide 8: Your Stats
-                {
-                    emoji: '📊',
-                    label: 'YOUR STATS',
-                    value: state.myName || 'You',
-                    valueClass: 'name',
-                    custom: `
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; width: 100%;">
-                            <div style="background: rgba(155, 181, 201, 0.2); border-radius: 16px; padding: 16px 12px; text-align: center; animation: revealUp 0.4s ease 0.4s forwards; opacity: 0; box-shadow: 0 4px 12px rgba(61,158,90,0.1);">
-                                <div style="font-size: 28px; margin-bottom: 4px;">🍺</div>
-                                <div style="font-size: 32px; font-weight: 800; color: var(--brand-text);">${myDrinks}</div>
-                                <div style="font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Drinks</div>
-                            </div>
-                            <div style="background: rgba(155, 181, 201, 0.2); border-radius: 16px; padding: 16px 12px; text-align: center; animation: revealUp 0.4s ease 0.5s forwards; opacity: 0; box-shadow: 0 4px 12px rgba(61,158,90,0.1);">
-                                <div style="font-size: 28px; margin-bottom: 4px;">🐦</div>
-                                <div style="font-size: 32px; font-weight: 800; color: var(--brand-text);">${myBirdies}</div>
-                                <div style="font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Birdies</div>
-                            </div>
-                            <div style="background: rgba(155, 181, 201, 0.2); border-radius: 16px; padding: 16px 12px; text-align: center; animation: revealUp 0.4s ease 0.6s forwards; opacity: 0; box-shadow: 0 4px 12px rgba(61,158,90,0.1);">
-                                <div style="font-size: 28px; margin-bottom: 4px;">💸</div>
-                                <div style="font-size: 32px; font-weight: 800; color: var(--brand-text);">${myLosses}</div>
-                                <div style="font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Losses</div>
-                            </div>
-                            <div style="background: rgba(155, 181, 201, 0.2); border-radius: 16px; padding: 16px 12px; text-align: center; animation: revealUp 0.4s ease 0.7s forwards; opacity: 0; box-shadow: 0 4px 12px rgba(61,158,90,0.1);">
-                                <div style="font-size: 28px; margin-bottom: 4px;">💬</div>
-                                <div style="font-size: 32px; font-weight: 800; color: var(--brand-text);">${myMessages}</div>
-                                <div style="font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Messages</div>
-                            </div>
-                        </div>
-                    `
-                },
-                // Slide 9: Thanks
-                {
-                    emoji: '🎉',
-                    label: '',
-                    value: 'Thanks for using RALLII!',
-                    valueClass: 'name small',
-                    subtitle: state.eventName || 'Trip',
-                    hint: 'Swipe to restart'
-                }
-            ];
-
-            const currentSlide = slides[wrappedSlide % slides.length];
-            const totalSlides = slides.length;
-
-            // Dynamic gradient - green intensifies as you progress
-            const progress = wrappedSlide / (totalSlides - 1); // 0 to 1
+            storyTotalSlides = 10;
+            storyCurrentSlide = 0;
 
             screen.innerHTML = `
-                <div class="wrapped-container" id="wrappedContainer" style="
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: linear-gradient(160deg, #E4FF5A 0%, #d4f04a 50%, #c8e600 100%);
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 24px;
-                    user-select: none;
-                ">
-                    <!-- Progress bars (Instagram style) -->
-                    <div style="position: absolute; top: 12px; left: 12px; right: 12px; display: flex; gap: 4px;">
-                        ${slides.map((_, i) => `
-                            <div style="flex: 1; height: 3px; border-radius: 2px; background: rgba(0,0,0,0.15); overflow: hidden;">
-                                <div style="width: ${i < wrappedSlide ? '100%' : i === wrappedSlide ? '100%' : '0%'}; height: 100%; background: rgba(0,0,0,0.5); transition: width 0.3s;"></div>
+                <div class="story-wrapped-container">
+                    <!-- Progress Bar -->
+                    <div class="story-progress-bar">
+                        ${Array.from({length: storyTotalSlides}, (_, i) => `
+                            <div class="story-progress-segment ${i === 0 ? 'active' : ''}">
+                                ${i === 0 ? '<div class="story-progress-fill"></div>' : ''}
                             </div>
                         `).join('')}
                     </div>
 
-                    <!-- White Card -->
-                    <div class="wrapped-card">
-                        ${currentSlide.emoji ? `<div class="wrapped-emoji">${currentSlide.emoji}</div>` : ''}
-                        ${currentSlide.label ? `<div class="wrapped-label">${currentSlide.label}</div>` : ''}
-                        ${currentSlide.value !== undefined ? `<div class="wrapped-value ${currentSlide.valueClass || ''}">${currentSlide.value}</div>` : ''}
-                        ${currentSlide.subtitle ? `<div class="wrapped-subtitle">${currentSlide.subtitle}</div>` : ''}
-                        ${currentSlide.highlight ? `<div class="wrapped-highlight">${currentSlide.highlight}</div>` : ''}
-                        ${currentSlide.custom || ''}
-                        ${currentSlide.hint ? `<div style="margin-top: 32px; font-size: 13px; color: #aaa; animation: revealUp 0.5s ease 0.8s forwards; opacity: 0;">${currentSlide.hint}</div>` : ''}
+                    <!-- Slides -->
+                    <div class="story-slides-container">
+                        <!-- Slide 0: Intro -->
+                        <div class="story-slide story-slide-intro active">
+                            <div class="story-intro-flag">🇵🇹</div>
+                            <div class="story-intro-logo"><img src="/logo.png" alt="Ralli"></div>
+                            <div class="story-intro-year">WRAPPED 2026</div>
+                            <div class="story-nav-hint">Tap to continue</div>
+                        </div>
+
+                        <!-- Slide 1: Trip Stats -->
+                        <div class="story-slide story-slide-stats">
+                            <div class="story-slide-emoji">✈️</div>
+                            <div class="story-slide-pretitle">Your Trip</div>
+                            <div class="story-slide-title">4 days. ${participantCount} lads.<br>1 legendary trip.</div>
+                            <div class="story-slide-subtitle">Here's how you did.</div>
+                        </div>
+
+                        <!-- Slide 2: Drinks -->
+                        <div class="story-slide story-slide-drinks">
+                            <div class="story-slide-emoji">🍺</div>
+                            <div class="story-slide-pretitle">You had</div>
+                            <div class="story-slide-stat">${myDrinks}</div>
+                            <div class="story-slide-title">drinks</div>
+                            <div class="story-slide-context">That's ${myDrinkPercent}% of the group's ${totalDrinks} total</div>
+                            <div class="story-slide-rank">#${myDrinkRank} of ${participantCount}</div>
+                        </div>
+
+                        <!-- Slide 3: Golf -->
+                        <div class="story-slide story-slide-golf">
+                            <div class="story-slide-emoji">⛳</div>
+                            <div class="story-slide-pretitle">On the course</div>
+                            <div class="story-slide-stat">${myBirdies}</div>
+                            <div class="story-slide-title">birdies</div>
+                            <div class="story-slide-subtitle">You beat ${Math.max(0, participantCount - myBirdieRank)} people</div>
+                            <div class="story-slide-rank">#${myBirdieRank} of ${participantCount}</div>
+                        </div>
+
+                        <!-- Slide 4: Spending -->
+                        <div class="story-slide story-slide-spending">
+                            <div class="story-slide-emoji">💸</div>
+                            <div class="story-slide-pretitle">You spent</div>
+                            <div class="story-slide-stat">€${Math.round(myExpenses)}</div>
+                            <div class="story-slide-subtitle">on the group</div>
+                        </div>
+
+                        <!-- Slide 5: Photos -->
+                        <div class="story-slide story-slide-photos">
+                            <div class="story-slide-emoji">📸</div>
+                            <div class="story-slide-pretitle">You uploaded</div>
+                            <div class="story-slide-stat">${myPhotos}</div>
+                            <div class="story-slide-title">photos</div>
+                            <div class="story-slide-subtitle">Capturing the memories</div>
+                        </div>
+
+                        <!-- Slide 6: Superlative -->
+                        <div class="story-slide story-slide-superlative">
+                            <div class="story-slide-emoji">🏆</div>
+                            <div class="story-slide-pretitle">You were</div>
+                            <div class="story-superlative-badge">
+                                <div class="story-superlative-label">Official Title</div>
+                                <div class="story-superlative-title">${myDrinkRank === 1 ? 'The Party Animal' : myBirdieRank === 1 ? 'The Golf King' : myPhotos > 5 ? 'The Photographer' : 'The Legend'}</div>
+                            </div>
+                            <div class="story-slide-subtitle" style="margin-top: 24px;">${myDrinkRank === 1 ? 'Most drinks consumed' : myBirdieRank === 1 ? 'Best on the course' : myPhotos > 5 ? 'Capturing every moment' : 'Part of the crew'}</div>
+                        </div>
+
+                        <!-- Slide 7: Best Message -->
+                        <div class="story-slide story-slide-message">
+                            <div class="story-slide-pretitle">The vibe</div>
+                            <div class="story-slide-quote">This is going to be legendary</div>
+                            <div class="story-slide-attribution">— The group, probably</div>
+                        </div>
+
+                        <!-- Slide 8: Group Moment -->
+                        <div class="story-slide story-slide-group">
+                            <div class="story-slide-emoji">🎉</div>
+                            <div class="story-slide-pretitle">Together</div>
+                            <div class="story-slide-title">${totalDrinks} drinks.<br>${totalBirdies} birdies.<br>Infinite memories.</div>
+                            <div class="story-slide-subtitle" style="color: #1A1A2E;">The lads did it again.</div>
+                        </div>
+
+                        <!-- Slide 9: Outro -->
+                        <div class="story-slide story-slide-outro">
+                            <div class="story-slide-emoji">🇵🇹</div>
+                            <div class="story-slide-pretitle">Lisbon 2026</div>
+                            <div class="story-slide-title">Until the next one.</div>
+                            <div class="story-slide-subtitle">Trips fade. Memories don't.</div>
+                            <button class="story-share-button" onclick="shareWrappedStory()">Share Your Wrapped</button>
+                        </div>
                     </div>
 
-                    <!-- Slide counter -->
-                    <div style="position: absolute; bottom: 20px; font-size: 12px; color: rgba(0,0,0,0.5);">
-                        ${wrappedSlide + 1} / ${totalSlides}
-                    </div>
+                    <!-- Tap Zones -->
+                    <div class="story-tap-zone left" onclick="storyPrevSlide()"></div>
+                    <div class="story-tap-zone right" onclick="storyNextSlide()"></div>
                 </div>
             `;
-
-            // Setup swipe handling
-            setupWrappedSwipe();
             } catch (err) {
                 console.error('Wrapped view error:', err);
                 screen.innerHTML = `
@@ -8429,10 +8856,10 @@
                 ? capturedErrors.map(e => `[${e.time}] ${e.type}: ${e.message}${e.line ? ` (line ${e.line})` : ''}`).join('\n')
                 : 'No errors captured';
 
-            const subject = encodeURIComponent('RALLII Bug Report');
+            const subject = encodeURIComponent('Ralli Bug Report');
             const body = encodeURIComponent(`Hi Ryan,
 
-Something went wrong in RALLII.
+Something went wrong in Ralli.
 
 **Briefly describe what happened (optional):**
 [Type here or just send as-is]
@@ -8848,12 +9275,12 @@ ${ua}
             // Add to feed
             state.feedItems.unshift({
                 participantName: myName,
-                action: 'started a RALLII Check!',
+                action: 'started a Ralli Check!',
                 emoji: '📸',
                 timestamp: now.toISOString()
             });
 
-            showToast('🔔 RALLII CHECK started!');
+            showToast('🔔 RALLI CHECK started!');
             renderView();
 
             // Mark as seen so we don't show ourselves the popup
@@ -8887,7 +9314,7 @@ ${ua}
                 <div class="check-popup-content">
                     <div class="check-popup-header">
                         <span class="check-popup-icon">📸</span>
-                        <span class="check-popup-title">RALLII CHECK!</span>
+                        <span class="check-popup-title">RALLI CHECK!</span>
                     </div>
                     <div class="check-popup-subtitle">${check.startedBy} wants to see what you're doing</div>
                     <div class="check-popup-timer">⏱️ <span class="popup-timer-value">${mins}:${secs.toString().padStart(2, '0')}</span> left</div>
@@ -8964,7 +9391,7 @@ ${ua}
             modal.innerHTML = `
                 <div class="name-prompt-content">
                     <div class="name-prompt-emoji">👋</div>
-                    <h2>Welcome to RALLII!</h2>
+                    <h2>Welcome to Ralli!</h2>
                     <p>What should we call you?</p>
                     <input type="text" id="namePromptInput" placeholder="Enter your name" maxlength="20" autocomplete="off" autofocus>
                     <button onclick="submitNamePrompt()">Let's Go!</button>
@@ -9174,7 +9601,7 @@ ${ua}
                         // Add to feed
                         state.feedItems.unshift({
                             participantName: myName,
-                            action: 'responded to RALLII Check',
+                            action: 'responded to Ralli Check',
                             emoji: '📸',
                             timestamp: new Date().toISOString()
                         });
@@ -9221,7 +9648,7 @@ ${ua}
 
             return `
                 <div class="active-check-banner">
-                    <div class="check-title">🔔 RALLII CHECK!</div>
+                    <div class="check-title">🔔 RALLI CHECK!</div>
                     <div class="timer">${mins}:${secs.toString().padStart(2, '0')}</div>
                     ${!hasResponded ? `
                         <button class="respond-btn" onclick="respondToCheck('${activeCheck.id}')">📸 Take Photo</button>
@@ -9273,7 +9700,7 @@ ${ua}
 
             return `
                 <div class="past-checks">
-                    <h4>Past RALLII Checks</h4>
+                    <h4>Past Ralli Checks</h4>
                     ${pastChecks.map(check => `
                         <div class="past-check-item" onclick="showCheckGallery('${check.id}')">
                             <div class="past-check-preview">
@@ -9291,6 +9718,29 @@ ${ua}
                     `).join('')}
                 </div>
             `;
+        }
+
+        // Rone track player
+        let roneIsPlaying = false;
+        function toggleRoneTrack() {
+            const audio = document.getElementById('roneAudio');
+            const btn = document.getElementById('ronePlayBtn');
+            if (!audio) return;
+
+            if (roneIsPlaying) {
+                audio.pause();
+                btn.textContent = '▶️';
+                roneIsPlaying = false;
+            } else {
+                audio.play();
+                btn.textContent = '⏸️';
+                roneIsPlaying = true;
+            }
+
+            audio.onended = () => {
+                btn.textContent = '▶️';
+                roneIsPlaying = false;
+            };
         }
 
         function renderMusicView() {
@@ -9336,6 +9786,38 @@ ${ua}
                     Listen on Spotify
                 </button>
 
+                <!-- Custom Track: Rone - Stranger -->
+                <div style="
+                    background: var(--card-bg);
+                    border-radius: 16px;
+                    padding: 16px;
+                    margin-bottom: 24px;
+                    box-shadow: var(--shadow-md);
+                ">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <button id="ronePlayBtn" onclick="toggleRoneTrack()" style="
+                            width: 56px;
+                            height: 56px;
+                            border-radius: 50%;
+                            background: var(--brand-green);
+                            border: none;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 24px;
+                            flex-shrink: 0;
+                            box-shadow: 0 4px 12px rgba(228, 255, 90, 0.3);
+                        ">▶️</button>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 16px; margin-bottom: 2px;">Stranger</div>
+                            <div style="color: var(--text-dim); font-size: 14px;">Rone</div>
+                            <div style="color: var(--brand-green); font-size: 12px; font-weight: 600; margin-top: 4px;">🎺 TRIP ANTHEM</div>
+                        </div>
+                    </div>
+                    <audio id="roneAudio" src="/rone-stranger.mp3" preload="metadata"></audio>
+                </div>
+
                 <div class="spotify-container" style="padding: 0; background: transparent; border: none;">
                     <div class="spotify-embed">
                         <iframe
@@ -9380,6 +9862,8 @@ ${ua}
             const pars = state.golfPars || [];
             const currentGroup = state.golfGroups[state.selectedGolfGroup];
             const golfPlayers = currentGroup?.players || [];
+            const currentHole = state.currentGolfHole || 0;
+            const currentPar = pars[currentHole] || 4;
 
             // Get player objects for those playing golf
             const players = golfPlayers.map(name => {
@@ -9410,20 +9894,52 @@ ${ua}
                         parTotal += pars[i] || 4;
                     }
                 }
-                if (total === 0) return '-';
+                if (total === 0) return { display: 'E', value: 0 };
                 const diff = total - parTotal;
-                if (diff > 0) return '+' + diff;
-                if (diff < 0) return diff.toString();
-                return 'E';
+                return {
+                    display: diff > 0 ? '+' + diff : diff === 0 ? 'E' : diff.toString(),
+                    value: diff
+                };
+            };
+
+            const getScoreLabel = (score, par) => {
+                const diff = score - par;
+                if (diff <= -3) return 'Albatross';
+                if (diff === -2) return 'Eagle';
+                if (diff === -1) return 'Birdie';
+                if (diff === 0) return 'Par';
+                if (diff === 1) return 'Bogey';
+                if (diff === 2) return 'Double';
+                if (diff === 3) return 'Triple';
+                return '+' + diff;
+            };
+
+            const getScoreColor = (score, par) => {
+                if (!score) return 'transparent';
+                const diff = score - par;
+                if (diff <= -2) return '#FFD700'; // Eagle or better - gold
+                if (diff === -1) return '#4CAF50'; // Birdie - green
+                if (diff === 0) return '#2196F3'; // Par - blue
+                if (diff === 1) return '#FF9800'; // Bogey - orange
+                return '#f44336'; // Double+ - red
             };
 
             const totalPar = pars.slice(0, holes).reduce((a, b) => a + b, 0);
 
             screen.innerHTML = `
+                <!-- Invitational Card -->
+                <div style="background: linear-gradient(145deg, rgba(57, 170, 65, 0.95) 0%, rgba(45, 140, 52, 0.98) 100%); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-radius: 20px; padding: 12px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.15);">
+                    <img src="/invitational.svg" alt="Joe's Invitational" style="width: 100%; height: auto;">
+                </div>
+
                 <div class="golf-scorecard">
-                    <div class="golf-header">
-                        <h3>⛳ ${state.golfCourse}</h3>
-                        <div style="font-size: 13px; opacity: 0.8; margin-top: 4px;">${holes} Holes · Par ${totalPar}</div>
+                    <!-- Header with course info -->
+                    <div class="golf-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="margin: 0;">⛳ ${state.golfCourse}</h3>
+                            <div style="font-size: 13px; opacity: 0.8; margin-top: 4px;">${holes} Holes · Par ${totalPar}</div>
+                        </div>
+                        <button onclick="showGolfSettingsModal()" style="width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--glass-strong); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">⚙️</button>
                     </div>
 
                     <!-- Group Tabs -->
@@ -9436,55 +9952,70 @@ ${ua}
                     </div>
 
                     ${players.length > 0 ? `
-                    <div class="golf-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Hole</th>
-                                    ${Array.from({length: holes}, (_, i) => `<th>${i + 1}</th>`).join('')}
-                                    <th class="golf-total">Tot</th>
-                                    <th class="golf-total">+/-</th>
-                                </tr>
-                                <tr style="background: rgba(155, 181, 201, 0.25); color: var(--text);">
-                                    <td style="background: rgba(155, 181, 201, 0.25); font-weight: 600;">Par</td>
-                                    ${Array.from({length: holes}, (_, i) => `<td style="font-weight: 600;">${pars[i] || 4}</td>`).join('')}
-                                    <td class="golf-total">${totalPar}</td>
-                                    <td class="golf-total">-</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${players.map(p => `
-                                    <tr>
-                                        <td style="color: ${p.color}; font-weight: 600;">${p.name}</td>
-                                        ${Array.from({length: holes}, (_, i) => `
-                                            <td>
-                                                <input type="number"
-                                                    value="${currentGroup.scores[p.name]?.[i] || ''}"
-                                                    onchange="updateGolfScore('${p.name}', ${i}, this.value)"
-                                                    min="1" max="12">
-                                            </td>
-                                        `).join('')}
-                                        <td class="golf-total">${getTotal(p.name) || '-'}</td>
-                                        <td class="golf-total">${getVsPar(p.name)}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                    <!-- Current Hole Display -->
+                    <div style="background: var(--surface); padding: 20px; text-align: center; border-bottom: 1px solid var(--border);">
+                        <div style="font-size: 14px; color: var(--text-dim); margin-bottom: 4px;">HOLE</div>
+                        <div style="font-size: 48px; font-weight: 700; color: var(--text);">${currentHole + 1}</div>
+                        <div style="font-size: 16px; color: var(--text-dim);">Par ${currentPar}</div>
+                    </div>
+
+                    <!-- Hole Navigation -->
+                    <div style="display: flex; padding: 12px; gap: 4px; background: var(--bg); overflow-x: auto;">
+                        ${Array.from({length: holes}, (_, i) => {
+                            const hasScores = players.some(p => currentGroup.scores[p.name]?.[i]);
+                            return `
+                                <button onclick="goToGolfHole(${i})" style="min-width: 36px; height: 36px; border: 2px solid ${i === currentHole ? 'var(--brand-green)' : hasScores ? '#4CAF50' : 'var(--border)'}; border-radius: 8px; font-size: 13px; font-weight: ${i === currentHole ? '700' : '500'}; cursor: pointer; background: ${i === currentHole ? 'var(--brand-green)' : hasScores ? 'rgba(76, 175, 80, 0.1)' : 'var(--surface)'}; color: var(--text);">
+                                    ${i + 1}
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Player Scores for Current Hole -->
+                    <div style="padding: 12px;">
+                        ${players.map(p => {
+                            const currentScore = parseInt(currentGroup.scores[p.name]?.[currentHole]) || null;
+                            const vsPar = getVsPar(p.name);
+                            const scoreLabel = currentScore ? getScoreLabel(currentScore, currentPar) : '';
+                            const scoreColor = getScoreColor(currentScore, currentPar);
+                            return `
+                                <div onclick="openScoreEntry('${p.name}')" style="display: flex; align-items: center; padding: 16px; background: var(--surface); border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 2px solid ${currentScore ? scoreColor : 'transparent'};">
+                                    <div style="width: 44px; height: 44px; border-radius: 50%; background: ${p.color}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; margin-right: 12px; overflow: hidden;">
+                                        ${p.profileImage ? `<img src="${p.profileImage}" style="width: 100%; height: 100%; object-fit: cover;">` : p.name.charAt(0)}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: var(--text);">${p.name}</div>
+                                        <div style="font-size: 13px; color: var(--text-dim);">
+                                            Total: ${getTotal(p.name) || '-'} · ${vsPar.display}
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        ${currentScore ? `
+                                            <div style="font-size: 28px; font-weight: 700; color: var(--text);">${currentScore}</div>
+                                            <div style="font-size: 12px; color: ${scoreColor}; font-weight: 600;">${scoreLabel}</div>
+                                        ` : `
+                                            <div style="font-size: 14px; color: var(--text-dim);">Tap to enter</div>
+                                        `}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div style="display: flex; gap: 12px; padding: 16px; background: var(--surface); border-top: 1px solid var(--border);">
+                        <button onclick="goToGolfHole(${currentHole - 1})" style="flex: 1; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; background: var(--bg); color: var(--text); ${currentHole === 0 ? 'opacity: 0.4;' : ''}">
+                            ← Prev
+                        </button>
+                        <button onclick="goToGolfHole(${currentHole + 1})" style="flex: 2; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; background: var(--brand-green); color: var(--brand-text); ${currentHole >= holes - 1 ? 'opacity: 0.4;' : ''}">
+                            ${currentHole >= holes - 1 ? 'Finish Round' : `Hole ${currentHole + 2} →`}
+                        </button>
                     </div>
                     ` : `
                     <div style="padding: 40px 20px; text-align: center; color: var(--text-dim);">
-                        No players in ${currentGroup.name}.<br>Tap "Edit Players" to add golfers.
+                        No players in ${currentGroup.name}.<br>Tap the ⚙️ to add golfers.
                     </div>
                     `}
-                </div>
-                <div class="brief-section" style="padding: 16px;">
-                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                        <button class="golf-btn" onclick="setGolfHoles(9)">9 Holes</button>
-                        <button class="golf-btn" onclick="setGolfHoles(18)">18 Holes</button>
-                    </div>
-                    <button class="add-challenge-btn" style="margin-bottom: 8px;" onclick="showEditPlayersModal()">Edit Players - ${currentGroup.name}</button>
-                    <button class="add-challenge-btn" style="background: var(--surface); color: var(--text); margin-bottom: 8px;" onclick="showEditGroupNameModal()">Rename Group</button>
-                    <button class="add-challenge-btn" style="background: var(--surface); color: var(--text); margin-bottom: 0;" onclick="showEditCourseModal()">Edit Course Name</button>
                 </div>
             `;
         }
@@ -9492,6 +10023,137 @@ ${ua}
         function selectGolfGroup(index) {
             state.selectedGolfGroup = index;
             renderView();
+        }
+
+        function goToGolfHole(hole) {
+            if (hole < 0 || hole >= state.golfHoles) return;
+            state.currentGolfHole = hole;
+            renderView();
+            syncToFirebase();
+        }
+
+        function openScoreEntry(playerName) {
+            const currentHole = state.currentGolfHole || 0;
+            const currentPar = state.golfPars[currentHole] || 4;
+            const currentGroup = state.golfGroups[state.selectedGolfGroup];
+            const currentScore = parseInt(currentGroup.scores[playerName]?.[currentHole]) || null;
+
+            const getScoreLabel = (score, par) => {
+                const diff = score - par;
+                if (diff <= -3) return 'Albatross';
+                if (diff === -2) return 'Eagle';
+                if (diff === -1) return 'Birdie';
+                if (diff === 0) return 'Par';
+                if (diff === 1) return 'Bogey';
+                if (diff === 2) return 'Double';
+                if (diff === 3) return 'Triple';
+                return '+' + diff;
+            };
+
+            const getScoreColor = (score, par) => {
+                const diff = score - par;
+                if (diff <= -2) return '#FFD700';
+                if (diff === -1) return '#4CAF50';
+                if (diff === 0) return '#2196F3';
+                if (diff === 1) return '#FF9800';
+                return '#f44336';
+            };
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.alignItems = 'flex-end';
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+            const scores = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+            modal.innerHTML = `
+                <div style="background: var(--surface); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--text);">${playerName}</div>
+                            <div style="font-size: 14px; color: var(--text-dim);">Hole ${currentHole + 1} · Par ${currentPar}</div>
+                        </div>
+                        <button onclick="this.closest('.modal-overlay').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-dim);">×</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 24px;">
+                        ${scores.map(s => {
+                            const label = getScoreLabel(s, currentPar);
+                            const color = getScoreColor(s, currentPar);
+                            const isSelected = currentScore === s;
+                            return `
+                                <button onclick="selectGolfScore('${playerName}', ${s})" style="padding: 12px 8px; border: 2px solid ${isSelected ? color : 'var(--border)'}; border-radius: 12px; background: ${isSelected ? color + '20' : 'var(--bg)'}; cursor: pointer; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--text);">${s}</div>
+                                    <div style="font-size: 10px; color: ${color}; font-weight: 600; margin-top: 2px;">${label}</div>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <button onclick="finishHoleScore('${playerName}')" style="width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--brand-green); color: var(--brand-text);">
+                        Finish Hole ${currentHole + 1}
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        function selectGolfScore(playerName, score) {
+            const currentHole = state.currentGolfHole || 0;
+            const currentGroup = state.golfGroups[state.selectedGolfGroup];
+            if (!currentGroup.scores[playerName]) {
+                currentGroup.scores[playerName] = new Array(state.golfHoles).fill('');
+            }
+            currentGroup.scores[playerName][currentHole] = score.toString();
+            syncToFirebase();
+
+            // Refresh the modal
+            document.querySelector('.modal-overlay')?.remove();
+            openScoreEntry(playerName);
+        }
+
+        function finishHoleScore(playerName) {
+            document.querySelector('.modal-overlay')?.remove();
+            renderView();
+        }
+
+        function showGolfSettingsModal() {
+            const currentGroup = state.golfGroups[state.selectedGolfGroup];
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+            modal.innerHTML = `
+                <div class="modal-content" style="padding: 20px; max-width: 340px;">
+                    <h3 style="margin: 0 0 20px 0; text-align: center;">⛳ Golf Settings</h3>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 13px; color: var(--text-dim); margin-bottom: 6px; display: block;">Number of Holes</label>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="setGolfHoles(9); this.closest('.modal-overlay').remove();" class="golf-btn" style="flex: 1; padding: 12px; ${state.golfHoles === 9 ? 'background: var(--brand-green);' : ''}">9 Holes</button>
+                            <button onclick="setGolfHoles(18); this.closest('.modal-overlay').remove();" class="golf-btn" style="flex: 1; padding: 12px; ${state.golfHoles === 18 ? 'background: var(--brand-green);' : ''}">18 Holes</button>
+                        </div>
+                    </div>
+
+                    <button onclick="showEditPlayersModal(); this.closest('.modal-overlay').remove();" class="add-challenge-btn" style="margin-bottom: 8px;">
+                        Edit Players - ${currentGroup.name}
+                    </button>
+                    <button onclick="showEditGroupNameModal(); this.closest('.modal-overlay').remove();" class="add-challenge-btn" style="background: var(--surface); color: var(--text); margin-bottom: 8px;">
+                        Rename Group
+                    </button>
+                    <button onclick="showEditCourseModal(); this.closest('.modal-overlay').remove();" class="add-challenge-btn" style="background: var(--surface); color: var(--text); margin-bottom: 8px;">
+                        Edit Course Name
+                    </button>
+                    <button onclick="showEditGolfSettingsModal(); this.closest('.modal-overlay').remove();" class="add-challenge-btn" style="background: var(--surface); color: var(--text); margin-bottom: 16px;">
+                        Edit Par for Each Hole
+                    </button>
+
+                    <button onclick="this.closest('.modal-overlay').remove()" class="modal-confirm" style="width: 100%;">Done</button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
         }
 
         function updateGolfScore(player, hole, value) {
@@ -9912,7 +10574,7 @@ ${ua}
                     contentEl.innerHTML = `
                         <div class="wrapped-teaser">
                             <div class="wrapped-teaser-icon">🎁</div>
-                            <div class="wrapped-teaser-title">RALLII Wrapped</div>
+                            <div class="wrapped-teaser-title">Ralli Wrapped</div>
                             <div class="wrapped-teaser-desc">At the end of the trip, you'll unlock your personalised trip summary - total drinks, top moments, MVP crown, and more!</div>
                         </div>
                         <div class="onboarding-card" style="margin-top: 16px; padding: 16px 20px;">
@@ -9951,7 +10613,7 @@ ${ua}
                                 </div>
                                 <div class="install-step">
                                     <div class="install-step-num">3</div>
-                                    <div class="install-step-text">Tap <strong>"Add"</strong> to install RALLII</div>
+                                    <div class="install-step-text">Tap <strong>"Add"</strong> to install Ralli</div>
                                 </div>
                             </div>
                         `;
@@ -9968,7 +10630,7 @@ ${ua}
                                 </div>
                                 <div class="install-step">
                                     <div class="install-step-num">3</div>
-                                    <div class="install-step-text">Tap <strong>"Add"</strong> to install RALLII</div>
+                                    <div class="install-step-text">Tap <strong>"Add"</strong> to install Ralli</div>
                                 </div>
                             </div>
                         `;
@@ -9990,7 +10652,7 @@ ${ua}
                     contentEl.innerHTML = `
                         <div class="onboarding-card" style="margin-bottom: 16px;">
                             <div class="onboarding-emoji">📲</div>
-                            <div class="onboarding-title">Install RALLII</div>
+                            <div class="onboarding-title">Install Ralli</div>
                             <div class="onboarding-subtitle" style="margin-bottom: 0;">Add to your home screen for quick access during the trip</div>
                         </div>
                         ${installSteps}
@@ -10031,7 +10693,7 @@ ${ua}
                             <div class="onboarding-card" style="margin-top: 16px; padding: 16px 20px;">
                                 <div style="font-size: 14px; color: var(--text-secondary);">
                                     ⚠️ <strong>Install the app first</strong><br>
-                                    <span style="font-size: 13px;">Notifications will be available once you add RALLII to your home screen and open it from there.</span>
+                                    <span style="font-size: 13px;">Notifications will be available once you add Ralli to your home screen and open it from there.</span>
                                 </div>
                             </div>
                         `;
@@ -10416,7 +11078,7 @@ ${ua}
                                 ${isIOS ? `
                                     <p style="margin-bottom: 4px;">1. Tap <strong>Share</strong> button (box with arrow)</p>
                                     <p style="margin-bottom: 4px;">2. Scroll down, tap <strong>"Add to Home Screen"</strong></p>
-                                    <p>3. Open RALLII from your home screen</p>
+                                    <p>3. Open Ralli from your home screen</p>
                                 ` : `
                                     <p style="margin-bottom: 4px;">1. Tap <strong>menu ⋮</strong> in browser</p>
                                     <p>2. Tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong></p>
@@ -11329,7 +11991,7 @@ ${ua}
 
         window.confirmResetAllData = async function() {
             const code = document.getElementById('resetCodeInput')?.value;
-            if (!code || code.toUpperCase() !== 'RALLII') {
+            if (!code || code.toUpperCase() !== 'RALLI') {
                 showToast('Incorrect code');
                 return;
             }
