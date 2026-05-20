@@ -5354,7 +5354,30 @@
             // Listen for tracker count changes
             tripRef.child('trackerCounts').on('value', (snapshot) => {
                 const data = snapshot.val();
-                state.trackerCounts = data || { drinks: {}, clubs: {}, birdies: {}, holeinone: {} };
+                const oldCounts = state.trackerCounts || {};
+                const newCounts = data || { drinks: {}, clubs: {}, birdies: {}, holeinone: {} };
+
+                // Check for lead changes in each category
+                const categories = ['drinks', 'clubs', 'birdies', 'holeinone'];
+                const categoryLabels = { drinks: 'Drinks', clubs: 'Clubs', birdies: 'Birdies', holeinone: 'Hole-in-One' };
+                const categoryEmojis = { drinks: '🍺', clubs: '🪩', birdies: '🐦', holeinone: '⛳' };
+
+                categories.forEach(cat => {
+                    const oldLeader = getLeaderForCategory(oldCounts[cat] || {});
+                    const newLeader = getLeaderForCategory(newCounts[cat] || {});
+
+                    // Notify if someone new took the lead (and it's not the current user)
+                    if (newLeader && newLeader !== oldLeader && newLeader !== state.myName) {
+                        const newCount = newCounts[cat]?.[newLeader] || 0;
+                        sendNotification(
+                            `${categoryEmojis[cat]} New ${categoryLabels[cat]} Leader!`,
+                            `${newLeader} just took the lead with ${newCount}!`,
+                            categoryEmojis[cat]
+                        );
+                    }
+                });
+
+                state.trackerCounts = newCounts;
                 if (state.view) {
                     trackers.forEach(t => {
                         const countEl = document.getElementById(`tracker-count-${t.id}`);
@@ -5365,6 +5388,20 @@
             }, (error) => {
                 console.error('Firebase trackerCounts error:', error);
             });
+
+            // Helper to get leader for a category
+            function getLeaderForCategory(counts) {
+                if (!counts || Object.keys(counts).length === 0) return null;
+                let leader = null;
+                let maxCount = 0;
+                for (const [name, count] of Object.entries(counts)) {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        leader = name;
+                    }
+                }
+                return leader;
+            }
 
             // Listen for activity/schedule changes
             tripRef.child('activities').on('value', (snapshot) => {
@@ -5399,6 +5436,12 @@
                     // Don't show popup to the person who started it
                     if (activeCheck.startedBy !== state.myName) {
                         showRalliiCheckPopup(activeCheck);
+                        // Send push notification for Ralli Check
+                        sendNotification(
+                            '📸 RALLI CHECK!',
+                            `${activeCheck.startedBy} wants to see what you're doing!`,
+                            '📸'
+                        );
                     }
                 }
 
