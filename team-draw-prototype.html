@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Draw - Portugal vs Chile</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #666;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header .matchup {
+            font-size: 28px;
+            margin: 8px 0;
+            font-weight: 700;
+        }
+
+        /* Tombola Drum */
+        .tombola-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            perspective: 1000px;
+        }
+
+        .tombola {
+            width: 200px;
+            height: 200px;
+            position: relative;
+        }
+
+        .drum {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2c3e50, #1a252f);
+            border: 8px solid #E4FF5A;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                inset 0 0 40px rgba(0,0,0,0.5),
+                0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .drum.spinning {
+            animation: spin 0.15s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .drum-window {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border: 3px solid rgba(228, 255, 90, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .balls-inside {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .mini-ball {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Drawn Ball Display */
+        .drawn-ball-container {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .drawn-ball {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            box-shadow:
+                inset -4px -4px 10px rgba(0,0,0,0.3),
+                0 8px 25px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .drawn-ball.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .drawn-ball .ball-name {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Team Assignment */
+        .team-reveal {
+            text-align: center;
+            margin: 16px 0;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .team-reveal .assigned-to {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .team-reveal .assigned-to.visible {
+            opacity: 1;
+        }
+
+        .team-reveal .team-flag {
+            font-size: 64px;
+            opacity: 0;
+            transform: scale(0) rotate(-180deg);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .team-reveal .team-flag.visible {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        /* Teams Display */
+        .teams-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .team-column {
+            border-radius: 16px;
+            padding: 12px;
+            min-height: 140px;
+        }
+
+        .team-column.portugal {
+            background: linear-gradient(135deg, #006600 0%, #004d00 100%);
+            color: white;
+        }
+
+        .team-column.chile {
+            background: linear-gradient(135deg, #d52b1e 0%, #a82118 100%);
+            color: white;
+        }
+
+        .team-header {
+            text-align: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 8px;
+        }
+
+        .team-flag-small {
+            font-size: 24px;
+        }
+
+        .team-name {
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .team-members {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .member {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            animation: popIn 0.3s ease-out forwards;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .member-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            background: rgba(255,255,255,0.3);
+            flex-shrink: 0;
+        }
+
+        .member-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #E4FF5A 0%, #c4e000 100%);
+            color: #1a1a2e;
+            box-shadow: 0 4px 20px rgba(228, 255, 90, 0.4);
+        }
+
+        .btn-team {
+            padding: 14px;
+            font-size: 15px;
+        }
+
+        .btn-portugal {
+            background: linear-gradient(135deg, #006600 0%, #004d00 100%);
+            color: white;
+        }
+
+        .btn-chile {
+            background: linear-gradient(135deg, #d52b1e 0%, #a82118 100%);
+            color: white;
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Status */
+        .status {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .remaining {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Complete state */
+        .complete-message {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .complete-message h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .complete-message p {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Team Draw</h1>
+                <div class="matchup">🇵🇹 Portugal vs Chile 🇨🇱</div>
+            </div>
+
+            <!-- Tombola Drum -->
+            <div class="tombola-container">
+                <div class="tombola">
+                    <div class="drum" id="drum">
+                        <div class="balls-inside" id="ballsInside"></div>
+                        <div class="drum-window"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="status" id="status">
+                <span class="remaining"><span id="remainingCount">8</span> balls remaining</span>
+            </div>
+
+            <!-- Drawn Ball Display -->
+            <div class="drawn-ball-container">
+                <div class="drawn-ball" id="drawnBall">
+                    <span class="ball-name" id="ballName"></span>
+                </div>
+            </div>
+
+            <!-- Team Assignment Reveal -->
+            <div class="team-reveal" id="teamReveal">
+                <div class="assigned-to" id="assignedTo">goes to...</div>
+                <div class="team-flag" id="teamFlag"></div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div id="controlsPreDraw">
+                <button class="btn btn-primary" onclick="startDraw()">
+                    🎱 Start Draw
+                </button>
+            </div>
+
+            <div id="controlsDrawing" class="hidden">
+                <button class="btn btn-primary" id="drawBtn" onclick="drawBall()">
+                    🎰 Draw Ball
+                </button>
+                <div class="btn-row hidden" id="teamButtons">
+                    <button class="btn btn-team btn-portugal" onclick="assignTeam('portugal')">
+                        🇵🇹 Portugal
+                    </button>
+                    <button class="btn btn-team btn-chile" onclick="assignTeam('chile')">
+                        🇨🇱 Chile
+                    </button>
+                </div>
+            </div>
+
+            <div id="controlsComplete" class="hidden">
+                <div class="complete-message">
+                    <h2>Draw Complete!</h2>
+                    <p>May the best team win</p>
+                </div>
+                <button class="btn btn-primary" onclick="resetDraw()">
+                    🔄 Draw Again
+                </button>
+            </div>
+
+            <!-- Teams Display -->
+            <div class="teams-container">
+                <div class="team-column portugal">
+                    <div class="team-header">
+                        <div class="team-flag-small">🇵🇹</div>
+                        <div class="team-name">Portugal</div>
+                    </div>
+                    <div class="team-members" id="portugalTeam"></div>
+                </div>
+                <div class="team-column chile">
+                    <div class="team-header">
+                        <div class="team-flag-small">🇨🇱</div>
+                        <div class="team-name">Chile</div>
+                    </div>
+                    <div class="team-members" id="chileTeam"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="confetti" id="confetti"></div>
+
+    <script>
+        // Sample participants - in real app this comes from state.participants
+        const participants = [
+            { name: 'Joe', color: '#FF6B6B' },
+            { name: 'Ryan', color: '#4ECDC4' },
+            { name: 'Mike', color: '#45B7D1' },
+            { name: 'Dan', color: '#96CEB4' },
+            { name: 'Tom', color: '#FFEAA7' },
+            { name: 'Chris', color: '#DDA0DD' },
+            { name: 'James', color: '#98D8C8' },
+            { name: 'Dave', color: '#F7DC6F' }
+        ];
+
+        let portugalTeam = [];
+        let chileTeam = [];
+        let remainingPlayers = [];
+        let currentPlayer = null;
+        let drawMode = 'random'; // 'random' or 'manual'
+
+        function initBalls() {
+            const container = document.getElementById('ballsInside');
+            container.innerHTML = '';
+
+            remainingPlayers.forEach((p, i) => {
+                const ball = document.createElement('div');
+                ball.className = 'mini-ball';
+                ball.style.background = p.color;
+                ball.textContent = p.name[0];
+
+                // Random position inside drum
+                const angle = (i / remainingPlayers.length) * Math.PI * 2;
+                const radius = 50 + Math.random() * 25;
+                const x = 100 + Math.cos(angle) * radius - 12;
+                const y = 100 + Math.sin(angle) * radius - 12;
+
+                ball.style.left = x + 'px';
+                ball.style.top = y + 'px';
+
+                container.appendChild(ball);
+            });
+        }
+
+        function updateStatus() {
+            document.getElementById('remainingCount').textContent = remainingPlayers.length;
+        }
+
+        function startDraw() {
+            // Reset
+            portugalTeam = [];
+            chileTeam = [];
+            remainingPlayers = [...participants];
+            currentPlayer = null;
+
+            // Shuffle
+            for (let i = remainingPlayers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [remainingPlayers[i], remainingPlayers[j]] = [remainingPlayers[j], remainingPlayers[i]];
+            }
+
+            // Init display
+            initBalls();
+            updateStatus();
+            renderTeams();
+
+            // Reset ball display
+            document.getElementById('drawnBall').classList.remove('visible');
+            document.getElementById('assignedTo').classList.remove('visible');
+            document.getElementById('teamFlag').classList.remove('visible');
+
+            // Show drawing controls
+            document.getElementById('controlsPreDraw').classList.add('hidden');
+            document.getElementById('controlsDrawing').classList.remove('hidden');
+            document.getElementById('controlsComplete').classList.add('hidden');
+            document.getElementById('teamButtons').classList.add('hidden');
+            document.getElementById('drawBtn').disabled = false;
+        }
+
+        function drawBall() {
+            if (remainingPlayers.length === 0) return;
+
+            // Disable button during animation
+            document.getElementById('drawBtn').disabled = true;
+
+            // Reset reveals
+            document.getElementById('drawnBall').classList.remove('visible');
+            document.getElementById('assignedTo').classList.remove('visible');
+            document.getElementById('teamFlag').classList.remove('visible');
+
+            // Spin the drum
+            const drum = document.getElementById('drum');
+            drum.classList.add('spinning');
+
+            // Spin for 1.5 seconds then reveal
+            setTimeout(() => {
+                drum.classList.remove('spinning');
+
+                // Pick random player
+                const index = Math.floor(Math.random() * remainingPlayers.length);
+                currentPlayer = remainingPlayers[index];
+                remainingPlayers.splice(index, 1);
+
+                // Update balls in drum
+                initBalls();
+                updateStatus();
+
+                // Show drawn ball
+                const ballEl = document.getElementById('drawnBall');
+                const nameEl = document.getElementById('ballName');
+                ballEl.style.background = currentPlayer.color;
+                nameEl.textContent = currentPlayer.name;
+                ballEl.classList.add('visible');
+
+                // Show team selection buttons
+                setTimeout(() => {
+                    document.getElementById('teamButtons').classList.remove('hidden');
+                }, 500);
+
+            }, 1500);
+        }
+
+        function assignTeam(team) {
+            if (!currentPlayer) return;
+
+            // Hide team buttons
+            document.getElementById('teamButtons').classList.add('hidden');
+
+            // Show assignment
+            document.getElementById('assignedTo').classList.add('visible');
+
+            setTimeout(() => {
+                const flagEl = document.getElementById('teamFlag');
+                flagEl.textContent = team === 'portugal' ? '🇵🇹' : '🇨🇱';
+                flagEl.classList.add('visible');
+
+                // Add to team
+                if (team === 'portugal') {
+                    portugalTeam.push(currentPlayer);
+                } else {
+                    chileTeam.push(currentPlayer);
+                }
+
+                renderTeams();
+                currentPlayer = null;
+
+                // Check if complete
+                setTimeout(() => {
+                    if (remainingPlayers.length === 0) {
+                        showComplete();
+                    } else {
+                        document.getElementById('drawBtn').disabled = false;
+                    }
+                }, 800);
+
+            }, 300);
+        }
+
+        function renderTeams() {
+            document.getElementById('portugalTeam').innerHTML = portugalTeam.map(p => `
+                <div class="member">
+                    <div class="member-avatar" style="background: ${p.color}">${p.name[0]}</div>
+                    <div class="member-name">${p.name}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('chileTeam').innerHTML = chileTeam.map(p => `
+                <div class="member">
+                    <div class="member-avatar" style="background: ${p.color}">${p.name[0]}</div>
+                    <div class="member-name">${p.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function showComplete() {
+            document.getElementById('controlsDrawing').classList.add('hidden');
+            document.getElementById('controlsComplete').classList.remove('hidden');
+
+            // Hide ball display
+            document.getElementById('drawnBall').classList.remove('visible');
+            document.getElementById('assignedTo').classList.remove('visible');
+            document.getElementById('teamFlag').classList.remove('visible');
+
+            launchConfetti();
+        }
+
+        function resetDraw() {
+            document.getElementById('controlsPreDraw').classList.remove('hidden');
+            document.getElementById('controlsDrawing').classList.add('hidden');
+            document.getElementById('controlsComplete').classList.add('hidden');
+
+            // Reset display
+            remainingPlayers = [...participants];
+            portugalTeam = [];
+            chileTeam = [];
+            initBalls();
+            updateStatus();
+            renderTeams();
+
+            document.getElementById('drawnBall').classList.remove('visible');
+            document.getElementById('assignedTo').classList.remove('visible');
+            document.getElementById('teamFlag').classList.remove('visible');
+        }
+
+        function launchConfetti() {
+            const confettiEl = document.getElementById('confetti');
+            const colors = ['#006600', '#d52b1e', '#FFD700', '#FFFFFF', '#E4FF5A'];
+
+            for (let i = 0; i < 100; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 0.5 + 's';
+                piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+                confettiEl.appendChild(piece);
+            }
+
+            setTimeout(() => {
+                confettiEl.innerHTML = '';
+            }, 4000);
+        }
+
+        // Initialize
+        remainingPlayers = [...participants];
+        initBalls();
+        updateStatus();
+    </script>
+</body>
+</html>
