@@ -7,9 +7,15 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        :root {
+            --brand-green: #E4FF5A;
+            --brand-dark: #2d3436;
+            --brand-text: #1a1a1a;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: var(--brand-green);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,10 +30,10 @@
         }
 
         .card {
-            background: rgba(255,255,255,0.97);
+            background: #fff;
             border-radius: 24px;
             padding: 20px;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.15);
         }
 
         .header {
@@ -36,17 +42,18 @@
         }
 
         .header h1 {
-            font-size: 18px;
-            color: #666;
+            font-size: 14px;
+            color: #888;
             font-weight: 600;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
 
         .header .matchup {
-            font-size: 28px;
+            font-size: 24px;
             margin: 8px 0;
             font-weight: 700;
+            color: var(--brand-text);
         }
 
         /* Tombola Drum */
@@ -67,13 +74,13 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: linear-gradient(145deg, #2c3e50, #1a252f);
-            border: 8px solid #E4FF5A;
+            background: linear-gradient(145deg, #2d3436, #1a1a1a);
+            border: 6px solid var(--brand-green);
             position: relative;
             overflow: hidden;
             box-shadow:
                 inset 0 0 40px rgba(0,0,0,0.5),
-                0 10px 30px rgba(0,0,0,0.3);
+                0 10px 30px rgba(0,0,0,0.2);
         }
 
         .drum.spinning {
@@ -92,9 +99,9 @@
             transform: translate(-50%, -50%);
             width: 70px;
             height: 70px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(228, 255, 90, 0.1);
             border-radius: 50%;
-            border: 3px solid rgba(228, 255, 90, 0.5);
+            border: 3px solid rgba(228, 255, 90, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -272,6 +279,59 @@
             font-size: 13px;
         }
 
+        /* Football Shirts */
+        .shirt {
+            width: 28px;
+            height: 32px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .shirt::before {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 24px;
+            bottom: 0;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .shirt::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 12px;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .portugal-shirt::before {
+            background: linear-gradient(180deg, #006600 0%, #004d00 100%);
+        }
+        .portugal-shirt::after {
+            background: linear-gradient(180deg, #008800 0%, #006600 100%);
+        }
+
+        .chile-shirt::before {
+            background: linear-gradient(180deg, #d52b1e 0%, #a82118 100%);
+        }
+        .chile-shirt::after {
+            background: linear-gradient(180deg, #ff3b2e 0%, #d52b1e 100%);
+        }
+
+        .shirt-number {
+            position: relative;
+            z-index: 1;
+            font-size: 11px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            margin-top: 6px;
+        }
+
         /* Buttons */
         .btn {
             width: 100%;
@@ -294,9 +354,9 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #E4FF5A 0%, #c4e000 100%);
-            color: #1a1a2e;
-            box-shadow: 0 4px 20px rgba(228, 255, 90, 0.4);
+            background: var(--brand-dark);
+            color: var(--brand-green);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
 
         .btn-team {
@@ -341,7 +401,8 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #f0f0f0;
+            background: var(--brand-green);
+            color: var(--brand-dark);
             padding: 4px 12px;
             border-radius: 20px;
             font-weight: 600;
@@ -376,16 +437,21 @@
         .complete-message {
             text-align: center;
             padding: 20px;
+            background: var(--brand-green);
+            border-radius: 16px;
+            margin-bottom: 12px;
         }
 
         .complete-message h2 {
             font-size: 24px;
             margin-bottom: 8px;
+            color: var(--brand-dark);
         }
 
         .complete-message p {
-            color: #666;
+            color: var(--brand-dark);
             font-size: 14px;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -434,16 +500,8 @@
 
             <div id="controlsDrawing" class="hidden">
                 <button class="btn btn-primary" id="drawBtn" onclick="drawBall()">
-                    🎰 Draw Ball
+                    🎰 Draw Next
                 </button>
-                <div class="btn-row hidden" id="teamButtons">
-                    <button class="btn btn-team btn-portugal" onclick="assignTeam('portugal')">
-                        🇵🇹 Portugal
-                    </button>
-                    <button class="btn btn-team btn-chile" onclick="assignTeam('chile')">
-                        🇨🇱 Chile
-                    </button>
-                </div>
             </div>
 
             <div id="controlsComplete" class="hidden">
@@ -495,7 +553,7 @@
         let chileTeam = [];
         let remainingPlayers = [];
         let currentPlayer = null;
-        let drawMode = 'random'; // 'random' or 'manual'
+        let nextTeam = 'portugal'; // Alternates, starts with Portugal (home)
 
         function initBalls() {
             const container = document.getElementById('ballsInside');
@@ -530,6 +588,7 @@
             chileTeam = [];
             remainingPlayers = [...participants];
             currentPlayer = null;
+            nextTeam = 'portugal'; // Portugal picks first (home team)
 
             // Shuffle
             for (let i = remainingPlayers.length - 1; i > 0; i--) {
@@ -551,7 +610,6 @@
             document.getElementById('controlsPreDraw').classList.add('hidden');
             document.getElementById('controlsDrawing').classList.remove('hidden');
             document.getElementById('controlsComplete').classList.add('hidden');
-            document.getElementById('teamButtons').classList.add('hidden');
             document.getElementById('drawBtn').disabled = false;
         }
 
@@ -570,7 +628,7 @@
             const drum = document.getElementById('drum');
             drum.classList.add('spinning');
 
-            // Spin for 1.5 seconds then reveal
+            // Spin for 3 seconds then reveal
             setTimeout(() => {
                 drum.classList.remove('spinning');
 
@@ -590,61 +648,68 @@
                 nameEl.textContent = currentPlayer.name;
                 ballEl.classList.add('visible');
 
-                // Show team selection buttons
+                // Auto-assign to team after showing name
                 setTimeout(() => {
-                    document.getElementById('teamButtons').classList.remove('hidden');
-                }, 500);
+                    autoAssignTeam();
+                }, 1000);
 
-            }, 1500);
+            }, 3000);
         }
 
-        function assignTeam(team) {
+        function autoAssignTeam() {
             if (!currentPlayer) return;
 
-            // Hide team buttons
-            document.getElementById('teamButtons').classList.add('hidden');
-
-            // Show assignment
+            // Show assignment text
             document.getElementById('assignedTo').classList.add('visible');
 
             setTimeout(() => {
                 const flagEl = document.getElementById('teamFlag');
-                flagEl.textContent = team === 'portugal' ? '🇵🇹' : '🇨🇱';
+                flagEl.textContent = nextTeam === 'portugal' ? '🇵🇹' : '🇨🇱';
                 flagEl.classList.add('visible');
 
                 // Add to team
-                if (team === 'portugal') {
+                if (nextTeam === 'portugal') {
                     portugalTeam.push(currentPlayer);
+                    nextTeam = 'chile';
                 } else {
                     chileTeam.push(currentPlayer);
+                    nextTeam = 'portugal';
                 }
 
                 renderTeams();
                 currentPlayer = null;
 
-                // Check if complete
+                // Check if complete or enable next draw
                 setTimeout(() => {
                     if (remainingPlayers.length === 0) {
                         showComplete();
                     } else {
                         document.getElementById('drawBtn').disabled = false;
                     }
-                }, 800);
+                }, 1000);
 
-            }, 300);
+            }, 500);
         }
 
         function renderTeams() {
-            document.getElementById('portugalTeam').innerHTML = portugalTeam.map(p => `
+            // Portugal jersey numbers: 1, 7, 10, 3, etc.
+            const portugalNumbers = [1, 7, 10, 3, 8, 11, 5, 9, 2, 4, 6];
+            const chileNumbers = [1, 7, 10, 3, 8, 11, 5, 9, 2, 4, 6];
+
+            document.getElementById('portugalTeam').innerHTML = portugalTeam.map((p, i) => `
                 <div class="member">
-                    <div class="member-avatar" style="background: ${p.color}">${p.name[0]}</div>
+                    <div class="shirt portugal-shirt">
+                        <span class="shirt-number">${portugalNumbers[i] || i + 1}</span>
+                    </div>
                     <div class="member-name">${p.name}</div>
                 </div>
             `).join('');
 
-            document.getElementById('chileTeam').innerHTML = chileTeam.map(p => `
+            document.getElementById('chileTeam').innerHTML = chileTeam.map((p, i) => `
                 <div class="member">
-                    <div class="member-avatar" style="background: ${p.color}">${p.name[0]}</div>
+                    <div class="shirt chile-shirt">
+                        <span class="shirt-number">${chileNumbers[i] || i + 1}</span>
+                    </div>
                     <div class="member-name">${p.name}</div>
                 </div>
             `).join('');
@@ -682,7 +747,7 @@
 
         function launchConfetti() {
             const confettiEl = document.getElementById('confetti');
-            const colors = ['#006600', '#d52b1e', '#FFD700', '#FFFFFF', '#E4FF5A'];
+            const colors = ['#E4FF5A', '#2d3436', '#006600', '#d52b1e', '#FFFFFF'];
 
             for (let i = 0; i < 100; i++) {
                 const piece = document.createElement('div');
