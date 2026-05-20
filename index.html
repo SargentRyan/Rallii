@@ -791,6 +791,16 @@
             50% { filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9)); }
         }
 
+        /* Team Draw Animations */
+        @keyframes teamDrawSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes teamDrawConfetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
 
         .view-tabs {
             display: flex;
@@ -8079,6 +8089,275 @@
             });
         }
 
+        // Team Draw View - Portugal vs Chile
+        let teamDrawState = {
+            portugalTeam: [],
+            chileTeam: [],
+            remainingPlayers: [],
+            currentPlayer: null,
+            nextTeam: 'portugal',
+            isDrawing: false,
+            isComplete: false
+        };
+
+        function renderTeamDrawView() {
+            const screen = document.getElementById('screen');
+            screen.className = 'screen';
+
+            const { portugalTeam, chileTeam, remainingPlayers, currentPlayer, isDrawing, isComplete } = teamDrawState;
+            const hasStarted = portugalTeam.length > 0 || chileTeam.length > 0 || remainingPlayers.length > 0;
+
+            // Portugal jersey numbers
+            const portugalNumbers = [1, 7, 10, 3, 8, 11, 5, 9, 2, 4, 6];
+            const chileNumbers = [1, 7, 10, 3, 8, 11, 5, 9, 2, 4, 6];
+
+            screen.innerHTML = `
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <div style="font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase;">Team Draw</div>
+                    <div style="font-size: 20px; font-weight: 700; margin-top: 4px;">🇵🇹 Portugal vs Chile 🇨🇱</div>
+                </div>
+
+                <!-- Tombola Drum -->
+                <div style="display: flex; justify-content: center; margin: 10px 0;">
+                    <div style="width: 120px; height: 120px; position: relative;">
+                        <div id="teamDrawDrum" style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(145deg, #2d3436, #1a1a1a); border: 5px solid var(--brand-green); position: relative; overflow: hidden; box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 8px 20px rgba(0,0,0,0.2);">
+                            <div id="teamDrawBalls" style="position: absolute; width: 100%; height: 100%;"></div>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: rgba(228, 255, 90, 0.1); border-radius: 50%; border: 2px solid rgba(228, 255, 90, 0.4);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div style="text-align: center; margin-bottom: 8px;">
+                    <span style="display: inline-flex; align-items: center; gap: 4px; background: var(--brand-green); color: #2d3436; padding: 3px 10px; border-radius: 20px; font-weight: 600; font-size: 11px;">
+                        <span id="teamDrawRemaining">${remainingPlayers.length}</span> balls remaining
+                    </span>
+                </div>
+
+                <!-- Drawn Ball Display -->
+                <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin: 8px 0;">
+                    <div id="teamDrawBall" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: white; box-shadow: inset -3px -3px 8px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.3); opacity: 0; transform: scale(0); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                        <span id="teamDrawBallName"></span>
+                    </div>
+                </div>
+
+                <!-- Team Flag Reveal -->
+                <div style="text-align: center; min-height: 45px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="teamDrawAssigned" style="font-size: 11px; color: var(--text-dim); margin-bottom: 4px; opacity: 0; transition: opacity 0.3s;">goes to...</div>
+                    <div id="teamDrawFlag" style="font-size: 36px; opacity: 0; transform: scale(0) rotate(-180deg); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);"></div>
+                </div>
+
+                <!-- Control Button -->
+                <div style="margin: 10px 0;">
+                    ${!hasStarted ? `
+                        <button onclick="startTeamDraw()" style="width: 100%; padding: 12px; background: #2d3436; color: var(--brand-green); border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;">
+                            🎱 Start Draw
+                        </button>
+                    ` : isComplete ? `
+                        <div style="text-align: center; padding: 12px; background: var(--brand-green); border-radius: 10px; margin-bottom: 8px;">
+                            <div style="font-size: 16px; font-weight: 700; color: #2d3436;">Draw Complete!</div>
+                            <div style="font-size: 11px; color: #2d3436; opacity: 0.7;">May the best team win ⚽</div>
+                        </div>
+                        <button onclick="resetTeamDraw()" style="width: 100%; padding: 12px; background: #2d3436; color: var(--brand-green); border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;">
+                            🔄 Draw Again
+                        </button>
+                    ` : `
+                        <button id="teamDrawBtn" onclick="drawNextBall()" ${isDrawing ? 'disabled' : ''} style="width: 100%; padding: 12px; background: #2d3436; color: var(--brand-green); border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; opacity: ${isDrawing ? '0.5' : '1'};">
+                            🎰 Draw Next
+                        </button>
+                    `}
+                </div>
+
+                <!-- Teams Display -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                    <div style="background: linear-gradient(135deg, #006600 0%, #004d00 100%); border-radius: 12px; padding: 10px; min-height: 90px;">
+                        <div style="text-align: center; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 6px;">
+                            <div style="font-size: 16px;">🇵🇹</div>
+                            <div style="font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: white;">Portugal</div>
+                        </div>
+                        <div id="portugalTeamList" style="display: flex; flex-direction: column; gap: 4px;">
+                            ${portugalTeam.map((p, i) => `
+                                <div style="display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: rgba(255,255,255,0.15); border-radius: 6px;">
+                                    <div style="width: 20px; height: 24px; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <div style="position: absolute; width: 20px; height: 16px; bottom: 0; background: linear-gradient(180deg, #008800 0%, #006600 100%); border-radius: 0 0 4px 4px;"></div>
+                                        <div style="position: absolute; top: 0; width: 14px; height: 9px; background: linear-gradient(180deg, #00aa00 0%, #008800 100%); border-radius: 0 0 3px 3px;"></div>
+                                        <span style="position: relative; z-index: 1; font-size: 8px; font-weight: 800; color: white; margin-top: 4px;">${portugalNumbers[i] || i + 1}</span>
+                                    </div>
+                                    <div style="font-weight: 600; font-size: 11px; color: white;">${p.name}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #d52b1e 0%, #a82118 100%); border-radius: 12px; padding: 10px; min-height: 90px;">
+                        <div style="text-align: center; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 6px;">
+                            <div style="font-size: 16px;">🇨🇱</div>
+                            <div style="font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: white;">Chile</div>
+                        </div>
+                        <div id="chileTeamList" style="display: flex; flex-direction: column; gap: 4px;">
+                            ${chileTeam.map((p, i) => `
+                                <div style="display: flex; align-items: center; gap: 6px; padding: 4px 6px; background: rgba(255,255,255,0.15); border-radius: 6px;">
+                                    <div style="width: 20px; height: 24px; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <div style="position: absolute; width: 20px; height: 16px; bottom: 0; background: linear-gradient(180deg, #ff3b2e 0%, #d52b1e 100%); border-radius: 0 0 4px 4px;"></div>
+                                        <div style="position: absolute; top: 0; width: 14px; height: 9px; background: linear-gradient(180deg, #ff5544 0%, #ff3b2e 100%); border-radius: 0 0 3px 3px;"></div>
+                                        <span style="position: relative; z-index: 1; font-size: 8px; font-weight: 800; color: white; margin-top: 4px;">${chileNumbers[i] || i + 1}</span>
+                                    </div>
+                                    <div style="font-weight: 600; font-size: 11px; color: white;">${p.name}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Initialize balls in drum
+            initTeamDrawBalls();
+        }
+
+        function initTeamDrawBalls() {
+            const container = document.getElementById('teamDrawBalls');
+            if (!container) return;
+            container.innerHTML = '';
+
+            teamDrawState.remainingPlayers.forEach((p, i) => {
+                const ball = document.createElement('div');
+                const angle = (i / teamDrawState.remainingPlayers.length) * Math.PI * 2;
+                const radius = 25 + Math.random() * 15;
+                const x = 60 + Math.cos(angle) * radius - 8;
+                const y = 60 + Math.sin(angle) * radius - 8;
+
+                ball.style.cssText = `position: absolute; width: 16px; height: 16px; border-radius: 50%; font-size: 7px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: white; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3); background: ${p.color}; left: ${x}px; top: ${y}px;`;
+                ball.textContent = p.name[0];
+                container.appendChild(ball);
+            });
+        }
+
+        function startTeamDraw() {
+            // Reset state
+            teamDrawState.portugalTeam = [];
+            teamDrawState.chileTeam = [];
+            teamDrawState.remainingPlayers = [...state.participants];
+            teamDrawState.currentPlayer = null;
+            teamDrawState.nextTeam = 'portugal';
+            teamDrawState.isDrawing = false;
+            teamDrawState.isComplete = false;
+
+            // Shuffle players
+            for (let i = teamDrawState.remainingPlayers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [teamDrawState.remainingPlayers[i], teamDrawState.remainingPlayers[j]] =
+                [teamDrawState.remainingPlayers[j], teamDrawState.remainingPlayers[i]];
+            }
+
+            renderTeamDrawView();
+        }
+
+        function drawNextBall() {
+            if (teamDrawState.remainingPlayers.length === 0 || teamDrawState.isDrawing) return;
+
+            teamDrawState.isDrawing = true;
+
+            // Update button state
+            const btn = document.getElementById('teamDrawBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+
+            // Reset reveals
+            const ballEl = document.getElementById('teamDrawBall');
+            const assignedEl = document.getElementById('teamDrawAssigned');
+            const flagEl = document.getElementById('teamDrawFlag');
+
+            if (ballEl) { ballEl.style.opacity = '0'; ballEl.style.transform = 'scale(0)'; }
+            if (assignedEl) assignedEl.style.opacity = '0';
+            if (flagEl) { flagEl.style.opacity = '0'; flagEl.style.transform = 'scale(0) rotate(-180deg)'; }
+
+            // Spin the drum
+            const drum = document.getElementById('teamDrawDrum');
+            if (drum) drum.style.animation = 'teamDrawSpin 0.15s linear infinite';
+
+            // Spin for 3 seconds then reveal
+            setTimeout(() => {
+                if (drum) drum.style.animation = '';
+
+                // Pick random player
+                const index = Math.floor(Math.random() * teamDrawState.remainingPlayers.length);
+                teamDrawState.currentPlayer = teamDrawState.remainingPlayers[index];
+                teamDrawState.remainingPlayers.splice(index, 1);
+
+                // Update balls
+                initTeamDrawBalls();
+                document.getElementById('teamDrawRemaining').textContent = teamDrawState.remainingPlayers.length;
+
+                // Show drawn ball
+                if (ballEl) {
+                    ballEl.style.background = teamDrawState.currentPlayer.color;
+                    document.getElementById('teamDrawBallName').textContent = teamDrawState.currentPlayer.name;
+                    ballEl.style.opacity = '1';
+                    ballEl.style.transform = 'scale(1)';
+                }
+
+                // Auto-assign after showing name
+                setTimeout(() => {
+                    if (assignedEl) assignedEl.style.opacity = '1';
+
+                    setTimeout(() => {
+                        if (flagEl) {
+                            flagEl.textContent = teamDrawState.nextTeam === 'portugal' ? '🇵🇹' : '🇨🇱';
+                            flagEl.style.opacity = '1';
+                            flagEl.style.transform = 'scale(1) rotate(0deg)';
+                        }
+
+                        // Add to team
+                        if (teamDrawState.nextTeam === 'portugal') {
+                            teamDrawState.portugalTeam.push(teamDrawState.currentPlayer);
+                            teamDrawState.nextTeam = 'chile';
+                        } else {
+                            teamDrawState.chileTeam.push(teamDrawState.currentPlayer);
+                            teamDrawState.nextTeam = 'portugal';
+                        }
+
+                        teamDrawState.currentPlayer = null;
+                        teamDrawState.isDrawing = false;
+
+                        // Check if complete
+                        setTimeout(() => {
+                            if (teamDrawState.remainingPlayers.length === 0) {
+                                teamDrawState.isComplete = true;
+                                launchTeamDrawConfetti();
+                            }
+                            renderTeamDrawView();
+                        }, 800);
+
+                    }, 500);
+                }, 1000);
+
+            }, 3000);
+        }
+
+        function resetTeamDraw() {
+            teamDrawState = {
+                portugalTeam: [],
+                chileTeam: [],
+                remainingPlayers: [],
+                currentPlayer: null,
+                nextTeam: 'portugal',
+                isDrawing: false,
+                isComplete: false
+            };
+            renderTeamDrawView();
+        }
+
+        function launchTeamDrawConfetti() {
+            const colors = ['#E4FF5A', '#2d3436', '#006600', '#d52b1e', '#FFFFFF'];
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `position: fixed; width: 10px; height: 10px; top: -10px; left: ${Math.random() * 100}%; background: ${colors[Math.floor(Math.random() * colors.length)]}; pointer-events: none; z-index: 1000; animation: teamDrawConfetti ${2 + Math.random() * 2}s ease-out forwards; animation-delay: ${Math.random() * 0.5}s;`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
         // Bill Splitting View
         function renderSplitView() {
             const screen = document.getElementById('screen');
@@ -8850,6 +9129,7 @@
                 { view: 'race', emoji: '🏁', label: 'Race', desc: 'Live leaderboard race' },
                 { view: 'golf', emoji: '⛳', label: 'Golf', desc: 'Scorecard & standings' },
                 { view: 'padel', emoji: '🎾', label: 'Padel', desc: 'Tournament bracket' },
+                { view: 'teamdraw', emoji: '⚽', label: 'Team Draw', desc: 'Portugal vs Chile' },
                 { view: 'split', emoji: '💰', label: 'Bills', desc: 'Split expenses' },
                 { view: 'challenges', emoji: '🏆', label: 'Challenges', desc: 'Group challenges' }
             ];
@@ -9893,6 +10173,7 @@ ${ua}
                 case 'wrapped': renderWrappedView(); break;
                 case 'photos': renderPhotosView(); break;
                 case 'music': renderMusicView(); break;
+                case 'teamdraw': renderTeamDrawView(); break;
                 case 'more': renderMoreView(); break;
             }
         }
