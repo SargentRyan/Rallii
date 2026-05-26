@@ -5090,6 +5090,7 @@
             selectedDay: 'Friday',
             trackerCounts: { drinks: {}, clubs: {}, birdies: {}, holeinone: {} },
             customTrackerLabels: {}, // Custom names for trackers (synced to Firebase)
+            customTrackerEmojis: {}, // Custom emojis for trackers (synced to Firebase)
             myName: '',
             wrappedUnlocked: false,
             myParticipantId: null,
@@ -5161,15 +5162,16 @@
         // Active trackers (can have custom labels)
         let trackers = JSON.parse(JSON.stringify(defaultTrackers));
 
-        // Load custom tracker labels from state
+        // Load custom tracker labels and emojis from state
         function loadCustomTrackerLabels() {
-            if (state.customTrackerLabels) {
-                trackers.forEach(t => {
-                    if (state.customTrackerLabels[t.id]) {
-                        t.label = state.customTrackerLabels[t.id];
-                    }
-                });
-            }
+            trackers.forEach(t => {
+                if (state.customTrackerLabels && state.customTrackerLabels[t.id]) {
+                    t.label = state.customTrackerLabels[t.id];
+                }
+                if (state.customTrackerEmojis && state.customTrackerEmojis[t.id]) {
+                    t.emoji = state.customTrackerEmojis[t.id];
+                }
+            });
         }
 
         // Get tracker label (custom or default)
@@ -5440,6 +5442,16 @@
                 const data = snapshot.val();
                 if (data) {
                     state.customTrackerLabels = data;
+                    loadCustomTrackerLabels();
+                    if (state.view === 'live') renderView();
+                }
+            });
+
+            // Listen for custom tracker emoji changes
+            tripRef.child('customTrackerEmojis').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    state.customTrackerEmojis = data;
                     loadCustomTrackerLabels();
                     if (state.view === 'live') renderView();
                 }
@@ -5981,13 +5993,26 @@
             const tracker = trackers.find(t => t.id === trackerId);
             if (!tracker) return;
 
+            // Common emoji suggestions for counters
+            const emojiSuggestions = ['🍺', '🍻', '🥃', '🍷', '🍸', '🪩', '🎉', '⛳', '🐦', '🏌️', '🎯', '💰', '🎲', '🃏', '🏆', '⚽', '🎱', '🍕', '☕', '💪'];
+
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
             modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
             modal.innerHTML = `
                 <div style="background: var(--bg-solid, #fff); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 320px; text-align: center;">
-                    <div style="font-size: 48px; margin-bottom: 12px;">${tracker.emoji}</div>
-                    <div style="font-size: 14px; color: var(--text-dim); margin-bottom: 16px;">Rename this counter</div>
+                    <div style="font-size: 14px; color: var(--text-dim); margin-bottom: 8px;">Tap to change emoji</div>
+                    <input type="text" id="trackerEmojiInput" value="${tracker.emoji}"
+                        style="width: 80px; padding: 8px; font-size: 48px; text-align: center; border: 2px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 8px; box-sizing: border-box;"
+                        maxlength="2" autocomplete="off">
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; padding: 8px; background: var(--surface-2); border-radius: var(--radius-sm);">
+                        ${emojiSuggestions.map(e => `
+                            <div onclick="document.getElementById('trackerEmojiInput').value='${e}'"
+                                style="font-size: 24px; cursor: pointer; padding: 4px; border-radius: 8px; transition: transform 0.1s;"
+                                onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">${e}</div>
+                        `).join('')}
+                    </div>
+                    <div style="font-size: 14px; color: var(--text-dim); margin-bottom: 8px;">Counter name</div>
                     <input type="text" id="trackerLabelInput" value="${tracker.label}"
                         style="width: 100%; padding: 14px; font-size: 18px; font-weight: 600; text-align: center; border: 2px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: 16px; box-sizing: border-box;"
                         maxlength="20" autocomplete="off">
@@ -6005,10 +6030,10 @@
             `;
             document.body.appendChild(modal);
 
-            // Focus and select input
-            const input = document.getElementById('trackerLabelInput');
-            input.focus();
-            input.select();
+            // Focus label input
+            const labelInput = document.getElementById('trackerLabelInput');
+            labelInput.focus();
+            labelInput.select();
 
             // Close on backdrop click
             modal.addEventListener('click', (e) => {
@@ -6016,39 +6041,52 @@
             });
 
             // Save on Enter
-            input.addEventListener('keypress', (e) => {
+            labelInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') saveTrackerLabel(trackerId);
             });
         }
 
         async function saveTrackerLabel(trackerId) {
-            const input = document.getElementById('trackerLabelInput');
-            const newLabel = input.value.trim();
+            const labelInput = document.getElementById('trackerLabelInput');
+            const emojiInput = document.getElementById('trackerEmojiInput');
+            const newLabel = labelInput.value.trim();
+            const newEmoji = emojiInput.value.trim();
 
             if (!newLabel) {
                 showToast('Label cannot be empty');
                 return;
             }
 
+            if (!newEmoji) {
+                showToast('Emoji cannot be empty');
+                return;
+            }
+
             // Update local tracker
             const tracker = trackers.find(t => t.id === trackerId);
-            if (tracker) tracker.label = newLabel;
+            if (tracker) {
+                tracker.label = newLabel;
+                tracker.emoji = newEmoji;
+            }
 
             // Update state
             state.customTrackerLabels[trackerId] = newLabel;
+            if (!state.customTrackerEmojis) state.customTrackerEmojis = {};
+            state.customTrackerEmojis[trackerId] = newEmoji;
 
             // Save to Firebase
             if (db && state.eventId) {
                 try {
                     await db.ref(`events/${state.eventId}/customTrackerLabels/${trackerId}`).set(newLabel);
+                    await db.ref(`events/${state.eventId}/customTrackerEmojis/${trackerId}`).set(newEmoji);
                 } catch (err) {
-                    console.log('Error saving tracker label:', err);
+                    console.log('Error saving tracker:', err);
                 }
             }
 
             // Close modal and re-render
             document.querySelector('.modal-overlay')?.remove();
-            showToast(`Renamed to "${newLabel}"`);
+            showToast(`Updated to ${newEmoji} ${newLabel}`);
             renderView();
         }
 
