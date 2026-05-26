@@ -12619,15 +12619,18 @@ ${ua}
             }
 
             if (splashShown) {
-                // Already shown this session - hide quickly after auth
-                splashMinTimeElapsed = true;
+                // Already shown this session - still show briefly
+                setTimeout(() => {
+                    splashMinTimeElapsed = true;
+                    hideSplashIfReady();
+                }, 1000);
             } else {
-                // First load - show animation for 2.5s
+                // First load - show full animation (logo + tagline)
                 sessionStorage.setItem('rallii_splash_shown', 'true');
                 setTimeout(() => {
                     splashMinTimeElapsed = true;
                     hideSplashIfReady();
-                }, 2500);
+                }, 3200);
             }
 
             // Setup login form handlers
