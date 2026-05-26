@@ -9084,7 +9084,7 @@
                             Your trip stats will be revealed after ${lastDay}!
                         </p>
                         <p style="color: var(--text-dim); font-size: 13px;">
-                            Keep tracking your drinks, birdies and moments...<br>
+                            Keep tracking your ${(trackers[0]?.label || 'drinks').toLowerCase()}, ${(trackers[2]?.label || 'birdies').toLowerCase()} and moments...<br>
                             The final reveal awaits! 🎁
                         </p>
                     </div>
@@ -9165,22 +9165,22 @@
                             <div class="story-slide-subtitle">Here's how you did.</div>
                         </div>
 
-                        <!-- Slide 2: Drinks -->
+                        <!-- Slide 2: Tracker 1 (Drinks) -->
                         <div class="story-slide story-slide-drinks">
-                            <div class="story-slide-emoji">🍺</div>
+                            <div class="story-slide-emoji">${trackers[0]?.emoji || '🍺'}</div>
                             <div class="story-slide-pretitle">You had</div>
                             <div class="story-slide-stat">${myDrinks}</div>
-                            <div class="story-slide-title">drinks</div>
+                            <div class="story-slide-title">${(trackers[0]?.label || 'drinks').toLowerCase()}</div>
                             <div class="story-slide-context">That's ${myDrinkPercent}% of the group's ${totalDrinks} total</div>
                             <div class="story-slide-rank">#${myDrinkRank} of ${participantCount}</div>
                         </div>
 
-                        <!-- Slide 3: Golf -->
+                        <!-- Slide 3: Tracker 3 (Birdies) -->
                         <div class="story-slide story-slide-golf">
-                            <div class="story-slide-emoji">⛳</div>
-                            <div class="story-slide-pretitle">On the course</div>
+                            <div class="story-slide-emoji">${trackers[2]?.emoji || '🐦'}</div>
+                            <div class="story-slide-pretitle">You scored</div>
                             <div class="story-slide-stat">${myBirdies}</div>
-                            <div class="story-slide-title">birdies</div>
+                            <div class="story-slide-title">${(trackers[2]?.label || 'birdies').toLowerCase()}</div>
                             <div class="story-slide-subtitle">You beat ${Math.max(0, participantCount - myBirdieRank)} people</div>
                             <div class="story-slide-rank">#${myBirdieRank} of ${participantCount}</div>
                         </div>
@@ -9210,7 +9210,7 @@
                                 <div class="story-superlative-label">Official Title</div>
                                 <div class="story-superlative-title">${myDrinkRank === 1 ? 'The Party Animal' : myBirdieRank === 1 ? 'The Golf King' : myPhotos > 5 ? 'The Photographer' : 'The Legend'}</div>
                             </div>
-                            <div class="story-slide-subtitle" style="margin-top: 24px;">${myDrinkRank === 1 ? 'Most drinks consumed' : myBirdieRank === 1 ? 'Best on the course' : myPhotos > 5 ? 'Capturing every moment' : 'Part of the crew'}</div>
+                            <div class="story-slide-subtitle" style="margin-top: 24px;">${myDrinkRank === 1 ? `Most ${(trackers[0]?.label || 'drinks').toLowerCase()}` : myBirdieRank === 1 ? `Most ${(trackers[2]?.label || 'birdies').toLowerCase()}` : myPhotos > 5 ? 'Capturing every moment' : 'Part of the crew'}</div>
                         </div>
 
                         <!-- Slide 7: Best Message -->
