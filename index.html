@@ -6120,6 +6120,10 @@
             renderView();
         }
 
+        // Last tracker action for undo
+        let lastTrackerAction = null;
+        let undoTimeout = null;
+
         async function incrementTracker(trackerId) {
             // Skip if this was a long-press (edit mode)
             if (trackerLongPressTriggered) {
@@ -6130,6 +6134,11 @@
             // Update local state immediately for responsiveness
             if (!state.trackerCounts[trackerId]) state.trackerCounts[trackerId] = {};
             state.trackerCounts[trackerId][state.myName] = (state.trackerCounts[trackerId][state.myName] || 0) + 1;
+
+            // Store for undo
+            lastTrackerAction = { trackerId, name: state.myName, time: Date.now() };
+            if (undoTimeout) clearTimeout(undoTimeout);
+            undoTimeout = setTimeout(() => { lastTrackerAction = null; }, 5000);
 
             // Update just the counter element (avoid full re-render which causes image flash)
             const counterEl = document.getElementById(`tracker-count-${trackerId}`);
@@ -6144,7 +6153,7 @@
                 updateLeaderSection();
             }
 
-            // Fun toast messages
+            // Fun toast messages with undo
             const tracker = trackers.find(t => t.id === trackerId);
             const count = state.trackerCounts[trackerId][state.myName];
             const emoji = tracker?.emoji || '';
@@ -6167,7 +6176,7 @@
                 const quickMessages = [`+1 ${emoji}`, `${emoji} Nice!`, `${emoji} ${count}!`, `Another ${emoji}`];
                 msg = quickMessages[Math.floor(Math.random() * quickMessages.length)];
             }
-            showToast(msg);
+            showToastWithUndo(msg, trackerId);
 
             // Sync to Firebase
             syncTrackerIncrement(trackerId, state.myName);
@@ -6186,6 +6195,61 @@
                     console.log('Error saving to DB:', err);
                 }
             }
+        }
+
+        function showToastWithUndo(message, trackerId) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast yellow';
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button onclick="undoTrackerIncrement('${trackerId}')" style="margin-left: 12px; background: rgba(0,0,0,0.2); border: none; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; color: inherit;">Undo</button>
+            `;
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.justifyContent = 'center';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function undoTrackerIncrement(trackerId) {
+            if (!lastTrackerAction || lastTrackerAction.trackerId !== trackerId) {
+                showToast('Nothing to undo');
+                return;
+            }
+
+            // Decrement local state
+            if (state.trackerCounts[trackerId] && state.trackerCounts[trackerId][state.myName] > 0) {
+                state.trackerCounts[trackerId][state.myName]--;
+            }
+
+            // Update UI
+            const counterEl = document.getElementById(`tracker-count-${trackerId}`);
+            if (counterEl) {
+                counterEl.textContent = state.trackerCounts[trackerId][state.myName];
+                counterEl.style.transform = 'scale(0.8)';
+                setTimeout(() => counterEl.style.transform = 'scale(1)', 150);
+            }
+
+            // Update leader section
+            if (trackerId === 'drinks') {
+                updateLeaderSection();
+            }
+
+            // Sync to Firebase (set the new count)
+            if (db && firebaseInitialized) {
+                try {
+                    await db.ref(`trips/${TRIP_ID}/trackerCounts/${trackerId}/${state.myName}`).set(state.trackerCounts[trackerId][state.myName]);
+                } catch (err) {
+                    console.log('Error syncing undo:', err);
+                }
+            }
+
+            // Clear last action
+            lastTrackerAction = null;
+            document.querySelector('.toast')?.remove();
+            showToast('↩️ Undone!');
         }
 
         function updateLeaderSection() {
@@ -6361,6 +6425,69 @@
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 1800);
+        }
+
+        // Loading indicator
+        let loadingCount = 0;
+        function showLoading(message = 'Syncing...') {
+            loadingCount++;
+            let loader = document.getElementById('globalLoader');
+            if (!loader) {
+                loader = document.createElement('div');
+                loader.id = 'globalLoader';
+                loader.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 99999; background: linear-gradient(90deg, var(--brand-green), var(--soft-blue), var(--brand-green)); background-size: 200% 100%; animation: loadingShimmer 1s linear infinite;';
+                document.body.appendChild(loader);
+                // Add animation if not exists
+                if (!document.getElementById('loadingStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'loadingStyles';
+                    style.textContent = '@keyframes loadingShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }';
+                    document.head.appendChild(style);
+                }
+            }
+        }
+
+        function hideLoading() {
+            loadingCount = Math.max(0, loadingCount - 1);
+            if (loadingCount === 0) {
+                const loader = document.getElementById('globalLoader');
+                if (loader) loader.remove();
+            }
+        }
+
+        // Offline indicator
+        function showOfflineIndicator() {
+            if (document.getElementById('offlineIndicator')) return;
+            const indicator = document.createElement('div');
+            indicator.id = 'offlineIndicator';
+            indicator.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: var(--accent-4); color: white; text-align: center; padding: 8px; font-size: 13px; font-weight: 600; z-index: 99998;';
+            indicator.innerHTML = '📡 You\'re offline - changes will sync when reconnected';
+            document.body.appendChild(indicator);
+            // Adjust body padding
+            document.body.style.paddingTop = '36px';
+        }
+
+        function hideOfflineIndicator() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (indicator) {
+                indicator.remove();
+                document.body.style.paddingTop = '';
+            }
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            hideOfflineIndicator();
+            showToast('✅ Back online!');
+        });
+
+        window.addEventListener('offline', () => {
+            showOfflineIndicator();
+        });
+
+        // Check initial state
+        if (!navigator.onLine) {
+            showOfflineIndicator();
         }
 
         // Install prompt functions
@@ -10622,13 +10749,31 @@ ${ua}
                         }).join('')}
                     </div>
 
-                    <button onclick="finishHoleScore('${playerName}')" style="width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--brand-green); color: var(--brand-text);">
-                        Finish Hole ${currentHole + 1}
-                    </button>
+                    <div style="display: flex; gap: 12px;">
+                        ${currentScore ? `
+                            <button onclick="clearGolfScore('${playerName}')" style="flex: 1; padding: 16px; border: 2px solid var(--accent-4); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: transparent; color: var(--accent-4);">
+                                Clear Score
+                            </button>
+                        ` : ''}
+                        <button onclick="finishHoleScore('${playerName}')" style="flex: 2; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--brand-green); color: var(--brand-text);">
+                            ${currentScore ? 'Done' : 'Skip Hole'}
+                        </button>
+                    </div>
                 </div>
             `;
 
             document.body.appendChild(modal);
+        }
+
+        function clearGolfScore(playerName) {
+            const currentHole = state.currentGolfHole || 0;
+            const currentGroup = state.golfGroups[state.selectedGolfGroup];
+            if (currentGroup.scores[playerName]) {
+                currentGroup.scores[playerName][currentHole] = '';
+                syncToFirebase();
+            }
+            document.querySelector('.modal-overlay')?.remove();
+            openScoreEntry(playerName);
         }
 
         function selectGolfScore(playerName, score) {
