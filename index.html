@@ -7876,6 +7876,23 @@
             renderPadelView();
         }
 
+        // Chat search
+        function toggleChatSearch() {
+            state.showChatSearch = !state.showChatSearch;
+            if (!state.showChatSearch) {
+                state.chatSearchTerm = '';
+            }
+            renderChatView();
+            if (state.showChatSearch) {
+                setTimeout(() => document.getElementById('chatSearchInput')?.focus(), 100);
+            }
+        }
+
+        function filterChatMessages(term) {
+            state.chatSearchTerm = term;
+            renderChatView();
+        }
+
         function renderChatView() {
             const screen = document.getElementById('screen');
             screen.className = 'screen chat-screen';
@@ -7888,26 +7905,41 @@
                 return `<div class="message-reply-ref">↩ ${replyMsg.name}: ${replyText}</div>`;
             };
 
+            const searchTerm = state.chatSearchTerm || '';
+            const filteredMessages = searchTerm
+                ? state.messages.filter(m => m.text?.toLowerCase().includes(searchTerm.toLowerCase()) || m.name?.toLowerCase().includes(searchTerm.toLowerCase()))
+                : state.messages;
+
             screen.innerHTML = `
                 <div class="chat-view">
                     <div class="chat-tabs">
                         <button class="active">Group Chat</button>
+                        <button onclick="toggleChatSearch()" style="margin-left: auto; background: ${searchTerm ? 'var(--brand-green)' : 'transparent'}; padding: 6px 10px;">🔍</button>
                     </div>
+                    ${state.showChatSearch ? `
+                        <div style="padding: 8px 12px; background: var(--surface);">
+                            <input type="text" id="chatSearchInput" placeholder="Search messages..." value="${searchTerm}"
+                                oninput="filterChatMessages(this.value)"
+                                style="width: 100%; padding: 10px 14px; border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); font-size: 14px; background: var(--bg);">
+                        </div>
+                    ` : ''}
                     <div class="reaction-bar">
                         ${['🍺', '⛳', '👍', '👎', '😐', '😂', '🔥', '💀', '🎉', '👀'].map(e => `<button onclick="sendReaction('${e}')">${e}</button>`).join('')}
                     </div>
                     <div class="chat-messages" id="chatMessages">
-                        ${state.messages.length ? state.messages.map((msg, idx) => `
-                            <div class="chat-message ${msg.own ? 'own' : ''}" data-msg-idx="${idx}" data-msg-id="${msg.id}">
+                        ${filteredMessages.length ? filteredMessages.map((msg) => {
+                            const originalIdx = state.messages.indexOf(msg);
+                            return `
+                            <div class="chat-message ${msg.own ? 'own' : ''}" data-msg-idx="${originalIdx}" data-msg-id="${msg.id}">
                                 <div class="chat-avatar" style="background: ${getPersonColor(msg.name)}; ${getPersonProfileImage(msg.name) ? `background-image: url('${getPersonProfileImage(msg.name)}'); background-size: cover; background-position: center;` : ''}">${getPersonProfileImage(msg.name) ? '' : (msg.name?.[0] || '?')}</div>
-                                <div class="chat-bubble" oncontextmenu="event.preventDefault(); showReactionPicker(event, ${idx})">
+                                <div class="chat-bubble" oncontextmenu="event.preventDefault(); showReactionPicker(event, ${originalIdx})">
                                     ${renderReplyRef(msg)}
                                     ${!msg.own ? `<div class="name">${msg.name}</div>` : ''}
                                     <div class="text">${renderMessageContent(msg.text)}</div>
                                     ${msg.reactions && Object.keys(msg.reactions).length > 0 ? `
                                         <div class="message-reactions">
                                             ${Object.entries(msg.reactions).map(([emoji, users]) => `
-                                                <button class="reaction-badge ${users.includes(state.myName) ? 'own' : ''}" onclick="toggleReaction(${idx}, '${emoji}')">
+                                                <button class="reaction-badge ${users.includes(state.myName) ? 'own' : ''}" onclick="toggleReaction(${originalIdx}, '${emoji}')">
                                                     ${emoji} ${users.length}
                                                 </button>
                                             `).join('')}
@@ -7916,7 +7948,7 @@
                                     <div class="time">${msg.time}</div>
                                 </div>
                             </div>
-                        `).join('') : `
+                        `}).join('') : `
                             <div style="text-align: center; padding: 60px 20px;">
                                 <div style="font-size: 50px; margin-bottom: 12px;">💬</div>
                                 <h3 style="margin: 0 0 8px 0; font-size: 17px;">No Messages Yet</h3>
@@ -8231,9 +8263,37 @@
                 url: p.data,
                 caption: p.caption || 'Trip Photo',
                 by: p.by || p.takenBy || state.myName || 'You',
-                takenBy: p.takenBy || p.by || state.myName || 'You'
+                takenBy: p.takenBy || p.by || state.myName || 'You',
+                comments: p.comments || []
             }));
             return userPhotos.length > 0 ? userPhotos : getSamplePhotos();
+        }
+
+        function addPhotoComment(photoId) {
+            const input = document.getElementById('photoCommentInput');
+            const text = input?.value?.trim();
+            if (!text) return;
+
+            const photo = state.photos?.find(p => p.id === photoId);
+            if (!photo) return;
+
+            if (!photo.comments) photo.comments = [];
+            const comment = {
+                id: Date.now(),
+                text: text,
+                by: state.myName || 'You',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            photo.comments.push(comment);
+
+            // Sync to Firebase
+            if (db && firebaseInitialized) {
+                db.ref(`trips/${TRIP_ID}/photos/${photoId}/comments`).set(photo.comments);
+            }
+
+            input.value = '';
+            showToast('💬 Comment added');
+            renderPhotosModal();
         }
 
         // Open fullscreen photos modal
@@ -8325,6 +8385,30 @@
                     <div class="coverflow-caption">
                         <h3>${currentPhoto.caption}</h3>
                         <p>by ${currentPhoto.by}</p>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div style="padding: 0 20px; margin-top: 12px;">
+                        ${(currentPhoto.comments || []).length > 0 ? `
+                            <div style="max-height: 100px; overflow-y: auto; margin-bottom: 8px;">
+                                ${currentPhoto.comments.map(c => `
+                                    <div style="display: flex; gap: 8px; margin-bottom: 6px; font-size: 13px;">
+                                        <span style="font-weight: 600; color: var(--text);">${c.by}</span>
+                                        <span style="color: var(--text-secondary); flex: 1;">${c.text}</span>
+                                        <span style="color: var(--text-dim); font-size: 11px;">${c.time}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="photoCommentInput" placeholder="Add a comment..."
+                                style="flex: 1; padding: 10px 14px; border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); font-size: 14px; background: var(--surface);"
+                                onkeypress="if(event.key === 'Enter') addPhotoComment(${currentPhoto.id})">
+                            <button onclick="addPhotoComment(${currentPhoto.id})"
+                                style="padding: 10px 16px; background: var(--brand-green); border: none; border-radius: var(--radius-pill); font-size: 14px; font-weight: 600; cursor: pointer; color: var(--brand-text);">
+                                Post
+                            </button>
+                        </div>
                     </div>
 
                     <div class="coverflow-dots">
@@ -8693,29 +8777,62 @@
             }
         }
 
+        // Expense search
+        function toggleExpenseSearch() {
+            state.showExpenseSearch = !state.showExpenseSearch;
+            if (!state.showExpenseSearch) {
+                state.expenseSearchTerm = '';
+            }
+            renderSplitView();
+            if (state.showExpenseSearch) {
+                setTimeout(() => document.getElementById('expenseSearchInput')?.focus(), 100);
+            }
+        }
+
+        function filterExpenses(term) {
+            state.expenseSearchTerm = term;
+            renderSplitView();
+        }
+
         // Bill Splitting View
         function renderSplitView() {
             const screen = document.getElementById('screen');
             screen.className = 'screen';
             const isMe = state.viewModes.split === 'me';
 
-            const expenses = state.expenses || [];
-            const balances = calculateBalances(expenses);
+            const searchTerm = state.expenseSearchTerm || '';
+            const allExpenses = state.expenses || [];
+            const expenses = searchTerm
+                ? allExpenses.filter(e => e.description?.toLowerCase().includes(searchTerm.toLowerCase()) || e.paidBy?.toLowerCase().includes(searchTerm.toLowerCase()))
+                : allExpenses;
+
+            const balances = calculateBalances(allExpenses); // Use all expenses for balances
             const settlements = calculateSettlements(balances);
 
-            const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
+            const totalSpent = allExpenses.reduce((sum, e) => sum + e.amount, 0);
 
             // My-specific calculations
             const myBalance = balances[state.myName] || 0;
             const mySettlements = settlements.filter(s => s.from === state.myName || s.to === state.myName);
             const myExpenses = expenses.filter(e => e.paidBy === state.myName || e.splitBetween.includes(state.myName));
-            const myTotalPaid = expenses.filter(e => e.paidBy === state.myName).reduce((sum, e) => sum + e.amount, 0);
+            const myTotalPaid = allExpenses.filter(e => e.paidBy === state.myName).reduce((sum, e) => sum + e.amount, 0);
 
             screen.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h2 style="margin: 0; font-size: 20px;">💰 Bill Split</h2>
-                    <button onclick="showAddExpense()" class="btn-primary" style="width: auto; padding: 10px 16px;">+ Add Expense</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="toggleExpenseSearch()" style="padding: 10px; background: ${searchTerm ? 'var(--brand-green)' : 'var(--glass)'}; border: 1px solid var(--glass-border); border-radius: var(--radius-sm); cursor: pointer;">🔍</button>
+                        <button onclick="showAddExpense()" class="btn-primary" style="width: auto; padding: 10px 16px;">+ Add</button>
+                    </div>
                 </div>
+
+                ${state.showExpenseSearch ? `
+                    <div style="margin-bottom: 12px;">
+                        <input type="text" id="expenseSearchInput" placeholder="Search expenses..." value="${searchTerm}"
+                            oninput="filterExpenses(this.value)"
+                            style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); font-size: 14px; background: var(--surface); box-sizing: border-box;">
+                    </div>
+                ` : ''}
 
                 ${renderScopeToggle('split')}
 
