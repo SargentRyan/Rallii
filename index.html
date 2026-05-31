@@ -6884,6 +6884,14 @@
 
         function votePoll(pollId, optionIndex) {
             const tripRef = db.ref(`trips/${state.eventCode}`);
+
+            // Update local state immediately for instant feedback
+            if (state.polls[pollId]) {
+                if (!state.polls[pollId].votes) state.polls[pollId].votes = {};
+                state.polls[pollId].votes[state.myName] = optionIndex;
+            }
+
+            // Save to Firebase
             tripRef.child('polls').child(pollId).child('votes').child(state.myName).set(optionIndex);
             showToast('Vote recorded!');
             renderChatView();
