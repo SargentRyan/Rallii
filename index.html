@@ -5159,6 +5159,7 @@
         const state = {
             view: 'brief',
             selectedDay: 'Friday',
+            scheduleVisited: false,
             trackerCounts: { drinks: {}, clubs: {}, birdies: {}, holeinone: {} },
             customTrackerLabels: {}, // Custom names for trackers (synced to Firebase)
             customTrackerEmojis: {}, // Custom emojis for trackers (synced to Firebase)
@@ -6636,6 +6637,19 @@
             const screen = document.getElementById('screen');
             screen.className = 'screen';
             const days = ['Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday'];
+
+            // Auto-select current day or first upcoming day on first load
+            if (!state.scheduleVisited) {
+                state.scheduleVisited = true;
+                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                if (days.includes(today)) {
+                    state.selectedDay = today;
+                } else {
+                    // Trip hasn't started or is over - default to Thursday (first day)
+                    state.selectedDay = 'Thursday';
+                }
+            }
+
             const dayActivities = state.activities.filter(a => a.day === state.selectedDay);
 
             screen.innerHTML = `
