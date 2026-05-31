@@ -5593,6 +5593,7 @@
             // Listen for polls
             tripRef.child('polls').on('value', (snapshot) => {
                 state.polls = snapshot.val() || {};
+                console.log('Polls listener fired, data:', state.polls);
                 if (state.view === 'chat') renderView();
             });
 
@@ -6860,6 +6861,7 @@
 
                 // Store poll data in Firebase, then send message
                 const tripRef = db.ref(`trips/${state.eventCode}`);
+                console.log('Saving poll to:', `trips/${state.eventCode}/polls/${pollId}`);
                 tripRef.child('polls').child(pollId).set({
                     question: question,
                     options: options,
@@ -6867,6 +6869,7 @@
                     createdBy: state.myName,
                     createdAt: new Date().toISOString()
                 }).then(() => {
+                    console.log('Poll saved successfully');
                     // Send poll message with special format after Firebase save
                     const pollText = `[POLL:${pollId}]${question}[/POLL]`;
                     document.querySelector('.modal-overlay')?.remove();
