@@ -5585,8 +5585,9 @@
             // Listen for chat messages
             tripRef.child('messages').on('value', (snapshot) => {
                 const data = snapshot.val();
-                state.messages = data ? Object.values(data).map(m => ({
+                state.messages = data ? Object.entries(data).map(([firebaseKey, m]) => ({
                     ...m,
+                    _firebaseKey: firebaseKey,
                     own: m.name === state.myName
                 })) : [];
                 if (state.view === 'chat') renderView();
@@ -5789,9 +5790,9 @@
         }
 
         // Sync message reactions to Firebase
-        function syncMessageReactions(messageId, reactions) {
-            if (!db) return;
-            firebaseSet(`messages/${messageId}/reactions`, reactions || {});
+        function syncMessageReactions(firebaseKey, reactions) {
+            if (!db || !firebaseKey) return;
+            firebaseSet(`messages/${firebaseKey}/reactions`, reactions || {});
         }
 
         // ============================================
@@ -8194,8 +8195,8 @@
                 msg.reactions[emoji].push(myName);
             }
 
-            // Sync reactions to Firebase
-            syncMessageReactions(msg.id, msg.reactions);
+            // Sync reactions to Firebase using the Firebase key
+            syncMessageReactions(msg._firebaseKey || msg.id, msg.reactions);
 
             document.querySelector('.reaction-picker')?.remove();
             renderChatView();
@@ -8222,8 +8223,8 @@
                 msg.reactions[emoji].push(myName);
             }
 
-            // Sync reactions to Firebase
-            syncMessageReactions(msg.id, msg.reactions);
+            // Sync reactions to Firebase using the Firebase key
+            syncMessageReactions(msg._firebaseKey || msg.id, msg.reactions);
 
             renderChatView();
         }
