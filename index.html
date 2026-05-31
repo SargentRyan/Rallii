@@ -5593,7 +5593,6 @@
             // Listen for polls
             tripRef.child('polls').on('value', (snapshot) => {
                 state.polls = snapshot.val() || {};
-                console.log('Polls loaded from Firebase:', state.polls);
                 if (state.view === 'chat') renderView();
             });
 
@@ -6861,7 +6860,6 @@
 
                 // Store poll data in Firebase, then send message
                 const tripRef = db.ref(`trips/${state.eventCode}`);
-                console.log('Creating poll with ID:', pollId, 'at path:', `trips/${state.eventCode}/polls/${pollId}`);
                 tripRef.child('polls').child(pollId).set({
                     question: question,
                     options: options,
@@ -6869,7 +6867,6 @@
                     createdBy: state.myName,
                     createdAt: new Date().toISOString()
                 }).then(() => {
-                    console.log('Poll saved successfully:', pollId);
                     // Send poll message with special format after Firebase save
                     const pollText = `[POLL:${pollId}]${question}[/POLL]`;
                     document.querySelector('.modal-overlay')?.remove();
@@ -8264,10 +8261,8 @@
                 const question = pollMatch[2];
                 const poll = state.polls?.[pollId];
 
-                console.log('Poll lookup:', { pollId, question, poll, allPolls: state.polls });
-
                 if (!poll) {
-                    return `<div style="padding: 12px; background: rgba(255,255,255,0.5); border-radius: 12px;">📊 ${question}<br><span style="color: var(--text-dim); font-size: 12px;">Loading poll... (ID: ${pollId})</span></div>`;
+                    return `<div style="padding: 12px; background: rgba(255,255,255,0.5); border-radius: 12px;">📊 ${question}<br><span style="color: var(--text-dim); font-size: 12px;">Poll expired</span></div>`;
                 }
 
                 const options = poll.options || [];
