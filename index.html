@@ -6624,21 +6624,8 @@
         }
 
         function sendReaction(emoji) {
-            // Add as chat message
-            const now = new Date();
-            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            state.messages.push({
-                id: Date.now(),
-                name: state.myName || 'You',
-                text: emoji,
-                time: time,
-                own: true
-            });
-
-            // Re-render chat
-            if (state.view === 'chat') {
-                renderChatView();
-            }
+            // Send as chat message (using the same flow as regular messages)
+            sendMessage(emoji);
         }
 
         // Render functions
@@ -7241,11 +7228,6 @@
 
             screen.innerHTML = `
                 ${renderScopeToggle('race')}
-
-                <!-- Event Branding Card - breaks out of screen padding to match header width -->
-                <div style="margin: 0 -12px 14px -12px; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(52, 199, 89, 0.25);">
-                    <img src="/joe-guppy-card.png" alt="Joe Guppy Invitational - Aroeira II, Lisbon 2026" style="width: 100%; height: auto; display: block;">
-                </div>
 
                 ${isMe ? `
                     <!-- Me Mode: My Performance -->
@@ -9752,10 +9734,16 @@ ${ua}
 
         function navigateTo(view) {
             state.view = view;
-            // Update tab highlighting - remove active from all, but don't add to hidden views
+            // Update tab highlighting
             document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
             const tab = document.querySelector(`.view-tab[data-view="${view}"]`);
-            if (tab) tab.classList.add('active');
+            if (tab) {
+                tab.classList.add('active');
+            } else {
+                // For sub-views accessed from More menu, keep More tab highlighted
+                const moreTab = document.querySelector('.view-tab[data-view="more"]');
+                if (moreTab) moreTab.classList.add('active');
+            }
             renderView();
         }
 
