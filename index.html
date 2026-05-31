@@ -10563,16 +10563,16 @@ ${ua}
 
             if (roneIsPlaying) {
                 audio.pause();
-                if (icon) icon.textContent = '▶';
+                if (icon) icon.textContent = '▶️';
                 roneIsPlaying = false;
             } else {
                 audio.play();
-                if (icon) icon.textContent = '⏸';
+                if (icon) icon.textContent = '⏸️';
                 roneIsPlaying = true;
             }
 
             audio.onended = () => {
-                if (icon) icon.textContent = '▶';
+                if (icon) icon.textContent = '▶️';
                 roneIsPlaying = false;
             };
         }
@@ -10599,7 +10599,7 @@ ${ua}
                 <!-- Now Playing Bar (Yellow/Green) - Clickable to play -->
                 <div id="ronePlayBar" onclick="toggleRoneTrack()" style="background: var(--ralli-yellow); border-radius: 999px; padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; color: #1a1a1a;">
-                        <span id="ronePlayIcon">▶</span>
+                        <span id="ronePlayIcon">▶️</span>
                         <span>Rone</span>
                         <span style="color: rgba(0,0,0,0.5);">-</span>
                         <span>Stranger</span>
