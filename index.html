@@ -5782,10 +5782,16 @@
             firebaseSet(`ralliiChecks/${check.id}`, check);
         }
 
-        // Sync new message to Firebase
+        // Sync new message to Firebase (using message id as key)
         function syncNewMessage(message) {
             if (!db) return;
-            firebasePush('messages', message);
+            firebaseSet(`messages/${message.id}`, message);
+        }
+
+        // Sync message reactions to Firebase
+        function syncMessageReactions(messageId, reactions) {
+            if (!db) return;
+            firebaseSet(`messages/${messageId}/reactions`, reactions || {});
         }
 
         // ============================================
@@ -7975,7 +7981,7 @@
                     <div class="reaction-bar" style="background: rgba(255, 255, 255, 0.7); border-radius: 999px; padding: 8px 12px; margin-bottom: 10px; display: flex; justify-content: space-around; border: 1px solid rgba(255, 255, 255, 0.8); flex-shrink: 0;">
                         ${['🍺', '⛳', '👍', '👎', '😜', '😐', '😂', '🔥', '💀', '🕺', '👀'].map(e => `<button onclick="sendReaction('${e}')" style="background: none; border: none; font-size: 18px; padding: 4px; cursor: pointer;">${e}</button>`).join('')}
                     </div>
-                    <div class="chat-messages" id="chatMessages" style="background: rgba(255, 255, 255, 0.85); border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.9); flex: 1; overflow-y: auto; padding: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); min-height: 0;">
+                    <div class="chat-messages" id="chatMessages" style="flex: 1; overflow-y: auto; padding: 8px 0; min-height: 0;">
                         ${filteredMessages.length ? filteredMessages.map((msg) => {
                             const originalIdx = state.messages.indexOf(msg);
                             return `
@@ -8188,13 +8194,19 @@
                 msg.reactions[emoji].push(myName);
             }
 
+            // Sync reactions to Firebase
+            syncMessageReactions(msg.id, msg.reactions);
+
             document.querySelector('.reaction-picker')?.remove();
             renderChatView();
         }
 
         window.toggleReaction = function(msgIdx, emoji) {
             const msg = state.messages[msgIdx];
-            if (!msg || !msg.reactions || !msg.reactions[emoji]) return;
+            if (!msg) return;
+
+            if (!msg.reactions) msg.reactions = {};
+            if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
 
             const myName = state.myName || 'You';
             const idx = msg.reactions[emoji].indexOf(myName);
@@ -8209,6 +8221,9 @@
                 // Add reaction
                 msg.reactions[emoji].push(myName);
             }
+
+            // Sync reactions to Firebase
+            syncMessageReactions(msg.id, msg.reactions);
 
             renderChatView();
         }
