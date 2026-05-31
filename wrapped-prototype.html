@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RALLII Wrapped - Prototype</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --ralli-yellow: #E4FF5A;
+            --soft-blue: #7EB3D8;
+            --burgundy: #7A1F1F;
+            --magenta: #C41E7B;
+            --ice-blue: #E3F3FC;
+            --coral: #F06B6B;
+            --hot-pink: #E84B8A;
+            --night: #1A1A2E;
+            --slate: #6B7280;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Helvetica, Arial, sans-serif;
+            background: var(--night);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Wrapped Container */
+        .wrapped-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            background: white;
+            z-index: 10;
+        }
+
+        .progress-segment {
+            flex: 1;
+            height: 3px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-segment.complete {
+            background: var(--slate);
+        }
+
+        .progress-segment.active .progress-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--slate);
+            animation: progressFill 5s linear forwards;
+        }
+
+        @keyframes progressFill {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Slides Container */
+        .slides-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .slide.exit {
+            opacity: 0;
+            transform: scale(1.05);
+        }
+
+        /* Slide Backgrounds - New Palette */
+        .slide-intro { background: var(--ralli-yellow); }
+        .slide-stats { background: var(--soft-blue); }
+        .slide-drinks { background: var(--coral); }
+        .slide-golf { background: var(--burgundy); }
+        .slide-spending { background: var(--magenta); }
+        .slide-photos { background: var(--ice-blue); }
+        .slide-superlative { background: var(--hot-pink); }
+        .slide-message { background: var(--soft-blue); }
+        .slide-group { background: var(--ralli-yellow); }
+        .slide-outro { background: var(--ralli-yellow); }
+
+        .slide-outro .slide-title,
+        .slide-outro .slide-pretitle,
+        .slide-outro .slide-subtitle {
+            color: var(--night);
+        }
+
+        /* Typography */
+        .slide-emoji {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .slide-pretitle {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 12px;
+        }
+
+        .slide-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        /* Dark text for light backgrounds */
+        .slide-intro .intro-logo,
+        .slide-intro .intro-name,
+        .slide-group .slide-title,
+        .slide-group .slide-pretitle,
+        .slide-group .slide-subtitle,
+        .slide-photos .slide-title,
+        .slide-photos .slide-pretitle,
+        .slide-photos .slide-subtitle,
+        .slide-photos .slide-stat {
+            color: var(--night);
+        }
+
+        .slide-intro .intro-year,
+        .slide-photos .slide-context {
+            color: var(--slate);
+        }
+
+        .slide-intro .nav-hint {
+            color: var(--slate);
+        }
+
+        .slide-stat {
+            font-size: 96px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 16px;
+            animation: countUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes countUp {
+            0% { transform: translateY(40px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .slide-subtitle {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        .slide-context {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 24px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+        }
+
+        .slide-rank {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ralli-yellow);
+            margin-top: 16px;
+        }
+
+        /* Quote slide */
+        .slide-quote {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
+            max-width: 300px;
+            margin-bottom: 24px;
+        }
+
+        .slide-quote::before {
+            content: '"';
+            font-size: 48px;
+            display: block;
+            opacity: 0.5;
+            margin-bottom: -10px;
+        }
+
+        .slide-attribution {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Superlative badge */
+        .superlative-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 16px 32px;
+            border-radius: 20px;
+            margin-top: 24px;
+        }
+
+        .superlative-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+        }
+
+        .superlative-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+        }
+
+        /* Navigation hints */
+        .nav-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Tap zones */
+        .tap-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            z-index: 5;
+        }
+
+        .tap-zone.left { left: 0; }
+        .tap-zone.right { right: 0; }
+
+        /* Share button */
+        .share-button {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: var(--night);
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px 40px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .slide.active .share-button {
+            opacity: 1;
+        }
+
+        .share-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* Intro specific */
+        .intro-logo {
+            margin-bottom: 12px;
+        }
+
+        .intro-logo img {
+            height: 36px;
+            width: auto;
+            filter: brightness(0) saturate(100%) invert(19%) sepia(15%) saturate(749%) hue-rotate(182deg) brightness(95%) contrast(92%);
+        }
+
+        .intro-flag {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .intro-year {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 40px;
+        }
+
+        .intro-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Confetti for outro */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--ralli-yellow);
+            animation: confettiFall 3s linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapped-container">
+        <!-- Progress Bar -->
+        <div class="progress-bar" id="progressBar"></div>
+
+        <!-- Slides -->
+        <div class="slides-container" id="slidesContainer">
+            <!-- Slide 0: Intro -->
+            <div class="slide slide-intro active" data-index="0">
+                <div class="intro-flag">🇵🇹</div>
+                <div class="intro-logo"><img src="/logo.png" alt="Rallii"></div>
+                <div class="intro-year">WRAPPED 2026</div>
+                <div class="nav-hint">Tap to continue</div>
+            </div>
+
+            <!-- Slide 1: Trip Stats -->
+            <div class="slide slide-stats" data-index="1">
+                <div class="slide-emoji">✈️</div>
+                <div class="slide-pretitle">Your Trip</div>
+                <div class="slide-title">4 days. 11 lads.<br>1 legendary trip.</div>
+                <div class="slide-subtitle">Here's how you did.</div>
+            </div>
+
+            <!-- Slide 2: Drinks -->
+            <div class="slide slide-drinks" data-index="2">
+                <div class="slide-emoji">🍺</div>
+                <div class="slide-pretitle">You had</div>
+                <div class="slide-stat">23</div>
+                <div class="slide-title">drinks</div>
+                <div class="slide-context">That's 12% of the group's 187 total</div>
+                <div class="slide-rank">#4 of 11</div>
+            </div>
+
+            <!-- Slide 3: Golf -->
+            <div class="slide slide-golf" data-index="3">
+                <div class="slide-emoji">⛳</div>
+                <div class="slide-pretitle">On the course</div>
+                <div class="slide-stat">2</div>
+                <div class="slide-title">birdies</div>
+                <div class="slide-subtitle">You beat 6 people on day one</div>
+                <div class="slide-rank">#3 of 11</div>
+            </div>
+
+            <!-- Slide 4: Spending -->
+            <div class="slide slide-spending" data-index="4">
+                <div class="slide-emoji">💸</div>
+                <div class="slide-pretitle">You spent</div>
+                <div class="slide-stat">€347</div>
+                <div class="slide-subtitle">George still owes you €47</div>
+                <div class="slide-context">5th biggest spender</div>
+            </div>
+
+            <!-- Slide 5: Photos -->
+            <div class="slide slide-photos" data-index="5">
+                <div class="slide-emoji">📸</div>
+                <div class="slide-pretitle">You uploaded</div>
+                <div class="slide-stat">12</div>
+                <div class="slide-title">photos</div>
+                <div class="slide-subtitle">That's more than Connor, Lewis, and Thomas combined</div>
+            </div>
+
+            <!-- Slide 6: Superlative -->
+            <div class="slide slide-superlative" data-index="6">
+                <div class="slide-emoji">🏆</div>
+                <div class="slide-pretitle">You were</div>
+                <div class="superlative-badge">
+                    <div class="superlative-label">Official Title</div>
+                    <div class="superlative-title">The Early Bird</div>
+                </div>
+                <div class="slide-subtitle" style="margin-top: 24px;">First one up 3 out of 4 days</div>
+            </div>
+
+            <!-- Slide 7: Best Message -->
+            <div class="slide slide-message" data-index="7">
+                <div class="slide-pretitle">Your most reacted message</div>
+                <div class="slide-quote">This is going to be legendary</div>
+                <div class="slide-attribution">8 reactions from the group</div>
+            </div>
+
+            <!-- Slide 8: Group Moment -->
+            <div class="slide slide-group" data-index="8">
+                <div class="slide-emoji">🎉</div>
+                <div class="slide-pretitle">Together</div>
+                <div class="slide-title">You stayed up until sunrise. Twice.</div>
+                <div class="slide-subtitle" style="color: var(--night);">The Break of Dawn crew: Joe, Ryan, Tomas, Adam, George</div>
+            </div>
+
+            <!-- Slide 9: Outro -->
+            <div class="slide slide-outro" data-index="9">
+                <div class="slide-emoji">🇵🇹</div>
+                <div class="slide-pretitle">Lisbon 2026</div>
+                <div class="slide-title">Until the next one.</div>
+                <div class="slide-subtitle">Trips fade. Memories don't.</div>
+                <button class="share-button" onclick="shareWrapped()">Share Your Wrapped</button>
+            </div>
+        </div>
+
+        <!-- Tap Zones -->
+        <div class="tap-zone left" onclick="prevSlide()"></div>
+        <div class="tap-zone right" onclick="nextSlide()"></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Create progress segments
+        const progressBar = document.getElementById('progressBar');
+        for (let i = 0; i < totalSlides; i++) {
+            const segment = document.createElement('div');
+            segment.className = 'progress-segment';
+            if (i === 0) {
+                segment.classList.add('active');
+                segment.innerHTML = '<div class="progress-fill"></div>';
+            }
+            progressBar.appendChild(segment);
+        }
+
+        function updateProgress() {
+            const segments = document.querySelectorAll('.progress-segment');
+            segments.forEach((seg, i) => {
+                seg.classList.remove('active', 'complete');
+                seg.innerHTML = '';
+                if (i < currentSlide) {
+                    seg.classList.add('complete');
+                } else if (i === currentSlide) {
+                    seg.classList.add('active');
+                    seg.innerHTML = '<div class="progress-fill"></div>';
+                }
+            });
+        }
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active', 'exit');
+                if (i === currentSlide && index > currentSlide) {
+                    slide.classList.add('exit');
+                }
+            });
+
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            updateProgress();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        function shareWrapped() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Lisbon 2026 Wrapped',
+                    text: 'Check out my RALLII Wrapped from Lisbon 2026!',
+                    url: window.location.href
+                });
+            } else {
+                alert('Share functionality coming soon!');
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Swipe support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>

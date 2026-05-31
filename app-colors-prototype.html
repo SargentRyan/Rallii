@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RALLII - Color Splash Prototype</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            /* Core palette */
+            --ralli-yellow: #E4FF5A;
+            --soft-blue: #7EB3D8;
+            --burgundy: #7A1F1F;
+            --magenta: #C41E7B;
+            --ice-blue: #E3F3FC;
+            --coral: #F06B6B;
+            --hot-pink: #E84B8A;
+            --night: #1A1A2E;
+            --slate: #6B7280;
+
+            /* Existing app colors */
+            --bg-page: #D8E8F3;
+            --text: #2d3748;
+            --text-secondary: #5a6578;
+            --text-dim: rgba(0, 0, 0, 0.45);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-strong: rgba(255, 255, 255, 0.9);
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --radius-pill: 999px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Helvetica, Arial, sans-serif;
+            background: var(--bg-page);
+            min-height: 100vh;
+            padding: 12px;
+            padding-top: max(12px, env(safe-area-inset-top));
+        }
+
+        h2 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 24px 0 12px;
+            padding-left: 4px;
+        }
+
+        h2:first-of-type {
+            margin-top: 12px;
+        }
+
+        /* Header with soft blue */
+        .app-header {
+            padding: 20px 16px;
+            background: var(--soft-blue);
+            border-radius: var(--radius-lg);
+            margin-bottom: 12px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* View tabs */
+        .view-tabs {
+            display: flex;
+            gap: 6px;
+            padding: 6px;
+            background: var(--glass);
+            border-radius: var(--radius-pill);
+            margin-top: 18px;
+        }
+
+        .view-tab {
+            flex: 1;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(200, 215, 230, 0.4);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-dim);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .view-tab.active {
+            flex: 2;
+            background: var(--ralli-yellow);
+            border-radius: var(--radius-pill);
+            color: var(--text);
+        }
+
+        .view-tab.active .tab-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .view-tab .tab-label {
+            display: none;
+        }
+
+        /* Cards with color accent strips */
+        .card {
+            background: var(--glass-strong);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .card.accent-coral::before { background: var(--coral); }
+        .card.accent-magenta::before { background: var(--magenta); }
+        .card.accent-hot-pink::before { background: var(--hot-pink); }
+        .card.accent-burgundy::before { background: var(--burgundy); }
+        .card.accent-yellow::before { background: var(--ralli-yellow); }
+        .card.accent-blue::before { background: var(--soft-blue); }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        /* Tracker buttons with color backgrounds */
+        .tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .tracker-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 16px 12px;
+            background: var(--glass-strong);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+        }
+
+        .tracker-btn .emoji { font-size: 32px; }
+        .tracker-btn .count { font-size: 28px; font-weight: 700; }
+        .tracker-btn .label { font-size: 12px; color: var(--text-dim); }
+
+        /* Colored tracker button accents */
+        .tracker-btn.drinks { border-bottom: 3px solid var(--coral); }
+        .tracker-btn.meals { border-bottom: 3px solid var(--magenta); }
+        .tracker-btn.steps { border-bottom: 3px solid var(--soft-blue); }
+        .tracker-btn.photos { border-bottom: 3px solid var(--hot-pink); }
+
+        /* Activity feed with colored avatars */
+        .feed-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .feed-item:last-child { border-bottom: none; }
+
+        .feed-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .feed-avatar.coral { background: var(--coral); }
+        .feed-avatar.magenta { background: var(--magenta); }
+        .feed-avatar.hot-pink { background: var(--hot-pink); }
+        .feed-avatar.burgundy { background: var(--burgundy); }
+        .feed-avatar.blue { background: var(--soft-blue); }
+
+        .feed-content { flex: 1; }
+        .feed-content .text { font-size: 14px; margin-bottom: 4px; }
+        .feed-content .time { font-size: 12px; color: var(--text-dim); }
+
+        /* Race bars with brand colors */
+        .race-track {
+            background: var(--glass);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .race-lane {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .race-lane:last-child { border-bottom: none; }
+
+        .race-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .race-progress {
+            flex: 1;
+            height: 28px;
+            background: rgba(200, 220, 235, 0.5);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .race-bar {
+            height: 100%;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+        }
+
+        .race-bar.coral { background: linear-gradient(90deg, var(--coral), #ff8787); }
+        .race-bar.magenta { background: linear-gradient(90deg, var(--magenta), #d94f9a); }
+        .race-bar.hot-pink { background: linear-gradient(90deg, var(--hot-pink), #f06da8); }
+        .race-bar.burgundy { background: linear-gradient(90deg, var(--burgundy), #9a3535); }
+        .race-bar.blue { background: linear-gradient(90deg, var(--soft-blue), #9dcae8); }
+
+        .race-score {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Status pills/badges */
+        .pill-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .pill.coral { background: var(--coral); }
+        .pill.magenta { background: var(--magenta); }
+        .pill.hot-pink { background: var(--hot-pink); }
+        .pill.burgundy { background: var(--burgundy); }
+        .pill.blue { background: var(--soft-blue); color: var(--text); }
+        .pill.yellow { background: var(--ralli-yellow); color: var(--text); }
+
+        /* Quick action buttons with color hover */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .quick-action {
+            flex: 1;
+            padding: 14px 8px;
+            background: var(--glass-strong);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .quick-action .icon { font-size: 24px; }
+
+        .quick-action:nth-child(1):hover { background: rgba(240, 107, 107, 0.2); border: 2px solid var(--coral); }
+        .quick-action:nth-child(2):hover { background: rgba(196, 30, 123, 0.15); border: 2px solid var(--magenta); }
+        .quick-action:nth-child(3):hover { background: rgba(232, 75, 138, 0.15); border: 2px solid var(--hot-pink); }
+        .quick-action:nth-child(4):hover { background: rgba(126, 179, 216, 0.2); border: 2px solid var(--soft-blue); }
+
+        /* Leaderboard position colors */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.5);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+        }
+
+        .position {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .position.first { background: var(--ralli-yellow); color: var(--text); }
+        .position.second { background: var(--coral); }
+        .position.third { background: var(--hot-pink); }
+
+        .leaderboard-name { flex: 1; font-weight: 600; }
+        .leaderboard-score { font-weight: 700; color: var(--text-secondary); }
+
+        /* Section with colored left border */
+        .bordered-section {
+            border-left: 4px solid;
+            padding-left: 16px;
+            margin-bottom: 16px;
+        }
+
+        .bordered-section.coral { border-color: var(--coral); }
+        .bordered-section.magenta { border-color: var(--magenta); }
+        .bordered-section.hot-pink { border-color: var(--hot-pink); }
+        .bordered-section.blue { border-color: var(--soft-blue); }
+
+        .bordered-section h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .bordered-section p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Day navigation with color indicator */
+        .day-nav {
+            display: flex;
+            gap: 4px;
+            background: var(--glass);
+            padding: 6px;
+            border-radius: var(--radius-pill);
+            margin-bottom: 16px;
+        }
+
+        .day-btn {
+            flex: 1;
+            padding: 10px 8px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-pill);
+            color: var(--text-dim);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .day-btn.active {
+            background: var(--glass-strong);
+            color: var(--text);
+        }
+
+        .day-btn.today::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--coral);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="app-header">
+        <div class="header-top">
+            <h1>Joe's Stag 🇵🇹</h1>
+            <div class="header-actions">
+                <button class="header-btn">🔔</button>
+                <button class="header-btn">🎁</button>
+            </div>
+        </div>
+        <div class="view-tabs">
+            <button class="view-tab active">
+                <span>📊</span>
+                <span class="tab-label">Live</span>
+            </button>
+            <button class="view-tab">🗓️</button>
+            <button class="view-tab">💬</button>
+            <button class="view-tab">📸</button>
+            <button class="view-tab">⛳</button>
+            <button class="view-tab">💰</button>
+            <button class="view-tab">🎯</button>
+            <button class="view-tab">⚙️</button>
+        </div>
+    </div>
+
+    <h2>Tracker Buttons (colored bottom borders)</h2>
+    <div class="tracker-grid">
+        <button class="tracker-btn drinks">
+            <span class="emoji">🍺</span>
+            <span class="count">12</span>
+            <span class="label">Drinks</span>
+        </button>
+        <button class="tracker-btn meals">
+            <span class="emoji">🍽️</span>
+            <span class="count">3</span>
+            <span class="label">Meals</span>
+        </button>
+        <button class="tracker-btn steps">
+            <span class="emoji">👟</span>
+            <span class="count">8k</span>
+            <span class="label">Steps</span>
+        </button>
+        <button class="tracker-btn photos">
+            <span class="emoji">📸</span>
+            <span class="count">24</span>
+            <span class="label">Photos</span>
+        </button>
+    </div>
+
+    <h2>Cards with Color Accent Strips</h2>
+    <div class="card accent-coral">
+        <div class="card-title">🍺 Drinks Leaderboard</div>
+        <p style="color: var(--text-secondary); font-size: 13px;">Joe is in the lead with 15 drinks!</p>
+    </div>
+    <div class="card accent-magenta">
+        <div class="card-title">🎯 Challenge Active</div>
+        <p style="color: var(--text-secondary); font-size: 13px;">First to finish the bar crawl wins!</p>
+    </div>
+
+    <h2>Activity Feed (colored avatars)</h2>
+    <div class="card">
+        <div class="feed-item">
+            <div class="feed-avatar coral">RS</div>
+            <div class="feed-content">
+                <div class="text"><strong>Ryan</strong> logged 3 drinks</div>
+                <div class="time">2 mins ago</div>
+            </div>
+        </div>
+        <div class="feed-item">
+            <div class="feed-avatar magenta">JW</div>
+            <div class="feed-content">
+                <div class="text"><strong>Joe</strong> uploaded a photo</div>
+                <div class="time">5 mins ago</div>
+            </div>
+        </div>
+        <div class="feed-item">
+            <div class="feed-avatar hot-pink">TK</div>
+            <div class="feed-content">
+                <div class="text"><strong>Tom</strong> completed a challenge</div>
+                <div class="time">12 mins ago</div>
+            </div>
+        </div>
+        <div class="feed-item">
+            <div class="feed-avatar burgundy">AD</div>
+            <div class="feed-content">
+                <div class="text"><strong>Adam</strong> checked in at the bar</div>
+                <div class="time">15 mins ago</div>
+            </div>
+        </div>
+        <div class="feed-item">
+            <div class="feed-avatar blue">GW</div>
+            <div class="feed-content">
+                <div class="text"><strong>George</strong> hit 10k steps</div>
+                <div class="time">20 mins ago</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Race/Leaderboard (colored bars)</h2>
+    <div class="card">
+        <div class="card-title">🏁 Drinks Race</div>
+        <div class="race-track">
+            <div class="race-lane">
+                <div class="race-avatar" style="background: var(--coral)">JS</div>
+                <div class="race-progress">
+                    <div class="race-bar coral" style="width: 90%">
+                        <span class="race-score">15</span>
+                    </div>
+                </div>
+            </div>
+            <div class="race-lane">
+                <div class="race-avatar" style="background: var(--magenta)">RS</div>
+                <div class="race-progress">
+                    <div class="race-bar magenta" style="width: 75%">
+                        <span class="race-score">12</span>
+                    </div>
+                </div>
+            </div>
+            <div class="race-lane">
+                <div class="race-avatar" style="background: var(--hot-pink)">TK</div>
+                <div class="race-progress">
+                    <div class="race-bar hot-pink" style="width: 60%">
+                        <span class="race-score">9</span>
+                    </div>
+                </div>
+            </div>
+            <div class="race-lane">
+                <div class="race-avatar" style="background: var(--burgundy)">AD</div>
+                <div class="race-progress">
+                    <div class="race-bar burgundy" style="width: 45%">
+                        <span class="race-score">7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Status Pills/Badges</h2>
+    <div class="pill-row">
+        <span class="pill coral">🔥 On Fire</span>
+        <span class="pill magenta">🏆 Winner</span>
+        <span class="pill hot-pink">💪 Active</span>
+        <span class="pill burgundy">🍷 Wine Time</span>
+        <span class="pill blue">😴 Resting</span>
+        <span class="pill yellow">⭐ MVP</span>
+    </div>
+
+    <h2>Quick Actions (color on hover)</h2>
+    <div class="quick-actions">
+        <button class="quick-action">
+            <span class="icon">📍</span>
+            <span>Check In</span>
+        </button>
+        <button class="quick-action">
+            <span class="icon">📸</span>
+            <span>Photo</span>
+        </button>
+        <button class="quick-action">
+            <span class="icon">🎯</span>
+            <span>Challenge</span>
+        </button>
+        <button class="quick-action">
+            <span class="icon">💬</span>
+            <span>Message</span>
+        </button>
+    </div>
+
+    <h2>Leaderboard with Position Colors</h2>
+    <div class="card">
+        <div class="card-title">🏆 Overall Standings</div>
+        <div class="leaderboard-item">
+            <div class="position first">1</div>
+            <div class="leaderboard-name">Joe</div>
+            <div class="leaderboard-score">247 pts</div>
+        </div>
+        <div class="leaderboard-item">
+            <div class="position second">2</div>
+            <div class="leaderboard-name">Ryan</div>
+            <div class="leaderboard-score">212 pts</div>
+        </div>
+        <div class="leaderboard-item">
+            <div class="position third">3</div>
+            <div class="leaderboard-name">Tom</div>
+            <div class="leaderboard-score">198 pts</div>
+        </div>
+    </div>
+
+    <h2>Sections with Colored Borders</h2>
+    <div class="bordered-section coral">
+        <h4>🍺 Drinks Update</h4>
+        <p>The group has consumed 87 drinks so far!</p>
+    </div>
+    <div class="bordered-section magenta">
+        <h4>🎯 Challenge Alert</h4>
+        <p>New challenge unlocked: Photo Scavenger Hunt</p>
+    </div>
+    <div class="bordered-section hot-pink">
+        <h4>📸 Photo Milestone</h4>
+        <p>You've uploaded more photos than anyone!</p>
+    </div>
+
+    <h2>Day Navigation (today indicator)</h2>
+    <div class="day-nav">
+        <button class="day-btn">Thu</button>
+        <button class="day-btn active today">Fri</button>
+        <button class="day-btn">Sat</button>
+        <button class="day-btn">Sun</button>
+        <button class="day-btn">Mon</button>
+    </div>
+
+    <div style="height: 40px;"></div>
+</body>
+</html>
