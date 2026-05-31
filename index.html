@@ -4898,6 +4898,9 @@
     </div>
     </div><!-- end mainApp -->
 
+    <!-- Persistent Audio Player (survives page navigation) -->
+    <audio id="roneAudio" src="/rone-stranger.mp3" preload="metadata"></audio>
+
     <script>
 
         // Error capture for bug reports
@@ -10599,7 +10602,7 @@ ${ua}
                 <!-- Now Playing Bar (Yellow/Green) - Clickable to play -->
                 <div id="ronePlayBar" onclick="toggleRoneTrack()" style="background: var(--ralli-yellow); border-radius: 999px; padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; color: #1a1a1a;">
-                        <span id="ronePlayIcon">▶️</span>
+                        <span id="ronePlayIcon">${roneIsPlaying ? '⏸️' : '▶️'}</span>
                         <span>Rone</span>
                         <span style="color: rgba(0,0,0,0.5);">-</span>
                         <span>Stranger</span>
@@ -10608,7 +10611,6 @@ ${ua}
                         <span>😈</span><span>👂</span><span>🤌</span><span>🧠</span><span>🏄‍♂️</span><span>🍆</span>
                     </div>
                 </div>
-                <audio id="roneAudio" src="/rone-stranger.mp3" preload="metadata"></audio>
 
                 <!-- Spotify Playlist Embed (Full Size) -->
                 <div style="border-radius: 16px; overflow: hidden;">
@@ -12909,6 +12911,16 @@ ${ua}
                     splashMinTimeElapsed = true;
                     hideSplashIfReady();
                 }, 3200);
+            }
+
+            // Setup persistent audio player
+            const roneAudio = document.getElementById('roneAudio');
+            if (roneAudio) {
+                roneAudio.onended = () => {
+                    roneIsPlaying = false;
+                    const icon = document.getElementById('ronePlayIcon');
+                    if (icon) icon.textContent = '▶️';
+                };
             }
 
             // Setup login form handlers
