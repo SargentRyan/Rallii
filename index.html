@@ -3050,25 +3050,7 @@
             z-index: 2;
         }
 
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: 57px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--brand-green);
-            opacity: 0.3;
-            z-index: 1;
-        }
-
-        .timeline-item:first-child::before {
-            top: 16px;
-        }
-
-        .timeline-item:last-child::before {
-            bottom: calc(100% - 16px);
-        }
+        /* Timeline line is drawn inline in renderScheduleView */
 
         .timeline-item.now .timeline-dot {
             background: var(--brand-green);
