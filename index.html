@@ -846,7 +846,8 @@
 
         .view-tabs {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-evenly;
+            align-items: center;
             gap: 0;
             padding: 5px;
             margin: 0;
@@ -862,7 +863,6 @@
             box-shadow:
                 0 4px 16px rgba(0, 0, 0, 0.08),
                 inset 0 1px 2px rgba(255, 255, 255, 0.8);
-            align-items: center;
             min-height: 48px;
         }
 
@@ -871,8 +871,8 @@
             align-items: center;
             justify-content: center;
             gap: 0;
-            flex: 1 1 0;
-            min-width: 38px;
+            flex: 0 0 38px;
+            width: 38px;
             height: 38px;
             padding: 0;
             background: linear-gradient(145deg, #e8eef3 0%, #d5dfe8 100%);
@@ -911,10 +911,10 @@
         }
 
         .view-tab.active {
-            flex: 2 1 0;
-            min-width: 70px;
-            max-width: none;
-            padding: 0 12px;
+            flex: 0 0 auto;
+            width: auto;
+            min-width: 38px;
+            padding: 0 14px;
             gap: 6px;
             background: linear-gradient(145deg, #e8ff6a 0%, #d4f050 100%);
             border: none;
@@ -5588,7 +5588,12 @@
                     ...m,
                     _firebaseKey: firebaseKey,
                     own: m.name === state.myName
-                })) : [];
+                })).sort((a, b) => {
+                    // Sort by id (timestamp) or by timestamp field
+                    const timeA = a.id || new Date(a.timestamp).getTime() || 0;
+                    const timeB = b.id || new Date(b.timestamp).getTime() || 0;
+                    return timeA - timeB;
+                }) : [];
                 if (state.view === 'chat') renderView();
             });
 
@@ -8004,8 +8009,8 @@
                     ` : ''}
                     <div class="chat-input-area" style="display: flex; gap: 10px; align-items: center; padding-top: 12px;">
                         <input type="text" class="chat-input" id="chatInput" placeholder="${state.replyingTo ? 'Reply...' : 'Message the group...'}" style="flex: 1; padding: 14px 18px; border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 999px; font-size: 14px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);">
-                        <button class="chat-send" onclick="handleSendMessage()" style="width: 44px; height: 44px; border-radius: 50%; background: var(--brand-green); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(155, 181, 201, 0.3);">➤</button>
                         <button class="chat-gif-btn" onclick="showGifPicker()" style="background: #E84B8A; border: none; font-size: 12px; font-weight: 700; color: white; padding: 10px 14px; border-radius: 999px; cursor: pointer; box-shadow: 0 2px 8px rgba(232, 75, 138, 0.3);">GIF</button>
+                        <button class="chat-send" onclick="handleSendMessage()" style="width: 44px; height: 44px; border-radius: 50%; background: var(--brand-green); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(155, 181, 201, 0.3);">➤</button>
                     </div>
                 </div>
             `;
