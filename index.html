@@ -10558,21 +10558,21 @@ ${ua}
         let roneIsPlaying = false;
         function toggleRoneTrack() {
             const audio = document.getElementById('roneAudio');
-            const btn = document.getElementById('ronePlayBtn');
+            const icon = document.getElementById('ronePlayIcon');
             if (!audio) return;
 
             if (roneIsPlaying) {
                 audio.pause();
-                btn.textContent = '▶️';
+                if (icon) icon.textContent = '▶';
                 roneIsPlaying = false;
             } else {
                 audio.play();
-                btn.textContent = '⏸️';
+                if (icon) icon.textContent = '⏸';
                 roneIsPlaying = true;
             }
 
             audio.onended = () => {
-                btn.textContent = '▶️';
+                if (icon) icon.textContent = '▶';
                 roneIsPlaying = false;
             };
         }
@@ -10596,26 +10596,27 @@ ${ua}
                     </div>
                 </div>
 
-                <!-- Now Playing Bar (Yellow/Green) -->
-                <div style="background: var(--ralli-yellow); border-radius: 999px; padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                <!-- Now Playing Bar (Yellow/Green) - Clickable to play -->
+                <div id="ronePlayBar" onclick="toggleRoneTrack()" style="background: var(--ralli-yellow); border-radius: 999px; padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; color: #1a1a1a;">
-                        <span>▶</span>
+                        <span id="ronePlayIcon">▶</span>
                         <span>Rone</span>
                         <span style="color: rgba(0,0,0,0.5);">-</span>
                         <span>Stranger</span>
                     </div>
                     <div style="display: flex; gap: 4px; font-size: 16px;">
-                        <span>🤠</span><span>🍹</span><span>🌊</span><span>🏖️</span>
+                        <span>😈</span><span>👂</span><span>🤌</span><span>🧠</span><span>🏄‍♂️</span><span>🍆</span>
                     </div>
                 </div>
+                <audio id="roneAudio" src="/rone-stranger.mp3" preload="metadata"></audio>
 
-                <!-- Spotify Playlist Embed -->
-                <div style="background: rgba(255, 255, 255, 0.95); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+                <!-- Spotify Playlist Embed (Full Size) -->
+                <div style="border-radius: 16px; overflow: hidden;">
                     <iframe
                         style="border-radius:12px"
                         src="https://open.spotify.com/embed/playlist/4I6TflZGBTVPcYUEAQ7Z0g?utm_source=generator&theme=0"
                         width="100%"
-                        height="180"
+                        height="352"
                         frameBorder="0"
                         allowfullscreen=""
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
