@@ -6854,11 +6854,11 @@
             const opt3 = document.getElementById('pollOption3').value;
 
             if (question && opt1 && opt2) {
-                const pollId = Date.now();
+                const pollId = Date.now().toString();
                 const options = [opt1, opt2];
                 if (opt3) options.push(opt3);
 
-                // Store poll data in Firebase
+                // Store poll data in Firebase, then send message
                 const tripRef = db.ref(`trips/${state.eventCode}`);
                 tripRef.child('polls').child(pollId).set({
                     question: question,
@@ -6866,16 +6866,19 @@
                     votes: {},
                     createdBy: state.myName,
                     createdAt: new Date().toISOString()
+                }).then(() => {
+                    // Send poll message with special format after Firebase save
+                    const pollText = `[POLL:${pollId}]${question}[/POLL]`;
+                    document.querySelector('.modal-overlay')?.remove();
+                    navigateTo('chat');
+                    setTimeout(() => {
+                        sendMessage(pollText);
+                        showToast('Poll sent!');
+                    }, 100);
+                }).catch(err => {
+                    console.error('Error saving poll:', err);
+                    showToast('Error creating poll');
                 });
-
-                // Send poll message with special format
-                const pollText = `[POLL:${pollId}]${question}[/POLL]`;
-                document.querySelector('.modal-overlay').remove();
-                navigateTo('chat');
-                setTimeout(() => {
-                    sendMessage(pollText);
-                    showToast('Poll sent!');
-                }, 100);
             }
         }
 
