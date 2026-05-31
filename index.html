@@ -1837,6 +1837,10 @@
             border-radius: 4px;
             margin-bottom: 6px;
             color: var(--text-dim);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
         }
 
         .chat-message.own .message-reply-ref {
@@ -10773,8 +10777,8 @@ ${ua}
             const totalPar = pars.slice(0, holes).reduce((a, b) => a + b, 0);
 
             screen.innerHTML = `
-                <!-- Event Branding Card - breaks out of screen padding to match header width -->
-                <div style="margin: 0 -12px 14px -12px; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(52, 199, 89, 0.25);">
+                <!-- Event Branding Card - same width as content (matches header) -->
+                <div style="margin-bottom: 14px; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 32px rgba(52, 199, 89, 0.25);">
                     <img src="/joe-guppy-card.png" alt="Joe Guppy Invitational - Aroeira II, Lisbon 2026" style="width: 100%; height: auto; display: block;">
                 </div>
 
