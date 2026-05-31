@@ -6220,9 +6220,10 @@
 
             // Milestone messages
             const milestones = {
-                5: ['5 down!', 'Warming up', 'Nice start'],
-                10: ['Double digits!', 'In the zone', '10!'],
-                15: ['Going strong!', 'On a roll', 'Legend'],
+                1: ['First one m8', 'Yeea bwoii', 'EOW merkin me!'],
+                5: ['Yes Geez', 'Top Legend', 'Shaggadelic'],
+                10: ['Cannons', 'Boshhhh', 'Cwoarrrrr'],
+                15: ['Woii', 'Bloody Mental', 'Wowzerooney'],
                 20: ['20! 🔥', 'Unstoppable', 'Machine'],
                 25: ['25! Beast mode', 'Hall of fame', 'Iconic']
             };
@@ -6230,8 +6231,6 @@
             let msg;
             if (milestones[count]) {
                 msg = `${emoji} ${milestones[count][Math.floor(Math.random() * milestones[count].length)]}`;
-            } else if (count === 1) {
-                msg = `${emoji} First one!`;
             } else {
                 const quickMessages = [`+1 ${emoji}`, `${emoji} Nice!`, `${emoji} ${count}!`, `Another ${emoji}`];
                 msg = quickMessages[Math.floor(Math.random() * quickMessages.length)];
