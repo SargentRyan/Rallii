@@ -9604,16 +9604,14 @@
             screen.innerHTML = `
                 <!-- Top Row: Add Button + Group/Me Toggle -->
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
-                    <button onclick="sharePhoto()" style="background: var(--ralli-yellow); color: #1a1a1a; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(228, 255, 90, 0.4); flex-shrink: 0;">Add +</button>
-                    <div style="flex: 1; display: flex; justify-content: center;">
-                        <div class="scope-toggle photos-scope" style="margin-bottom: 0; max-width: 220px;">
-                            <button class="${isMe ? '' : 'active'}" onclick="setScopeMode('photos', 'group')">
-                                <span>👥</span> Group
-                            </button>
-                            <button class="${isMe ? 'active' : ''}" onclick="setScopeMode('photos', 'me')">
-                                <span>👤</span> Me
-                            </button>
-                        </div>
+                    <button onclick="sharePhoto()" style="background: #E84B8A; color: white; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(232, 75, 138, 0.3); flex-shrink: 0;">Add +</button>
+                    <div class="scope-toggle" style="margin-bottom: 0; flex: 1; max-width: none;">
+                        <button class="${isMe ? '' : 'active'}" onclick="setScopeMode('photos', 'group')">
+                            <span>👥</span> Group
+                        </button>
+                        <button class="${isMe ? 'active' : ''}" onclick="setScopeMode('photos', 'me')">
+                            <span>👤</span> Me
+                        </button>
                     </div>
                 </div>
 
@@ -9638,7 +9636,7 @@
                         <p style="color: var(--text-dim); font-size: 13px; margin: 0 0 16px 0;">
                             ${isMe ? 'Take your first photo to see it here!' : 'Be the first to capture a moment!'}
                         </p>
-                        <button onclick="sharePhoto()" style="background: var(--ralli-yellow); color: #1a1a1a; padding: 14px 32px; border-radius: 999px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(228, 255, 90, 0.4);">Add +</button>
+                        <button onclick="sharePhoto()" style="background: #E84B8A; color: white; padding: 14px 32px; border-radius: 999px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(232, 75, 138, 0.3);">Add +</button>
                     </div>
                 `}
             `;
