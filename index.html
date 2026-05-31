@@ -8262,7 +8262,10 @@
                 const poll = state.polls?.[pollId];
 
                 if (!poll) {
-                    return `<div style="padding: 12px; background: rgba(255,255,255,0.5); border-radius: 12px;">📊 ${question}<br><span style="color: var(--text-dim); font-size: 12px;">Poll expired</span></div>`;
+                    // Check if poll is old (more than 7 days) - show expired, otherwise loading
+                    const pollTime = parseInt(pollId);
+                    const isOld = Date.now() - pollTime > 7 * 24 * 60 * 60 * 1000;
+                    return `<div style="padding: 12px; background: rgba(255,255,255,0.5); border-radius: 12px;">📊 ${question}<br><span style="color: var(--text-dim); font-size: 12px;">${isOld ? 'Poll expired' : 'Loading...'}</span></div>`;
                 }
 
                 const options = poll.options || [];
